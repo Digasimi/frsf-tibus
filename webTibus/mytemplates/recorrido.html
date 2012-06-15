@@ -1,0 +1,241 @@
+{% extends "baseMenuMapa.html" %}
+
+{% block extras %}
+<table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
+  <form action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
+      Coordenadas Actuales: 
+    <table>
+      <tr>
+	<td> <label for="id_linea"> Linea: </label> {{ form.linea }} </td>	
+	<td> <BUTTON type="submit" name="accion" value="viewLinea"> Mostrar Linea </BUTTON> </td>
+      </tr>
+      <tr>
+	<td> <label for="id_orden"> Orden: </label> {{ form.orden }} </td>
+    <td> <BUTTON type="submit" name="accion" value="viewParada"> Buscar Parada </BUTTON> </td></tr>
+	<!--<td> <label for="id_latitud"> Latitud: </label> {{ form.latitud }}</td>
+	<td> <label for="id_longitud"> Longitud: </label> {{ form.longitud }}</td></tr>-->
+    </table>
+    <p> Nuevas Coordenadas: <div id="coor"></div></p>
+    <BUTTON type="submit" name="accion" value="addParada"> Agregar Parada </BUTTON>
+    <BUTTON type="submit" name="accion" value="editParada"> Modificar Parada </BUTTON>
+    <BUTTON type="submit" name="accion" value="delParada" > Eliminar Parada </BUTTON>
+    </form>
+  </td></tr>
+   {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
+    <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
+    </tr>
+  {% endif %}
+  <!--<tr><td><div id="coor"></div></td></tr>-->
+  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;"> Recorrido: </td></tr>
+  <tr><td><table>
+    {% if listaParadas %}
+	<tr><td> Orden </td><td> Latitud </td><td> Longitud </td></tr>
+      {% for parada in listaParadas %}
+        <tr><td>{{ parada.orden }}</td><td>{{ parada.latitud }}</td><td>{{ parada.longitud }}</td></tr>
+      {% endfor %}
+    {% else %}
+      <tr><td>No paradas disponibles.</td></tr>
+    {% endif %}
+  </table></td></tr>
+  <!--<tr><td><div id="recorrido"></div></td></tr> // Muestra los refinamientos sobre las posiciones-->
+</table>
+{% endblock %}
+
+{% block funcDblClick %}
+    function confirmacion(form){
+        if (form.accion[0].value != "viewLinea" && form.accion[0].value !="viewParada"){
+            var answer = confirm("Confirma el cambio que desea realizar")
+            if (answer)
+            {
+                alert("aca confirma");
+                return (true);
+            }
+            else
+            {
+                alert("aca no confirma");
+                return (false);
+            }
+        }
+    }
+    
+function mostrarCoordenadas(location, map) { //funcion javascript
+    var longitud = location.lng();
+    var latitud = location.lat();
+//    var linea = 14;
+//    var orden = 1;
+
+    //Codigo DOM
+    
+    //borra los datos anterior, para mostrar solo las coordenadas actuales
+    var parrafoAEliminar = document.getElementById("coor").getElementsByTagName("INPUT")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+    parrafoAEliminar = document.getElementById("coor").getElementsByTagName("INPUT")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+    parrafoAEliminar = document.getElementById("coor").getElementsByTagName("text")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+    parrafoAEliminar = document.getElementById("coor").getElementsByTagName("text")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+
+
+    /*//crea los elementos
+    var elem_table = document.createElement("table");
+    var elem_tr = document.createElement("tr");
+    var elem_td1 = document.createElement("td");
+    var elem_td2 = document.createElement("td");
+    var elem_td3 = document.createElement("td");
+    var elem_td4 = document.createElement("td");
+    
+
+    
+    //carga las coordenadas actuales
+    elem_td1.appendChild(document.createTextNode("Latitud"));
+    elem_td2.appendChild(document.createTextNode(latitud));
+    elem_td3.appendChild(document.createTextNode("Longitud"));
+    elem_td4.appendChild(document.createTextNode(longitud));
+    elem_tr.appendChild(elem_td1);
+    elem_tr.appendChild(elem_td2);
+    elem_tr.appendChild(elem_td3);
+    elem_tr.appendChild(elem_td4);
+    elem_table.appendChild(elem_tr);
+    
+    //document.getElementById("coor").appendChild(elem_newCoor);
+    //document.getElementById("recorrido").appendChild(elem_table); carga lista de constantes refinamientos
+    */
+
+    //agrega nuevos datos
+    var elem_inputlat = document.createElement("INPUT");
+    var elem_inputlon = document.createElement("INPUT");
+    var elem_text1 = document.createElement("text");
+    var elem_text2 = document.createElement("text");
+    elem_inputlat.setAttribute("type","text");
+    elem_inputlat.setAttribute("name","newlatitud");
+    elem_inputlat.setAttribute("value",latitud);
+    elem_inputlat.setAttribute("size","20");
+    elem_inputlon.setAttribute("type","text");
+    elem_inputlon.setAttribute("name","newlongitud");
+    elem_inputlon.setAttribute("value",longitud);
+    elem_inputlon.setAttribute("size","20");
+    elem_text1.appendChild(document.createTextNode("Latitud: "));
+    elem_text2.appendChild(document.createTextNode("  Longitud: "));
+
+    
+    document.getElementById("coor").appendChild(elem_text1);
+    document.getElementById("coor").appendChild(elem_inputlat);
+    document.getElementById("coor").appendChild(elem_text2);    
+    document.getElementById("coor").appendChild(elem_inputlon);  
+
+    /*/ codigo para crear formulario DOM
+    var elem_form = document.createElement("form");
+    var elem_inputlinea = document.createElement("INPUT")
+    var elem_inputorden = document.createElement("INPUT")
+    var elem_inputlat = document.createElement("INPUT");
+    var elem_inputlon = document.createElement("INPUT");
+    var elem_buttonAdd = document.createElement("BUTTON");
+        
+    elem_inputlinea.setAttribute("type","text");
+    elem_inputlinea.setAttribute("name","linea");
+    elem_inputlinea.setAttribute("value",linea);
+    elem_inputlinea.setAttribute("size","5");
+    elem_inputorden.setAttribute("type","text");
+    elem_inputorden.setAttribute("name","orden");
+    elem_inputorden.setAttribute("value",orden);
+    elem_inputorden.setAttribute("size","5");
+    elem_inputlat.setAttribute("type","text");
+    elem_inputlat.setAttribute("name","latitud");
+    elem_inputlat.setAttribute("value",latitud);
+    elem_inputlat.setAttribute("size","20");
+    elem_inputlon.setAttribute("type","text");
+    elem_inputlon.setAttribute("name","longitud");
+    elem_inputlon.setAttribute("value",longitud);
+    elem_inputlon.setAttribute("size","20");
+    elem_buttonAdd.setAttribute("type", "submit");
+    elem_buttonAdd.setAttribute("name", "accion");
+    elem_buttonAdd.setAttribute("value", "addParada");
+    elem_buttonAdd.appendChild(document.createTextNode("Agregar Parada"));
+
+    elem_form.setAttribute("action","");
+    elem_form.setAttribute("method","post");
+    
+    elem_form.appendChild(document.createTextNode("Linea: "));
+    elem_form.appendChild(elem_inputlinea);
+    elem_form.appendChild(document.createTextNode("  Orden: "));
+    elem_form.appendChild(elem_inputorden);
+    elem_form.appendChild(document.createTextNode("  Latitud: "));
+    elem_form.appendChild(elem_inputlat);
+    elem_form.appendChild(document.createTextNode("  Longitud: "));
+    elem_form.appendChild(elem_inputlon);
+    elem_form.appendChild(document.createTextNode("  "));
+    elem_form.appendChild(elem_buttonAdd);
+    
+    document.getElementById("coor").appendChild(elem_form);*/
+
+    //Codigo innerHTML
+    //document.getElementById("coor").innerHTML = "Latitud: " + latitud + " / Longitud: " + longitud;
+
+    //Poner marcador donde se hizo doble clic
+    /*var point = new GLatLng(latitud,longitud);
+    var marker= new GMarker(point);
+    map.addOverlay(marker);*/
+    }
+{% endblock %}
+   
+{% block defFuncDblClick %}    
+    var marker= new GMarker(new GLatLng(latlng.lat(),latlng.lng()));
+    map.addOverlay(marker);
+    mostrarCoordenadas(latlng, map);
+
+{% endblock %}
+
+{% block marcas %}   
+    // Crea marcador por defecto
+    var iconoBus = new GIcon(G_DEFAULT_ICON);
+    iconoBus.image = "http://google-maps-icons.googlecode.com/files/bus.png";
+    iconoBus.iconSize = new GSize(32, 37);
+                
+    // Setea opciones de los marcadores
+    markerOptions = { icon:iconoBus, draggable: true };
+
+    function closeInfoWindow() {
+        infoWindow.close();
+    }
+    
+    {% if listaParadas %}
+    var point = new GLatLng(0,0);
+    {% for parada in listaParadas %}
+	point = new GLatLng({{ parada.latitud }},{{ parada.longitud}} );
+    marcador = new GMarker(point, markerOptions);
+	
+    google.maps.Event.addListener(marcador, 'click', function(overly, latlng, overlaylatlng) { //funcion que muestra la ventana de informacion
+        map.openInfoWindowHtml(new GLatLng({{ parada.latitud }},{{ parada.longitud}} ), "<div style='font-size: 8pt; font-family: verdana'><p>Linea : {{ parada.linea}} </p><p>Orden: {{ parada.orden }} </p><p>Latitud: {{ parada.latitud }} </p><p>Longitud:{{ parada.longitud}} </p></div>"); 
+    });
+    
+    google.maps.Event.addListener(marcador, 'dragend', function(position) {
+        mostrarCoordenadas(position, map);
+    });
+    map.addOverlay(marcador);    
+
+    {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block anteMapa %}
+<table style="height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+	<tbody>
+	    <tr>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="linea"><img style="width: 148px; height: 40px;" alt="Lineas"
+			  src="Archivos/Que%20es.jpg" align="middle"></img></a></td>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="recorrido"><img style="width: 148px; height: 40px;" alt="Paradas"
+			  src="Archivos/lineas%20y%20recorridos.jpg" align="middle"></img></a></td>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="unidad"><img style="width: 148px; height: 40px;" alt="Unidades"
+			  src="Archivos/prediccion.jpg" align="middle"></img></a></td>
+        <td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="empresa"><img style="width: 148px; height: 40px;" alt="Empresa"
+			  src="Archivos/empresa.jpg" align="middle"></img></a></td>
+	    </tr>
+	</tbody>
+</table>
+{% endblock %}

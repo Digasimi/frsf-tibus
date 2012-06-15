@@ -1,0 +1,46 @@
+{% extends "baseMenu.html" %}
+
+{% block extrahead %}
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <title>Google Maps JavaScript API Example</title>
+  <script src="http://maps.google.com/maps?file=api&v=3"<!--&key=COLOCAR_AQUI_NUESTRA_KEY"-->
+    type="text/javascript"></script>
+  <script type="text/javascript">
+  //<![CDATA[
+  function initialize() {
+    //if (GBrowserIsCompatible()) {
+      var map = new google.maps.Map(document.getElementById("mapas"));
+      var infoWindow = null;
+      //var infoWindow = new google.maps.InfoWindow(); no existe contrutor para esta clase
+      map.setCenter(new google.maps.LatLng(37.78333309725631,-122.44983673095703), 16);
+      map.addControl(new google.maps.LargeMapControl());		//Movimientos de mapa
+      map.addControl(new google.maps.ScaleControl());		//Muestra la escala de mapas
+      map.addControl(new google.maps.OverviewMapControl()); 	//mapa pequeño
+
+    {% block marcas %}{% endblock %}
+    
+      google.maps.Event.addListener(map, 'click', function(overly, latlng, overlaylatlng) {
+      {% block defFuncDblClick %}{% endblock %}
+      closeInfoWindow();     //codigo para cerrar ventana de info
+      });
+  }
+
+  {% block funcDblClick %}{% endblock %}
+
+    //]]>
+  </script>
+  {% block extraScripts %}{% endblock %}
+</script>
+{% endblock %}
+
+{% block content %}
+	{% block anteMapa %}{% endblock %}
+	<table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2"> 
+	  <tbody> <tr style="vertical-align: top; height: 448px;">
+	    <td> <div id="mapas" style="width:100%; height:100%">Aca va el mapa</div></td>
+	    <td style="vertical-align: top; width: 50%;">
+	    {% block extras %} {% endblock %}
+	    </td>
+	  </tr> </tbody>
+	</table>
+{% endblock %}
