@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Project SYSTEM "Project-4.6.dtd">
+<!-- eric4 project file for project tibusV2 -->
+<!-- Saved: 2012-06-01, 18:58:45 -->
+<!-- Copyright (C) 2012 ,  -->
+<Project version="4.6">
+  <Language>en</Language>
+  <ProgLanguage mixed="0">Python</ProgLanguage>
+  <ProjectType>Qt4</ProjectType>
+  <Description></Description>
+  <Version>0.1</Version>
+  <Author></Author>
+  <Email></Email>
+  <Sources>
+    <Source>timetobus/urls.py</Source>
+    <Source>timetobus/__init__.py</Source>
+    <Source>timetobus/wsgi.py</Source>
+    <Source>timetobus/settings.py</Source>
+    <Source>manage.py</Source>
+    <Source>__init__.py</Source>
+    <Source>tibus/__init__.py</Source>
+    <Source>tibus/tests.py</Source>
+    <Source>tibus/models.py</Source>
+    <Source>tibus/views.py</Source>
+    <Source>tibus/urls.py</Source>
+    <Source>tibus/admin.py</Source>
+    <Source>tibus/forms.py</Source>
+    <Source>tibus/load.py</Source>
+    <Source>tibuser/__init__.py</Source>
+    <Source>tibuser/tests.py</Source>
+    <Source>tibuser/models.py</Source>
+    <Source>tibuser/views.py</Source>
+    <Source>tibusython/__init__.py</Source>
+    <Source>tibusython/tests.py</Source>
+    <Source>tibusython/models.py</Source>
+    <Source>tibusython/views.py</Source>
+  </Sources>
+  <Forms>
+  </Forms>
+  <Translations>
+  </Translations>
+  <Resources>
+  </Resources>
+  <Interfaces>
+  </Interfaces>
+  <Others>
+  </Others>
+  <Vcs>
+    <VcsType>None</VcsType>
+  </Vcs>
+  <FiletypeAssociations>
+    <FiletypeAssociation pattern="*.ui" type="FORMS" />
+    <FiletypeAssociation pattern="*.idl" type="INTERFACES" />
+    <FiletypeAssociation pattern="*.qm" type="TRANSLATIONS" />
+    <FiletypeAssociation pattern="*.ptl" type="SOURCES" />
+    <FiletypeAssociation pattern="*.pyw" type="SOURCES" />
+    <FiletypeAssociation pattern="*.ui.h" type="FORMS" />
+    <FiletypeAssociation pattern="*.ts" type="TRANSLATIONS" />
+    <FiletypeAssociation pattern="*.py" type="SOURCES" />
+    <FiletypeAssociation pattern="*.qrc" type="RESOURCES" />
+  </FiletypeAssociations>
+</Project>

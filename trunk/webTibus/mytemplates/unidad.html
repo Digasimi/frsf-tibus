@@ -1,0 +1,68 @@
+{% extends "baseMenuMapa.html" %}
+
+{% block extras %}
+<table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
+  <form name="formUnidad" action="" method="post">{% csrf_token %}
+      Unidad Actual: 
+    <table>
+        <tr>
+            <td> <label for="id_linea"> Linea: </label> {{ form.linea }} </td>	
+            <td> <BUTTON type="submit" name="accion" value="viewUnidad"> Buscar Unidades </BUTTON> </td>
+        </tr>
+        <tr>
+            <td> <label for="id_unidad_linea"> Identificador: </label> {{ form.id_unidad_linea }} </td>
+            <td> <label for="id_apto"> Apto para movilidad reducida: </label> {{ form.aptoMovilidadReducida }} </td>
+        </tr>
+    </table>
+    <BUTTON type="submit" name="accion" value="addUnidad"> Agregar Unidad </BUTTON>
+    <BUTTON type="submit" name="accion" value="editUnidad"> Modificar Unidad </BUTTON>
+    <BUTTON type=button name="accion" onclick="pregunta()" value="delUnidad" > Eliminar Unidad </BUTTON>
+    </form>
+  </td></tr>
+    {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
+    <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
+    </tr>{% endif %}
+  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;"> Unidades Existentes: </td></tr>
+  <tr><td><table>
+    {% if listaUnidad %}
+    <tr><td> Linea</td><td> Unidad  </td><td> Apta movilidad Reducida </td></tr>
+      {% for unidad in listaUnidad %}<tr><td>{{ unidad.linea }}</td><td>{{ unidad.id_unidad_linea }}</td> <td>{{ unidad.aptoMovilidadReducida }}</td></tr>{% endfor %}
+    {% else %}<tr><td>No unidades disponibles.</td></tr>
+    {% endif %}
+  </table></td></tr>
+</table>
+{% endblock %}
+
+{% block funcDblClick %}
+    function pregunta(){
+        if (confirm("Esta seguro de querer eliminar este registro?")){
+            document.formUnidad.accion = "delUnidad"
+            document.formUnidad.submit();
+        }
+    }{% endblock %}
+   
+{% block defFuncDblClick %}{% endblock %}
+
+{% block marcas %}{% endblock %}
+
+{% block anteMapa %}
+<table style="height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+	<tbody>
+	    <tr>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="linea"><img style="width: 148px; height: 40px;" alt="Lineas"
+			  src="Archivos/Que%20es.jpg" align="middle"></img></a></td>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="recorrido"><img style="width: 148px; height: 40px;" alt="Paradas"
+			  src="Archivos/lineas%20y%20recorridos.jpg" align="middle"></img></a></td>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="unidad"><img style="width: 148px; height: 40px;" alt="Unidades"
+			  src="Archivos/prediccion.jpg" align="middle"></img></a></td>
+        <td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="empresa"><img style="width: 148px; height: 40px;" alt="Empresa"
+			  src="Archivos/empresa.jpg" align="middle"></img></a></td>
+	    </tr>
+	</tbody>
+</table>
+{% endblock %}

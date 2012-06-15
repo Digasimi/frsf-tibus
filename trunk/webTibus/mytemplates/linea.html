@@ -1,0 +1,86 @@
+{% extends "baseMenuMapa.html" %}
+
+{% block extras %}
+<table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
+  <form name = "formLinea" action="" method="post" onSubmit = "return confirmacion(this)" enctype="multipart/form-data">{% csrf_token %}
+      Linea Actual: 
+    <table>
+      <tr>
+	<td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
+    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=''">> 
+      {% for linea in listaLinea %}
+       <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+      {% endfor %}
+    </SELECT></td>
+    	<td> <BUTTON type="submit" name="accion" value="viewLinea"> Buscar Linea </BUTTON> </td>
+      </tr>
+      <tr>
+      <td><label for="id_orden"> Frecuencia: </label> {{ form.frecuencia }} </td>
+      <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }} </td></tr>
+      </tr>
+    <tr><td><label for="id_masivo">Carga masiva de paradas:</label>{{ form.masivo}}</td></tr> 
+    <tr><td><font face="univers" size="1"> Las paradas deben estan en orden y una por linea con el formato: Latitud; Longitud;</font></td></tr> 
+    </table>
+    <BUTTON type="submit" name="accion" value="addLinea"> Agregar Linea </BUTTON>
+    <BUTTON type="submit" name="accion" value="editLinea"> Modificar Linea </BUTTON>
+    <BUTTON type="submit" name="accion" value="delLinea" > Eliminar Linea </BUTTON>
+    </form>
+  </td></tr>
+    {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
+    <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
+  </tr>
+  {% endif %}
+  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;"> Lineas Existentes: </td></tr>
+  <tr><td><table>
+    {% if listaLinea %}
+	<tr><td> Linea </td><td> Frecuencia </td><td> Empresa </td></tr>
+      {% for linea in listaLinea %}
+        <tr><td style="width: 30%;">{{ linea.linea }}</td><td style="width: 30%;">{{ linea.frecuencia }}</td><td>{{ linea.empresa }}</td></tr>
+      {% endfor %}
+    {% else %}
+      <tr><td>No lineas disponibles.</td></tr>
+    {% endif %}
+  </table></td></tr>
+</table>
+{% endblock %}
+
+{% block funcDblClick %}
+    function confirmacion(form){
+        if (form.accion[0].value != "viewLinea"){
+            var answer = confirm("Confirma el cambio que desea realizar")
+            if (answer)
+            {
+                return (true);
+            }
+            else
+            {
+                return (false);
+            }
+        }
+    }{% endblock %}
+   
+{% block defFuncDblClick %}{% endblock %}
+
+{% block marcas %}{% endblock %}
+
+{% block anteMapa %}
+<table style="height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+	<tbody>
+	    <tr>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="linea"><img style="width: 148px; height: 40px;" alt="Lineas"
+			  src="Archivos/Que%20es.jpg" align="middle"></img></a></td>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="recorrido"><img style="width: 148px; height: 40px;" alt="Paradas"
+			  src="Archivos/lineas%20y%20recorridos.jpg" align="middle"></img></a></td>
+		<td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="unidad"><img style="width: 148px; height: 40px;" alt="Unidades"
+			  src="Archivos/prediccion.jpg" align="middle"></img></a></td>
+        <td style="vertical-align: middle; width: 20%; text-align: center;">
+		    <A HREF="empresa"><img style="width: 148px; height: 40px;" alt="Empresa"
+			  src="Archivos/empresa.jpg" align="middle"></img></a></td>
+	    </tr>
+	</tbody>
+</table>
+{% endblock %}

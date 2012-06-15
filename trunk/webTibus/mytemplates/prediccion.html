@@ -1,0 +1,85 @@
+{% extends "baseMenuMapa.html" %}
+
+{% block extras %}
+<table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2"> 
+  <tr style="text-align: left; height: 10%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+    <td>
+        <form action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
+      Parada Destino:: 
+            <table>
+              <tr> <td> <label for="id_linea"> Linea: </label> {{ form.linea }} </td>	
+                       <td> <label for="id_orden"> Parada: </label> {{ form.orden }} </td>
+            <td> <BUTTON type="submit" name="accion" value="predecir"> Predecir</BUTTON> </td></tr>
+            </table>
+        </form>
+    </td>
+  </tr>
+  {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
+    <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
+  </tr>
+  {% endif %}
+    <tr><td><table>
+    {% if listaUnidades %}
+	<tr><td> Unidad </td><td> Parada Estimada </td><td> Tiempo Medio</td><td> Desviacion </td><td> Tiempo Minimo </td><td> Tiempo Maximo </td></tr>
+      {% for unidad in predicciones %}
+        <tr><td>{{ unidad.unidad }}</td><td>{{ unidad.paradaasociada }}</td><td>{{unidad.tiempo}}</td><td>{{unidad.desviacion}}</td><td>{{unidad.tiempoInicial}}</td><td>{{unidad.tiempoFinal}}</td></tr>
+      {% endfor %}
+    {% else %}
+      <tr><td>No Hay unidades disponibles.</td></tr>
+    {% endif %}
+  </table></td></tr>
+</table>
+{% endblock %}
+
+{% block marcas %}   
+    // Crea marcador por defecto
+    var iconoBus = new GIcon(G_DEFAULT_ICON);
+    iconoBus.image = "http://google-maps-icons.googlecode.com/files/bus.png";
+    iconoBus.iconSize = new GSize(32, 37);
+
+    var iconoBus2 = new GIcon(G_DEFAULT_ICON);
+    //iconoBus2.image = "http://google-maps-icons.googlecode.com/files/bus.png";
+    iconoBus2.iconSize = new GSize(32, 37);
+    
+    // Setea opciones de los marcadores
+    markerOptions = { icon:iconoBus};
+    markerOptions2 = { icon:iconoBus2};
+
+    function closeInfoWindow() {
+        infoWindow.close();
+    }
+    
+    {% if listaParadas %}
+    var point = new GLatLng(0,0);
+    {% for parada in listaParadas %}
+	point = new GLatLng({{ parada.latitud }},{{ parada.longitud}} );
+    marcador = new GMarker(point, markerOptions);
+	
+    google.maps.Event.addListener(marcador, 'click', function(overly, latlng, overlaylatlng) { //funcion que muestra la ventana de informacion
+        map.openInfoWindowHtml(new GLatLng({{ parada.latitud }},{{ parada.longitud}} ), "<div style='font-size: 8pt; font-family: verdana'><p>Unidad: {{ unidad.unidad_id }} </p><p>Latitud: {{ parada.latitud }} </p><p>Longitud:{{ parada.longitud}} </p></div>"); 
+    });
+    
+    google.maps.Event.addListener(marcador, 'dragend', function(position) {
+        mostrarCoordenadas(position, map);
+    });
+    map.addOverlay(marcador);    
+
+    {% endfor %}
+    {% endif %}
+    
+    {% if listaUnidades %}
+    var point2 = new GLatLng(0,0);
+    {% for unidad in listaUnidades %}
+	point2 = new GLatLng({{ unidad.latitud }},{{ unidad.longitud}} );
+    marcador2 = new GMarker(point2, markerOptions2);
+	
+    google.maps.Event.addListener(marcador2, 'click', function(overly, latlng, overlaylatlng) { //funcion que muestra la ventana de informacion
+        map.openInfoWindowHtml(new GLatLng({{ unidad.latitud }},{{ unidad.longitud}} ), "<div style='font-size: 8pt; font-family: verdana'><p>Linea : {{ parada.linea}} </p><p>Orden: {{ parada.orden }} </p><p>Latitud: {{ unidad.latitud }} </p><p>Longitud:{{ unidad.longitud}} </p></div>"); 
+    });
+    map.addOverlay(marcador2);   
+    
+    {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block extraScripts %}<script>setTimeout('document.location.reload()',60000); </script>{% endblock %}
