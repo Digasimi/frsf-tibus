@@ -3,18 +3,6 @@ from django.contrib.gis.db import models
 from django.contrib.auth.models import User
 import re
 
-class Usuario(User):
-        nombre = models.CharField(max_length = 50,  primary_key=True)
-        mail = models.EmailField()
-        categoria = models.CharField(max_length = 50)
-    
-        def __unicode__(self):
-            return self.username
-        
-        class Admin:
-            pass
-
-# Create your models here.
 class Empresa(models.Model):
         idempresa = models.AutoField(primary_key=True)
         nombre = models.CharField(verbose_name="nombre", max_length=50)
@@ -22,11 +10,27 @@ class Empresa(models.Model):
         
         def __unicode__(self):
             return self.nombre
+            
+        class Meta:
+            db_table = 'empresa'
 
-class UsuarioEmpresa(models.Model):
-      nombre_usuario = models.ForeignKey(Usuario,  primary_key=True)
-      idempresa= models.ForeignKey(Empresa, primary_key=True)
-      
+
+class Usuario(User):
+        nombre = models.CharField(max_length = 50,  primary_key=True)
+        mail = models.EmailField()
+        categoria = models.CharField(max_length = 50)
+        empresa = models.ForeignKey(Empresa,  null=True)
+    
+        def __unicode__(self):
+            return self.username
+    
+        class Meta:
+            db_table = 'usuario'
+        
+        class Admin:
+            pass
+
+# Create your models here.
 
 class Recorrido(models.Model):
         idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
@@ -169,3 +173,16 @@ class WorldBorders(models.Model):
         # Returns the string representation of the model.
         def __unicode__(self):
             return self.name
+
+class MyListener(object):
+    mensaje = 'vacio'
+  
+    def on_error(self, headers, message):
+        print ('received an error %s' % message)
+
+    def on_message(self, headers, message):
+        print ('received a message %s' % message)
+        self.mensaje = message
+        
+    def getMensaje(self):
+      return self.mensaje
