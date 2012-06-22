@@ -32,3 +32,11 @@ class FormularioPrediccion(forms.Form):
 class FormularioEmpresa(forms.Form):
     nombre = forms.CharField()
     email = forms.EmailField()
+    
+class FormularioUsuario(forms.Form):
+    nombre = forms.CharField()
+    email = forms.EmailField()
+    categoria = forms.CharField()
+    empresa = forms.CharField()
+    password = forms.CharField()
+    confirmacion = forms.CharField()

@@ -18,7 +18,7 @@
     <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
   </tr>
   {% endif %}
-    <tr><td><table>
+    <!--<tr><td><table>
     {% if listaUnidades %}
 	<tr><td> Unidad </td><td> Parada Estimada </td><td> Tiempo Medio</td><td> Desviacion </td><td> Tiempo Minimo </td><td> Tiempo Maximo </td></tr>
       {% for unidad in predicciones %}
@@ -27,7 +27,18 @@
     {% else %}
       <tr><td>No Hay unidades disponibles.</td></tr>
     {% endif %}
-  </table></td></tr>
+  </table></td></tr><-->
+    <tr><td><table>
+      {% if predicciones %}
+	<tr><td> Prediccion </td></tr>
+    <tr><td>1 - {{ predicciones }}</td></tr>
+      {% for unidad in predicciones %}
+        <tr><td>{{ unidad }}</td></tr>
+      {% endfor %}
+    {% else %}
+      <tr><td>No Hay predicciones disponibles.</td></tr>
+    {% endif %}
+</table></td></tr>
 </table>
 {% endblock %}
 
