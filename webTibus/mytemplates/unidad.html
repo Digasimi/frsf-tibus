@@ -7,7 +7,12 @@
       Unidad Actual: 
     <table>
         <tr>
-            <td> <label for="id_linea"> Linea: </label> {{ form.linea }} </td>	
+            <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
+            <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=''">> 
+            {% for linea in listaLinea %}
+                <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+            {% endfor %}
+            </SELECT></td>
             <td> <BUTTON type="submit" name="accion" value="viewUnidad"> Buscar Unidades </BUTTON> </td>
         </tr>
         <tr>

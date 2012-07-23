@@ -1,6 +1,8 @@
 
 from django.contrib.gis.db import models 
 from django.contrib.auth.models import User
+from xml.sax.handler import ContentHandler
+
 import re
 
 class Empresa(models.Model):
@@ -175,7 +177,7 @@ class WorldBorders(models.Model):
             return self.name
 
 class MyListener(object):
-    mensaje = 'vacio'
+    mensaje = ''
   
     def on_error(self, headers, message):
         print ('received an error %s' % message)
@@ -186,3 +188,56 @@ class MyListener(object):
         
     def getMensaje(self):
       return self.mensaje
+
+class Presponse(object):
+    colectivo = ''
+    tiempo = 0
+     
+    def __init__ (self, c, t):
+        self.colectivo = c
+        self.tiempo = t
+        
+    def __unicode__(self):
+        return self.colectivo
+    
+class PresponseHandler(ContentHandler):
+ lista = []
+ isColeElement= 0;
+ isTiempoElement = 0;
+ colectivo = 0;
+ tiempo = 0;
+ 
+ def __init__ (self):
+   self.lista = []
+   self.isColeElement= 0;
+   self.isTiempoElement = 0;
+   self.colectivo = 0;
+   self.tiempo = 0;
+   
+ def startElement(self, name, attrs):
+   if name == 'colectivo':     
+     self.isColeElement= 1;
+     self.colectivo = "";
+   elif name == 'tiempo':
+     self.isTiempoElement = 1;
+     self.tiempo = "";
+   return
+
+ def characters (self, ch):
+   if self.isColeElement== 1:
+     self.colectivo += ch
+   if self.isTiempoElement == 1:
+     self.tiempo += ch
+
+ def endElement(self, name):
+   if name == 'colectivo':
+     self.isColeElement= 0
+   if name == 'tiempo':
+     self.inTiempoContent = 0
+   if name == 'prediction':
+       self.lista = self.lista + [Presponse(self.colectivo, self.tiempo)]
+   if name == 'prediction-responde':
+       print self.lista
+   
+ def obtenerLista(self):
+   return self.lista

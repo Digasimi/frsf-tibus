@@ -31,9 +31,8 @@
     <tr><td><table>
       {% if predicciones %}
 	<tr><td> Prediccion </td></tr>
-    <tr><td>1 - {{ predicciones }}</td></tr>
       {% for unidad in predicciones %}
-        <tr><td>{{ unidad }}</td></tr>
+        <tr><td>{{ unidad.colectivo }}</td><td>{{ unidad.tiempo }}</td></tr>
       {% endfor %}
     {% else %}
       <tr><td>No Hay predicciones disponibles.</td></tr>
