@@ -4,12 +4,22 @@
 <table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2"> 
   <tr style="text-align: left; height: 10%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
     <td>
-        <form action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
+        <form name = "formPrediccion" action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
       Parada Destino:: 
             <table>
-              <tr> <td> <label for="id_linea"> Linea: </label> {{ form.linea }} </td>	
-                       <td> <label for="id_orden"> Parada: </label> {{ form.orden }} </td>
-            <td> <BUTTON type="submit" name="accion" value="predecir"> Predecir</BUTTON> </td></tr>
+              <tr> <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
+                    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formPrediccion.id_linea.value = document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;document.formPrediccion.lineaCombo.value=''">> 
+                      {% for linea in listaLineas %}
+                       <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+                      {% endfor %}
+                    </SELECT></td></tr>
+                    <tr><td> <label for="id_orden"> Parada: </label> {{ form.orden }}     
+                    <SELECT NAME="paradaCombo" SIZE=1 onchange="document.formPrediccion.id_orden.value = document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value;document.formPrediccion.paradaCombo.value=''">>
+                      {% for parada in listaParadas %}
+                       <OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
+                      {% endfor %}
+                    </SELECT></td>
+                <td><BUTTON type="submit" name="accion" value="predecir"> Predecir</BUTTON> </td></tr>
             </table>
         </form>
     </td>
