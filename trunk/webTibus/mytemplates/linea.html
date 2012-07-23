@@ -16,13 +16,13 @@
     	<td> <BUTTON type="submit" name="accion" value="viewLinea"> Buscar Linea </BUTTON> </td>
       </tr>
       <tr>
-      <td><label for="id_orden"> Frecuencia: </label> {{ form.frecuencia }} </td>
-      <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
-      <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=''">> 
-      {% for empresa in listaEmpresas %}
-       <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
-      {% endfor %}
-    </SELECT></td>
+        <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
+        <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=''">> 
+        {% for empresa in listaEmpresa %}
+            <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
+        {% endfor %}
+        </SELECT></td>
+        <td><label for="id_orden"> Frecuencia: </label> {{ form.frecuencia }} </td>
       </tr>
       </tr>
     <tr><td><label for="id_masivo">Carga masiva de paradas:</label>{{ form.masivo}}</td></tr> 
