@@ -106,11 +106,19 @@
                 -moz-box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6); /* Add 2 inset shadows to each menu item  */
                 -webkit-box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6);
                 box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6);
-            }
+        }
+        
+        .sombraTabla table{
+                border: 3px solid rgb(0,0,0);
+                padding:10px ;
+                box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;
+                background-color:rgb(255,255,255);
+                align = center
+        }
 	</style>
    {% endblock %}
 
-{% block extrabody %} onload="initialize()" style="color: rgb(0, 0, 0); background-color: rgb(247, 235, 219);" alink="#000099" link="#000099" vlink="#990099" {% endblock %}
+{% block extrabody %} onload="initialize()" style="color: rgb(0, 0, 0); background-color: rgb(247, 235, 219);" alink="#000099" link="#000099" vlink="#990099"{% endblock %}
 
 {% block menu %}
 <table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border="0" cellpadding="0" cellspacing="0">
