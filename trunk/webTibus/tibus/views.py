@@ -24,11 +24,13 @@ def prediccion(request): #pagina que mostrara las predicciones
     #carga inicial
     c = {}
     c.update(csrf(request))
-    listaParadas = []
     listaUnidades = []
     listaPrediccion = []
     descripcionError = ""
     parser = PresponseHandler()
+    
+    listaLineas = Recorrido.objects.all().order_by('linea')
+    listaParadas = Parada.objects.all()
     
     #logica
     if request.method == 'POST':
@@ -83,6 +85,8 @@ def prediccion(request): #pagina que mostrara las predicciones
         #empiezan las excepciones
         except SAXParseException:
             descripcionError = "Datos en formato incorrecto"
+        except ValueError:
+            descripcionError = "Datos en formato incorrecto"
         except stomp.exception.ConnectFailedException:
             descripcionError = "No hay conexion con el servidor"
         except Recorrido.DoesNotExist:
@@ -97,7 +101,7 @@ def prediccion(request): #pagina que mostrara las predicciones
             descripcionError = "No hay estimaciones"
     else:
         form = FormularioPrediccion()
-    return render_to_response('prediccion.html',  {'form':form, 'listaParadas': listaParadas, 'listaUnidades': listaUnidades,  'predicciones':listaPrediccion,  'error': descripcionError,  'admin': False},  context_instance=RequestContext(request))
+    return render_to_response('prediccion.html',  {'form':form, 'listaParadas': listaParadas, 'listaUnidades': listaUnidades,  'predicciones':listaPrediccion,  'error': descripcionError,  'admin': False,  'listaLineas':listaLineas},  context_instance=RequestContext(request))
     
 def ayuda(request):#pagina de ayuda
     return render_to_response('ayuda.html',  {'admin': False})
