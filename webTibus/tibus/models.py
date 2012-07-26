@@ -53,7 +53,7 @@ class Recorrido(models.Model):
             return True
             
         def id(self):
-            return idrecorrido
+            return self.idrecorrido
 
 
 class Parada(models.Model):
@@ -66,7 +66,7 @@ class Parada(models.Model):
        linea = models.ForeignKey(Recorrido)
        calle1 = models.CharField(verbose_name="calle1", max_length=100)
        calle2 = models.CharField(verbose_name="calle2", max_length=100)
-       proximaparada = models.IntegerField()
+       proximaparada = models.IntegerField(null=True)
   
        class Meta:
           db_table = 'parada'
@@ -104,14 +104,14 @@ class PosicionActual(models.Model):
       latitud = models.FloatField()
       longitud = models.FloatField()
       paradaasociada= models.ForeignKey(Parada,  related_name = "parada_asociada")
-      unidad = models.ForeignKey(Unidad,  related_name = "numero_unidad", primary_key=True)
-      tiempo = models.DateTimeField(primary_key=True)
+      unidad = models.ForeignKey(Unidad,  related_name = "numero_unidad")
+      tiempo = models.DateTimeField()
       class Meta:
          db_table = 'posicionActual'
-         db_tablespace = 'motorprediccion'
+         #db_tablespace = 'motorprediccion'
           
       def _unicode_(self): 
-          return model_id
+          return self.model_id
 
 class Estimacion():
     tiempo = 0
@@ -120,7 +120,7 @@ class Estimacion():
     paradaasociada = 0
     
     def _unicode_(self): 
-      return unidad      
+      return self.unidad      
     
     def acumular(self, tiempoNew,  desviacionNew):
         self.tiempo = self.tiempo + tiempoNew
@@ -144,9 +144,9 @@ class TiempoRecorrido(models.Model):
       orden = models.IntegerField()
       class Meta:
          db_table = 'promedios'
-         db_tablespace = 'motorprediccion'            
+         #db_tablespace = 'motorprediccion'            
       def _unicode_(self): 
-          return promedio
+          return self.promedio
 
 class WorldBorders(models.Model):
         # Regular Django fields corresponding to the attributes in the

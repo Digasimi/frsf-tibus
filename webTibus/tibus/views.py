@@ -45,17 +45,17 @@ def prediccion(request): #pagina que mostrara las predicciones
             else:
                 newId= Recorrido.objects.get(linea = idLinea.upper())
                 listaParadas = Parada.objects.filter(linea = newId)
-                paradaDestino = Parada.objects.get(orden = int(request.POST.get('orden')),  linea = newId)  
+                #paradaDestino = Parada.objects.get(orden = int(request.POST.get('orden')),  linea = newId)  
                 listaUnidades = PosicionActual.objects.filter(unidad__linea__linea = newId)
                 
                 #formato nuevo
-                conn = stomp.Connection() #Aca hay que definir el conector externo
+                conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
                 conn.start()
                 conn.connect()
                 respuesta = '/temp-queue/respuesta'
                 mensaje = crearMensaje(idLinea,  request.POST.get('orden'))
                 conn.set_listener('list', MyListener())
-                conn.send(mensaje, destination='predictions.requests',headers={'reply-to':respuesta})
+                conn.send(mensaje, destination='/queue/predictions.requests',headers={'reply-to':respuesta})
                 conn.subscribe(destination=respuesta, ack='auto')
                 mens = ""
                 lis1 = conn.get_listener('list')
@@ -84,9 +84,9 @@ def prediccion(request): #pagina que mostrara las predicciones
 #                listaPrediccion.sort(compararEstimaciones)
         #empiezan las excepciones
         except SAXParseException:
-            descripcionError = "Datos en formato incorrecto"
+            descripcionError = "Datos en formato incorrecto - SAX"
         except ValueError:
-            descripcionError = "Datos en formato incorrecto"
+            descripcionError = "Datos en formato incorrecto - Value"
         except stomp.exception.ConnectFailedException:
             descripcionError = "No hay conexion con el servidor"
         except Recorrido.DoesNotExist:
@@ -358,7 +358,7 @@ def recorrido(request): #Pagina de ABM de paradas
                             descripcionError = "El orden debe ser un numero entero"
                         except TypeError:
                             descripcionError = "Las coordenadas no pueden ser vacias"
-                    listaParadas = Parada.objects.filter(linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
+                    listaParadas = Parada.objects.filter(linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
             #else:
                 #form = FormularioParada()
                 #if idLinea != '':
@@ -482,7 +482,10 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
                     if form.is_valid(): #comprobar direccion de mail, no comprueba formato.
                         email=request.POST.get('email').lower()
                         categoria=request.POST.get('categoria')
-                        empresa= Empresa.objects.get(nombre = request.POST.get('empresa'))
+                        if (request.POST.get('empresa') != ""):
+                            empresa= Empresa.objects.get(nombre = request.POST.get('empresa'))
+                        else:
+                            empresa=''
                         password=request.POST.get('password')
                         try:
                             newUsuario = Usuario.objects.get(nombre = idUsuario) #da verdadero si la linea ya existe.
@@ -629,4 +632,4 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 def crearMensaje(linea,  orden):
-    return '<prediction-request><linea>'+linea+'</linea><idparada>'+orden+'</idparada></prediction-request>'
+    return '<prediction-request><linea>'+linea+'</linea><parada>'+orden+'</parada></prediction-request>'

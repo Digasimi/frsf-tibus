@@ -37,6 +37,6 @@ class FormularioUsuario(forms.Form):
     nombre = forms.CharField()
     email = forms.EmailField()
     categoria = forms.CharField()
-    empresa = forms.CharField()
+    empresa = forms.CharField(required=False)
     password = forms.CharField()
     confirmacion = forms.CharField()
