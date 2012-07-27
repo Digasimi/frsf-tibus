@@ -3,7 +3,7 @@ from django import forms
 #Formulario con los datos para cargar una parada
 class FormularioParada(forms.Form):
     linea = forms.CharField()
-    orden = forms.IntegerField()
+    orden = forms.IntegerField(required=False)
     latitud = forms.FloatField()
     longitud = forms.FloatField()
     calle1 = forms.CharField()
