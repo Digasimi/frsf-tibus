@@ -15,7 +15,8 @@ from xml.sax import make_parser, parseString,  SAXParseException
 import stomp,  sys,  time
 
 def index(request): #pagina principal
-    return render_to_response('index.html',  {'admin': False})
+    return render_to_response('index.html',
+    {'admin': False})
     
 def modelo(request): #pagina que explica el funcionamiento del modelo
     return render_to_response('modelo.html',  {'admin': False})
@@ -84,9 +85,9 @@ def prediccion(request): #pagina que mostrara las predicciones
 #                listaPrediccion.sort(compararEstimaciones)
         #empiezan las excepciones
         except SAXParseException:
-            descripcionError = "Datos en formato incorrecto - SAX"
+            descripcionError = "Datos en formato incorrecto - Error de conexion con servidor"
         except ValueError:
-            descripcionError = "Datos en formato incorrecto - Value"
+            descripcionError = "Datos en formato incorrecto - Valor de datos"
         except stomp.exception.ConnectFailedException:
             descripcionError = "No hay conexion con el servidor"
         except Recorrido.DoesNotExist:
@@ -123,12 +124,12 @@ def linea(request):#pagina de ABM de lineas
     if (datosUsuario.categoria == 'System'):
         listaEmpresa = Empresa.objects.all()        
         listaLinea = Recorrido.objects.all().order_by('linea')
-    elif (datosUsuario.categoria == 'Linea'):
+    elif (datosUsuario.categoria == 'Empresa'):
         listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
         listaLinea = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
     
     #logica
-    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Linea'):
+    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
                 form = FormularioRecorrido(request.POST, request.FILES)
@@ -218,11 +219,11 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
     
     if (datosUsuario.categoria == 'System'):
         listaLinea = Recorrido.objects.all().order_by('linea')
-    elif (datosUsuario.categoria == 'Linea'):
+    elif (datosUsuario.categoria == 'Empresa'):
         listaLinea = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
         
     #logica
-    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Linea'):
+    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
                 idLinea=request.POST.get('linea').upper()
@@ -291,7 +292,7 @@ def recorrido(request): #Pagina de ABM de paradas
     if (datosUsuario.categoria == 'System'):
         listaLineas = Recorrido.objects.all().order_by('linea')
         listaParadas = Parada.objects.all()
-    elif (datosUsuario.categoria == 'Linea'):
+    elif (datosUsuario.categoria == 'Empresa'):
         listaLineas = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
         if idLinea == '' or idLinea == None:
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa)
@@ -299,7 +300,7 @@ def recorrido(request): #Pagina de ABM de paradas
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
     
     #logica
-    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Linea'):
+    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Empresa'):
         try:
             #if request.method == 'POST':
                 form = FormularioRecorrido(request.POST, request.FILES)
@@ -406,11 +407,11 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
     
     if (datosUsuario.categoria == 'System'):
         listaEmpresa = Empresa.objects.all()        
-    elif (datosUsuario.categoria == 'Linea'):
+    elif (datosUsuario.categoria == 'Empresa'):
         listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
         
     #logica
-    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Linea'):
+    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
                 idEmpresa=request.POST.get('nombre').upper()
@@ -464,14 +465,14 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
     if (datosUsuario.categoria == 'System'):
         listaUsuario=Usuario.objects.filter(is_active = True ).order_by('nombre')
         listaEmpresa = Empresa.objects.all()        
-        listaCategoria = ['System', 'Linea', 'Usuario']
-    elif (datosUsuario.categoria == 'Linea'):
+        listaCategoria = ['System', 'Empresa', 'Usuario']
+    elif (datosUsuario.categoria == 'Empresa'):
         listaUsuario=Usuario.objects.filter(is_active = True,  empresa = datosUsuario.empresa).order_by('nombre')
         listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
-        listaCategoria = ['Linea', 'Usuario']
+        listaCategoria = ['Empresa', 'Usuario']
         
     #logica
-    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Linea'):
+    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
                 idUsuario=request.POST.get('nombre').upper()
@@ -547,7 +548,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     if (datosUsuario.categoria == 'System'):
         listaLineas = Recorrido.objects.all().order_by('linea')
         listaParadas = Parada.objects.all()
-    elif (datosUsuario.categoria == 'Linea'):
+    elif (datosUsuario.categoria == 'Empresa'):
         listaLineas = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
         if idLinea == '' or idLinea == None:
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa)
@@ -555,7 +556,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
     
     #logica
-    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Linea'):
+    if (datosUsuario.categoria == 'System' or datosUsuario.categoria == 'Empresa'):
         try:
             #if request.method == 'POST':
                 form = FormularioRecorrido(request.POST, request.FILES)
