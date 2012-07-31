@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="prediction-request">
+    <xs:complexType>
+      <xs:sequence>
+	<xs:element name="linea" type="xs:string"/>
+	<xs:element name="parada" type="xs:integer"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="prediction-response">
+    <xs:complexType>
+      <xs:sequence>
+	<xs:element name="prediction" minOccurs="0" maxOccurs="unbounded">
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element name="colectivo" type="xs:string"/>
+	      <xs:element name="tiempo" type="xs:decimal"/>
+	    </xs:sequence>
+	  </xs:complexType>
+	</xs:element>
+	<xs:element name="timestamp" type="xs:dateTime"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema> 
