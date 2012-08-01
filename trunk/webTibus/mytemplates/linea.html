@@ -20,16 +20,18 @@
     <table>
       <tr>
 	<td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
-    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=''">> 
+    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
+    	<OPTION VALUE="">Seleccione un valor</OPTION>  
       {% for linea in listaLinea %}
-       <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+       	<OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
       {% endfor %}
     </SELECT></td>
     	<td> <BUTTON type="submit" name="accion" value="viewLinea"> Buscar Linea </BUTTON> </td>
       </tr>
       <tr>
         <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
-        <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=''">> 
+        <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
+        	<OPTION VALUE="">Seleccione un valor</OPTION> 
         {% for empresa in listaEmpresa %}
             <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
         {% endfor %}

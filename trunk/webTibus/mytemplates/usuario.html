@@ -28,13 +28,15 @@
                 </tr>
                 <tr>
                     <td> <label for="categoria"> Categoria: </label> {{ form.categoria }} 
-                    <SELECT NAME="tipoCombo" SIZE=1 onchange="document.formUsuario.id_categoria.value = document.formUsuario.tipoCombo.options[document.formUsuario.tipoCombo.selectedIndex].value;document.formUsuario.tipoCombo.value=''">> 
+                    <SELECT NAME="tipoCombo" SIZE=1 onchange="document.formUsuario.id_categoria.value = document.formUsuario.tipoCombo.options[document.formUsuario.tipoCombo.selectedIndex].value;document.formUsuario.tipoCombo.value=document.formUsuario.tipoCombo.options[document.formUsuario.tipoCombo.selectedIndex].value">
+                     		<OPTION VALUE="">Seleccione un valor</OPTION>
                         {% for categoria in listaCategoria %}
                             <OPTION VALUE="{{ categoria }}">{{ categoria }}</OPTION>
                         {% endfor %}
                     </SELECT></td>
                     <td> <label for="empresa"> Empresa: </label> {{ form.empresa }} 
-                    <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formUsuario.id_empresa.value = document.formUsuario.empresaCombo.options[document.formUsuario.empresaCombo.selectedIndex].value;document.formUsuario.empresaCombo.value=''">> 
+                    <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formUsuario.id_empresa.value = document.formUsuario.empresaCombo.options[document.formUsuario.empresaCombo.selectedIndex].value;document.formUsuario.empresaCombo.value=document.formUsuario.empresaCombo.options[document.formUsuario.empresaCombo.selectedIndex].value">
+                    		<OPTION VALUE="">Seleccione un valor</OPTION> 
                         {% for empresa in listaEmpresa %}
                             <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
                         {% endfor %}
