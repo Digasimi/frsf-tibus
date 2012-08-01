@@ -17,7 +17,7 @@ def socksend(conn, msg):
     conn.sendall(encode(msg))
         
 class uuid(object):
-    def uuid4(*args):
+    def uuid4(self, *args):
         """
         uuid courtesy of Carl Free Jr:
         (http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/213761)

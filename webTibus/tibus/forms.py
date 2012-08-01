@@ -10,7 +10,7 @@ class FormularioParada(forms.Form):
     calle2 = forms.CharField()
     
     def aumentarOrden(self):
-        orden = orden +1
+        self.orden = self.orden +1
 
 #Formulario con los datos para cargar una linea
 class FormularioRecorrido(forms.Form):
