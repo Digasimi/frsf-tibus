@@ -1,7 +1,16 @@
-{% extends "baseMenuMapa.html" %}
+{% extends "baseMenu.html" %}
 
-{% block extras %}
-<table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+{% block content %}
+<table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
+	<tr><td style="height: 100%; width: 50%;">
+		<table><thead> Unidades Existentes:</thead>
+    	{% if listaUnidad %}
+    		<tbody><tr><td> Linea</td><td> Unidad  </td><td> Apta movilidad Reducida </td></tr>
+      		{% for unidad in listaUnidad %}<tr><td>{{ unidad.linea }}</td><td>{{ unidad.id_unidad_linea }}</td> <td>{{ unidad.aptoMovilidadReducida }}</td></tr>{% endfor %}</tbody>
+		{% else %}<tr><td>No unidades disponibles.</td></tr>
+    {% endif %}
+  	</table></td>
+	<td><table>
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
   <form name="formUnidad" action="" method="post">{% csrf_token %}
       Unidad Actual: 
@@ -28,13 +37,6 @@
     {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
     <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
     </tr>{% endif %}
-  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;"> Unidades Existentes: </td></tr>
-  <tr><td><table>
-    {% if listaUnidad %}
-    <tr><td> Linea</td><td> Unidad  </td><td> Apta movilidad Reducida </td></tr>
-      {% for unidad in listaUnidad %}<tr><td>{{ unidad.linea }}</td><td>{{ unidad.id_unidad_linea }}</td> <td>{{ unidad.aptoMovilidadReducida }}</td></tr>{% endfor %}
-    {% else %}<tr><td>No unidades disponibles.</td></tr>
-    {% endif %}
   </table></td></tr>
 </table>
 {% endblock %}
@@ -50,27 +52,3 @@
 {% block defFuncDblClick %}{% endblock %}
 
 {% block marcas %}{% endblock %}
-
-{% block anteMapa %}
-<table style="height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
-	<tbody>
-	    <tr>
-		<td style="vertical-align: middle; width: 20%; text-align: center;">
-		    <A HREF="linea"><img style="width: 148px; height: 40px;" alt="Lineas"
-			  src="Archivos/Que%20es.jpg" align="middle"></img></a></td>
-		<td style="vertical-align: middle; width: 20%; text-align: center;">
-		    <A HREF="recorrido"><img style="width: 148px; height: 40px;" alt="Paradas"
-			  src="Archivos/lineas%20y%20recorridos.jpg" align="middle"></img></a></td>
-		<td style="vertical-align: middle; width: 20%; text-align: center;">
-		    <A HREF="unidad"><img style="width: 148px; height: 40px;" alt="Unidades"
-			  src="Archivos/prediccion.jpg" align="middle"></img></a></td>
-        <td style="vertical-align: middle; width: 20%; text-align: center;">
-		    <A HREF="empresa"><img style="width: 148px; height: 40px;" alt="Empresa"
-			  src="Archivos/empresa.jpg" align="middle"></img></a></td>
-      <td style="vertical-align: middle; width: 20%; text-align: center;">
-		    <A HREF="usuario"><img style="width: 148px; height: 40px;" alt="Usuario"
-			  src="Archivos/usuario.jpg" align="middle"></img></a></td>
-	    </tr>
-	</tbody>
-</table>
-{% endblock %}
