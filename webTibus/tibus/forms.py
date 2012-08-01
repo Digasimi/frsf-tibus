@@ -2,7 +2,7 @@ from django import forms
 
 #Formulario con los datos para cargar una parada
 class FormularioParada(forms.Form):
-    linea = forms.CharField()
+    linea = forms.CharField(widget=forms.HiddenInput)
     orden = forms.IntegerField(required=False)
     latitud = forms.FloatField()
     longitud = forms.FloatField()
@@ -16,18 +16,18 @@ class FormularioParada(forms.Form):
 class FormularioRecorrido(forms.Form):
     linea = forms.CharField()
     frecuencia = forms.IntegerField()
-    empresa = forms.CharField()
+    empresa = forms.CharField(widget=forms.HiddenInput)
     masivo = forms.FileField(required=False)
     
 #Formulario con los datos para cargar una unidad de colectivo
 class FormularioUnidad(forms.Form):
-    linea = forms.CharField()
+    linea = forms.CharField(widget=forms.HiddenInput)
     aptoMovilidadReducida = forms.BooleanField(required=False)
     id_unidad_linea = forms.IntegerField()
 
 class FormularioPrediccion(forms.Form):
-    linea = forms.CharField()
-    orden = forms.IntegerField()
+    linea = forms.CharField(widget=forms.HiddenInput)
+    orden = forms.IntegerField(widget=forms.HiddenInput)
     
 class FormularioEmpresa(forms.Form):
     nombre = forms.CharField()
@@ -36,7 +36,7 @@ class FormularioEmpresa(forms.Form):
 class FormularioUsuario(forms.Form):
     nombre = forms.CharField()
     email = forms.EmailField()
-    categoria = forms.CharField()
-    empresa = forms.CharField(required=False)
-    password = forms.CharField()
-    confirmacion = forms.CharField()
+    categoria = forms.CharField(widget=forms.HiddenInput)
+    empresa = forms.CharField(required=False, widget=forms.HiddenInput)
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirmacion = forms.CharField(widget=forms.PasswordInput)
