@@ -1,18 +1,20 @@
 # Create your views here.
+
+import stomp, time
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect,  Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response,  get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib.gis.geos import Point
+from django.db.utils import DatabaseError
 from django.db.models import Max
 from tibus.forms import FormularioParada,  FormularioRecorrido,  FormularioUnidad,  FormularioPrediccion,  FormularioEmpresa,  FormularioUsuario
 from tibus.models import Parada,  Recorrido,  Unidad,  TiempoRecorrido,  PosicionActual, Empresa, Usuario,  MyListener,  PresponseHandler
 from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib.auth.decorators import login_required
 from xml.sax import parseString,  SAXParseException
-import stomp, time
 
 def index(request): #pagina principal
     return render_to_response('index.html',
@@ -46,7 +48,6 @@ def prediccion(request): #pagina que mostrara las predicciones
             else:
                 newId= Recorrido.objects.get(linea = idLinea.upper())
                 listaParadas = Parada.objects.filter(linea = newId)
-                #paradaDestino = Parada.objects.get(orden = int(request.POST.get('orden')),  linea = newId)  
                 listaUnidades = PosicionActual.objects.filter(unidad__linea__linea = newId)
                 
                 #formato nuevo
@@ -62,32 +63,24 @@ def prediccion(request): #pagina que mostrara las predicciones
                 lis1 = conn.get_listener('list')
                 timer = 0
                 while (mens == '' and timer < 6):
-                  time.sleep(1)
-                  timer=timer+1
-                  mens = lis1.getMensaje()
+                    time.sleep(1)
+                    timer=timer+1
+                    mens = lis1.getMensaje()
                 if (timer == 6):
                     descripcionError = 'Tiempo de espera agotado'
                 else:
                     #parseString("<prediction-responde><prediction><colectivo>12</colectivo><tiempo>3</tiempo></prediction><prediction><colectivo>11</colectivo><tiempo>3.6</tiempo></prediction></prediction-responde>", parser)
                     parseString(mens, parser)
                     listaPrediccion = parser.obtenerLista()
-                    #listaPrediccion = mens.split(';')
                 conn.unsubscribe(destination=respuesta)
                 conn.disconnect()
-#formato viejo
-#                for unidadi in listaUnidades: #recorre la lista de unidades
-#                    if unidadi.paradaasociada.orden <= paradaDestino.orden: #calcula las predicciones entre la unidad y el destino
-#                        esttemp = Estimacion(unidadi.unidad.idunidad, unidadi.paradaasociada.orden)
-#                        for i in range(unidadi.paradaasociada.orden, paradaDestino.orden):
-#                            temp = TiempoRecorrido.objects.get(orden = i,  parada__linea__linea = idLinea)
-#                            esttemp.acumular(temp.promedio, temp.desstd) #acumula los tiempos predichos.
-#                        listaPrediccion = listaPrediccion + [esttemp] #guarda la lista de predicciones.
-#                listaPrediccion.sort(compararEstimaciones)
         #empiezan las excepciones
         except SAXParseException:
             descripcionError = "Datos en formato incorrecto - Error de conexion con servidor"
         except ValueError:
             descripcionError = "Datos en formato incorrecto - Valor de datos"
+        except DatabaseError:
+            descripcionError = "Error de no se que" #Ver cuando salta este error. posible error de asociacion linea-parada
         except stomp.exception.ConnectFailedException:
             descripcionError = "No hay conexion con el servidor"
         except Recorrido.DoesNotExist:
@@ -138,7 +131,7 @@ def linea(request):#pagina de ABM de lineas
                     descripcionError = "No ingreso la linea"
                 elif request.POST.get('accion') == 'viewLinea':          #no necesitaria el is_valid, solo que exista linea
                     newId= Recorrido.objects.get(linea = idLinea)
-                    listaParadas = Parada.objects.filter(linea = newId)
+                    #listaParadas = Parada.objects.filter(linea = newId)
                         #!corregir, no pasa la linea correctamente como parametro.
                     direccion = 'recorrido/' + idLinea #carga la pagina de edicion de paradas asociadas a la linea ingresada
                     form = FormularioParada() 
@@ -334,7 +327,7 @@ def recorrido(request): #Pagina de ABM de paradas
                                         listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
                                     else: #agrega la parada al final del recorrido
                                         parOrden = listaParadas.aggregate(orden=Max('orden')).get('orden') + 1
-                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, coordenadas = Point(parLat, parLon), linea = newId)  
+                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId)  
                                     newParada.save()
                                 elif request.POST.get('accion') == 'editParada': #sin revisar - Falta ver que pasa si se cambia el orden.
                                     newParada = Parada.objects.get(orden = int(parOrden),  linea = newId)  

@@ -1,12 +1,10 @@
 {% extends "baseMenuMapa.html" %}
 
 {% block extras %}
-        <div align="center"> 
-<table style="text-align: left; height: 100%; width: 100%;" border="1" cellpadding="2" cellspacing="2"> 
-  <tr style="text-align: left; height: 10%; width: 100%;" border="1" cellpadding="2" cellspacing="2">
-    <td>
-        <form name = "formPrediccion" action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
-      Parada Destino:: 
+<table style="text-align: left; height: 100%; width: 100%;"> 
+  <tr style="text-align: left; height: 20%; width: 100%;">
+  	<td><form name = "formPrediccion" action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
+Parada Destino: 
             <table>
               <tr> <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
                     <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formPrediccion.id_linea.value = document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;document.formPrediccion.lineaCombo.value=''">> 
@@ -29,16 +27,6 @@
     <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
   </tr>
   {% endif %}
-    <!--<tr><td><table>
-    {% if listaUnidades %}
-	<tr><td> Unidad </td><td> Parada Estimada </td><td> Tiempo Medio</td><td> Desviacion </td><td> Tiempo Minimo </td><td> Tiempo Maximo </td></tr>
-      {% for unidad in predicciones %}
-        <tr><td>{{ unidad.unidad }}</td><td>{{ unidad.paradaasociada }}</td><td>{{unidad.tiempo}}</td><td>{{unidad.desviacion}}</td><td>{{unidad.tiempoInicial}}</td><td>{{unidad.tiempoFinal}}</td></tr>
-      {% endfor %}
-    {% else %}
-      <tr><td>No Hay unidades disponibles.</td></tr>
-    {% endif %}
-  </table></td></tr><-->
     <tr><td><table>
       {% if predicciones %}
 	<tr><td> Prediccion </td></tr>
@@ -49,7 +37,7 @@
       <tr><td>No Hay predicciones disponibles.</td></tr>
     {% endif %}
 </table></td></tr>
-</table></div>
+</table>
 {% endblock %}
 
 {% block marcas %}   
@@ -87,7 +75,7 @@
 
     {% endfor %}
     {% endif %}
-    
+    /*
     {% if listaUnidades %}
     var point2 = new GLatLng(0,0);
     {% for unidad in listaUnidades %}
@@ -100,7 +88,8 @@
     map.addOverlay(marcador2);   
     
     {% endfor %}
-    {% endif %}
+    {% endif %} Para cuando se pase las posiciones de los colectivos
+    */
 {% endblock %}
 
 {% block extraScripts %}<script>setTimeout('document.location.reload()',60000); </script>{% endblock %}

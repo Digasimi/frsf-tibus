@@ -71,10 +71,10 @@
         {% block pretitle %}{% endblock %}
         {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
         {% block menu %} {% endblock %}
-        {% block content %}
+        <div align="center">{% block content %}
         {% block object-tools %}{% endblock %}
         {{ content }}
-        {% endblock %}
+        {% endblock %}</div>
         {% block sidebar %}{% endblock %}
         <br class="clear" />
     </div>

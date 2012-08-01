@@ -62,7 +62,7 @@ class Parada(models.Model):
        objects = models.GeoManager()
        latitud = models.FloatField()
        longitud = models.FloatField()
-       coordenadas = models.PointField(srid=4326)
+       #coordenadas = models.PointField(srid=4326)
        linea = models.ForeignKey(Recorrido)
        calle1 = models.CharField(verbose_name="calle1", max_length=100)
        calle2 = models.CharField(verbose_name="calle2", max_length=100)
@@ -104,7 +104,7 @@ class PosicionActual(models.Model):
       latitud = models.FloatField()
       longitud = models.FloatField()
       paradaasociada= models.ForeignKey(Parada,  related_name = "parada_asociada")
-      unidad = models.ForeignKey(Unidad,  related_name = "numero_unidad")
+      unidad = models.ForeignKey(Unidad, related_name = "numero_unidad", primary_key=True)
       tiempo = models.DateTimeField()
       class Meta:
          db_table = 'posicionActual'
