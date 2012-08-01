@@ -7,15 +7,17 @@
 Parada Destino: 
             <table>
               <tr> <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
-                    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formPrediccion.id_linea.value = document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;document.formPrediccion.lineaCombo.value=''">> 
+                    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formPrediccion.id_linea.value = document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;document.formPrediccion.lineaCombo.value=document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value">
+                    	<OPTION VALUE="">Seleccione un valor</OPTION> 
                       {% for linea in listaLineas %}
-                       <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+                       	<OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
                       {% endfor %}
                     </SELECT></td></tr>
                     <tr><td> <label for="id_orden"> Parada: </label> {{ form.orden }}     
-                    <SELECT NAME="paradaCombo" SIZE=1 onchange="document.formPrediccion.id_orden.value = document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value;document.formPrediccion.paradaCombo.value=''">>
+                    <SELECT NAME="paradaCombo" SIZE=1 onchange="document.formPrediccion.id_orden.value = document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value;document.formPrediccion.paradaCombo.value=document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value">
+                    	<OPTION VALUE="">Seleccione un valor</OPTION>
                       {% for parada in listaParadas %}
-                       <OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
+                       	<OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
                       {% endfor %}
                     </SELECT></td>
                 <td><BUTTON type="submit" name="accion" value="predecir"> Predecir</BUTTON> </td></tr>

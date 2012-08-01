@@ -1,7 +1,7 @@
 {% extends "baseMenu.html" %}
 
 {% block content %}
-<table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);"
+<table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
   <tr>
   <td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi; width: 50%;"><table>
         Empresas Existentes: 
@@ -20,7 +20,8 @@
   <table>
         <tr>
             <td> <label for="id_empresa"> Empresa: </label> {{ form.nombre }} 
-            <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=''">> 
+            <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
+            	<OPTION VALUE="">Seleccione un valor</OPTION> 
             {% for empresa in listaEmpresa %}
                 <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
             {% endfor %}
