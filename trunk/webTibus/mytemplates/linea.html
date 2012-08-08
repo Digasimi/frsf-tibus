@@ -18,24 +18,27 @@
   <form name = "formLinea" action="" method="post" onSubmit = "return confirmacion(this)" enctype="multipart/form-data">{% csrf_token %}
       Linea Actual: 
     <table>
+    	<tr>
+	        <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
+        		<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
+        			<OPTION VALUE="">Seleccione un valor</OPTION> 
+        			{% for empresa in listaEmpresa %}
+            		<OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
+        			{% endfor %}
+      		</SELECT></td>
+      		<td><BUTTON type="submit" name="accion" value="viewEmpresa"> Buscar Empresa </BUTTON> </td>
+    	</tr>
       <tr>
-	<td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
-    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
-    	<OPTION VALUE="">Seleccione un valor</OPTION>  
-      {% for linea in listaLinea %}
-       	<OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
-      {% endfor %}
-    </SELECT></td>
+		<td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
+	    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
+    		<OPTION VALUE="">Seleccione un valor</OPTION>  
+      		{% for linea in listaLinea %}
+      		<OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+      	{% endfor %}
+    	</SELECT></td>
     	<td> <BUTTON type="submit" name="accion" value="viewLinea"> Buscar Linea </BUTTON> </td>
       </tr>
       <tr>
-        <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
-        <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
-        	<OPTION VALUE="">Seleccione un valor</OPTION> 
-        {% for empresa in listaEmpresa %}
-            <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
-        {% endfor %}
-        </SELECT></td>
         <td><label for="id_orden"> Frecuencia: </label> {{ form.frecuencia }} </td>
       </tr>
       </tr>

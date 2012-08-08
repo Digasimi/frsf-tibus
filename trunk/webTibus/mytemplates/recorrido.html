@@ -10,23 +10,22 @@
         <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
         <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formParada.id_linea.value = document.formParada.lineaCombo.options[document.formParada.lineaCombo.selectedIndex].value;document.formParada.lineaCombo.value=document.formParada.lineaCombo.options[document.formParada.lineaCombo.selectedIndex].value">
 	         <OPTION VALUE="">Seleccione un valor</OPTION>
-      {% for linea in listaLineas %}
+     		 {% for linea in listaLineas %}
        		 <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
-      {% endfor %}
-    </SELECT></td>
-	<td> <BUTTON type="submit" name="accion" value="viewLinea"> Mostrar Linea </BUTTON> </td>
-      </tr>
-      <tr>
-	  <td> <label for="id_orden"> Orden: </label> {{ form.orden }}
-    	<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
-   			<OPTION VALUE="">Seleccione un valor</OPTION>
-      		{% for parada in listaParadas %}
-       		<OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
       		{% endfor %}
     	</SELECT></td>
-    <td> <BUTTON type="submit" name="accion" value="viewParada"> Buscar Parada </BUTTON> </td></tr>
-	<!--<td> <label for="id_latitud"> Latitud: </label> {{ form.latitud }}</td>
-	<td> <label for="id_longitud"> Longitud: </label> {{ form.longitud }}</td></tr>-->
+		<td> <BUTTON type="submit" name="accion" value="viewLinea"> Mostrar Linea </BUTTON> </td>
+      </tr>
+      <tr>
+	  	<td><label for="id_orden"> Orden: </label> {{ form.orden }}
+    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
+   				<OPTION VALUE="">Seleccione un valor</OPTION>
+      			{% for parada in listaParadas %}
+       			<OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
+      			{% endfor %}
+   		</SELECT></td>
+   		<td> <BUTTON type="submit" name="accion" value="viewParada"> Buscar Parada </BUTTON> </td>
+    </tr>
     </table>
     <p> Nuevas Coordenadas: <div id="coor"></div></p>
     <BUTTON type="submit" name="accion" value="addParada"> Agregar Parada </BUTTON>
