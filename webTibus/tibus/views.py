@@ -127,7 +127,9 @@ def linea(request):#pagina de ABM de lineas
             try:
                 form = FormularioRecorrido(request.POST, request.FILES)
                 idLinea=request.POST.get('linea').upper()
-                if idLinea == '': #comprueba que se ingresa linea
+                if request.POST.get('accion') == 'viewEmpresa':
+                    listaLinea = Recorrido.objects.filter(empresa__nombre =request.POST.get('empresa').upper()).order_by('linea')
+                elif idLinea == '': #comprueba que se ingresa linea
                     descripcionError = "No ingreso la linea"
                 elif request.POST.get('accion') == 'viewLinea':          #no necesitaria el is_valid, solo que exista linea
                     newId= Recorrido.objects.get(linea = idLinea)
