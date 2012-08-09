@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public interface ModeloPrediccion {
 
-    public void procesarNuevasPosiciones(ArrayList<Posicion> posiciones);
+    public void procesarNuevaPosicion(BusPositionData busPosition);
     public PredictionResponse obtenerPrediccion(PredictionRequest r);
 
 }

@@ -13,7 +13,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import frsf.tibus.listener.PositionDataListener;
 import frsf.tibus.listener.PredictionRequestListener;
 import frsf.tibus.modeloPrediccion.ModeloPrediccion;
-import frsf.tibus.modeloPrediccion.test.ModeloTest;
+import frsf.tibus.modeloPrediccion.DummyModel.DummyPredictionModel;
 
 public class TibusServer {
 	
@@ -33,7 +33,7 @@ public class TibusServer {
 		jmsConnectionFactory = new ActiveMQConnectionFactory(messageBrokerUrl);
 	    Connection connection;
 		
-	    modeloPrediccion = new ModeloTest();
+	    modeloPrediccion = new DummyPredictionModel();
 	    
 	    try {
 			connection = jmsConnectionFactory.createConnection();

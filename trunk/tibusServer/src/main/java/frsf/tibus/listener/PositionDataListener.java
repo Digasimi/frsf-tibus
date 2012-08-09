@@ -1,6 +1,6 @@
 package frsf.tibus.listener;
 
-import java.util.ArrayList;
+
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
@@ -13,7 +13,7 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
-import frsf.tibus.domain.Posicion;
+import frsf.tibus.domain.BusPositionData;
 import frsf.tibus.modeloPrediccion.ModeloPrediccion;
 
 public class PositionDataListener implements MessageListener {
@@ -48,10 +48,10 @@ public class PositionDataListener implements MessageListener {
 		if(positionData instanceof ObjectMessage)
 		{
 			try {
-				ArrayList<Posicion> positions = (ArrayList<Posicion>) ((ObjectMessage)positionData).getObject();
-				if(positions != null)
+				Object position =  ((ObjectMessage)positionData).getObject();
+				if(position instanceof BusPositionData)
 				{
-					modelo.procesarNuevasPosiciones(positions);
+					modelo.procesarNuevaPosicion((BusPositionData)position);
 				}
 			} catch (JMSException e) {
 				e.printStackTrace();
