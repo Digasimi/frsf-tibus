@@ -8,6 +8,14 @@
   <name>domain</name>
   <url>http://maven.apache.org</url>
   <dependencies>
+  
+  <!-- DATE & TIME LIBS -->
+  	<dependency>
+		<groupId>joda-time</groupId>
+		<artifactId>joda-time</artifactId>
+		<version>2.1</version>
+	</dependency>
+            
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
