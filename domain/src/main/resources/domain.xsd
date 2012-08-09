@@ -4,7 +4,17 @@
 <xs:element name="prediction-response">
 	<xs:complexType>
 		<xs:sequence>
-			<xs:element name="prediccion" type="xs:decimal" maxOccurs="unbounded" minOccurs="0"/>
+			<xs:element name="prediction" maxOccurs="unbounded" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="busId" type="xs:string"/>
+						<xs:element name="timeSec" type="xs:integer"/>
+						<xs:element name="lat" type="xs:decimal"/>
+						<xs:element name="lon" type="xs:decimal"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="timestamp" type="xs:dateTime" maxOccurs="1" minOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 </xs:element>
