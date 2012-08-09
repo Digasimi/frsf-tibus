@@ -204,23 +204,37 @@ class PresponseHandler(ContentHandler):
  lista = []
  isColeElement= 0;
  isTiempoElement = 0;
+ islatElement = 0;
+ islonElement = 0;
  colectivo = 0;
  tiempo = 0;
+ lat = 0;
+ lon = 0; 
  
  def __init__ (self):
    self.lista = []
    self.isColeElement= 0;
    self.isTiempoElement = 0;
+   self.islatElement = 0;
+   self.islonElement = 0;
    self.colectivo = 0;
    self.tiempo = 0;
+   self.lat = 0;
+   self.lon = 0;
    
  def startElement(self, name, attrs):
-   if name == 'colectivo':     
+   if name == 'busId':     
      self.isColeElement= 1;
      self.colectivo = "";
-   elif name == 'tiempo':
+   elif name == 'timeSec':
      self.isTiempoElement = 1;
      self.tiempo = "";
+   elif name == 'lat':
+     self.islatElement = 1;
+     self.lat = "";
+   elif name == 'lon':
+     self.islonElement = 1;
+     self.long = "";   
    return
 
  def characters (self, ch):
@@ -228,12 +242,21 @@ class PresponseHandler(ContentHandler):
      self.colectivo += ch
    if self.isTiempoElement == 1:
      self.tiempo += ch
+   if self.islatElement == 1:
+     self.lat += ch
+   if self.islonElement == 1:
+     self.lon += ch
+
 
  def endElement(self, name):
-   if name == 'colectivo':
+   if name == 'busId':
      self.isColeElement= 0
-   if name == 'tiempo':
+   if name == 'timeSec':
      self.inTiempoContent = 0
+   if name == 'lat':
+     self.inlatContent = 0
+   if name == 'lon':
+     self.inlonContent = 0
    if name == 'prediction':
        self.lista = self.lista + [Presponse(self.colectivo, self.tiempo)]
    if name == 'prediction-responde':
