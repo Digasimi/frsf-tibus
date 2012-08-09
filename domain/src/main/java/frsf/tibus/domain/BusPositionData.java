@@ -6,33 +6,35 @@
 package frsf.tibus.domain;
 
 import java.io.Serializable;
-import java.util.GregorianCalendar;
+
+import org.joda.time.DateTime;
+
 
 /**
  *
  * @author dani
  */
-public class Posicion implements Serializable{
+public class BusPositionData implements Serializable{
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 3150497970302555791L;
 	private String idColectivo;
     private Float lat, lon;
-    private GregorianCalendar date;
+    private DateTime date;
 
-    public Posicion(String idColectivo, Float lat, Float lon, GregorianCalendar date) {
+    public BusPositionData(String idColectivo, Float lat, Float lon, DateTime date) {
         this.idColectivo = idColectivo;
         this.lat = lat;
         this.lon = lon;
         this.date = date;
     }
 
-    public GregorianCalendar getDate() {
+    public DateTime getDate() {
         return date;
     }
 
-    public void setDate(GregorianCalendar date) {
+    public void setDate(DateTime date) {
         this.date = date;
     }
 

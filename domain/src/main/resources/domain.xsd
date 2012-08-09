@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="prediction-response">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element name="prediccion" type="xs:decimal" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+<xs:element name="prediction-request">
+	<xs:complexType>
+		<xs:sequence>
+			<xs:element name="linea" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element name="parada" type="xs:string" maxOccurs="1" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:element>
+
+</xs:schema>
