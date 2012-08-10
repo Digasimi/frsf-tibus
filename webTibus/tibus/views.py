@@ -30,6 +30,7 @@ def prediccion(request): #pagina que mostrara las predicciones
     listaUnidades = []
     listaPrediccion = []
     descripcionError = ""
+    prediccionTimeStamp = ""
     parser = PresponseHandler()
     
     listaLineas = Recorrido.objects.all().order_by('linea')
@@ -72,6 +73,7 @@ def prediccion(request): #pagina que mostrara las predicciones
                     #parseString("<prediction-responde><prediction><colectivo>12</colectivo><tiempo>3</tiempo></prediction><prediction><colectivo>11</colectivo><tiempo>3.6</tiempo></prediction></prediction-responde>", parser)
                     parseString(mens, parser)
                     listaPrediccion = parser.obtenerLista()
+                    prediccionTimeStamp = parser.obtenerTimeStamp()
                 conn.unsubscribe(destination=respuesta)
                 conn.disconnect()
         #empiezan las excepciones
@@ -95,7 +97,7 @@ def prediccion(request): #pagina que mostrara las predicciones
             descripcionError = "No hay estimaciones"
     else:
         form = FormularioPrediccion()
-    return render_to_response('prediccion.html',  {'form':form, 'listaParadas': listaParadas, 'listaUnidades': listaUnidades,  'predicciones':listaPrediccion,  'error': descripcionError,  'admin': False,  'listaLineas':listaLineas},  context_instance=RequestContext(request))
+    return render_to_response('prediccion.html',  {'form':form, 'listaParadas': listaParadas, 'listaUnidades': listaUnidades,  'predicciones':listaPrediccion,  'error': descripcionError,  'admin': False,  'listaLineas':listaLineas, 'timeStamp': prediccionTimeStamp},  context_instance=RequestContext(request))
     
 def ayuda(request):#pagina de ayuda
     return render_to_response('ayuda.html',  {'admin': False})

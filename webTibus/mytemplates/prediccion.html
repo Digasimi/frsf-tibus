@@ -31,11 +31,11 @@ Parada Destino:
   {% endif %}
     <tr><td><table>
       {% if predicciones %}
-	<tr><td> Prediccion </td></tr>
+        <tr><td>Colectivo</td><td>Tiempo estimado [s]</td><td>Latitud</td><td>Longitud</td></tr>
       {% for unidad in predicciones %}
-        <tr><td>{{ unidad.colectivo }}</td><td>{{ unidad.tiempo }}</td></tr>
-        <tr><td>{{ unidad }}</td></tr>
+        <tr><td>{{ unidad.colectivo }}</td><td>{{ unidad.tiempo }}</td><td>{{ unidad.lat }}</td><td>{{ unidad.lon }}</td></tr>
       {% endfor %}
+      <tr><td>Tiempos Calculados a {{ timeStamp }}</td></tr>
     {% else %}
       <tr><td>No Hay predicciones disponibles.</td></tr>
     {% endif %}
