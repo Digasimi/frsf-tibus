@@ -25,11 +25,7 @@ Parada Destino:
         </form>
     </td>
   </tr>
-  {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
-    <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
-  </tr>
-  {% endif %}
-    <tr><td><table>
+    <tr><td align=center ><table class="informationTable">
       {% if predicciones %}
         <tr><td>Colectivo</td><td>Tiempo estimado [s]</td><td>Latitud</td><td>Longitud</td></tr>
       {% for unidad in predicciones %}
@@ -44,41 +40,24 @@ Parada Destino:
 {% endblock %}
 
 {% block marcas %}   
-    // Crea marcador por defecto
-    var iconoBus = new GIcon(G_DEFAULT_ICON);
-    iconoBus.image = "http://google-maps-icons.googlecode.com/files/bus.png";
-    iconoBus.iconSize = new GSize(32, 37);
-
-    var iconoBus2 = new GIcon(G_DEFAULT_ICON);
-    //iconoBus2.image = "http://google-maps-icons.googlecode.com/files/bus.png";
-    iconoBus2.iconSize = new GSize(32, 37);
-    
-    // Setea opciones de los marcadores
-    markerOptions = { icon:iconoBus};
-    markerOptions2 = { icon:iconoBus2};
-
-    function closeInfoWindow() {
-        infoWindow.close();
-    }
-    
-    {% if listaParadas %}
-    var point = new GLatLng(0,0);
-    {% for parada in listaParadas %}
-	point = new GLatLng({{ parada.latitud }},{{ parada.longitud}} );
-    marcador = new GMarker(point, markerOptions);
+    {% if linea %}
+    	{% if listaParadas %}
+    		{% for parada in listaParadas %}
+    			markerPosition = new google.maps.LatLng({{ parada.latitud }},{{ parada.longitud}});
+       			marker = new google.maps.Marker({
+        			map:map,
+        			draggable:true,
+        			position: markerPosition,
+        			icon: markerImage
+    			});
+        
+    			google.maps.event.addListener(marker, 'click', toggleBounce); //Click sobre el marker
 	
-    google.maps.Event.addListener(marcador, 'click', function(overly, latlng, overlaylatlng) { //funcion que muestra la ventana de informacion
-        map.openInfoWindowHtml(new GLatLng({{ parada.latitud }},{{ parada.longitud}} ), "<div style='font-size: 8pt; font-family: verdana'><p>Unidad: {{ unidad.unidad_id }} </p><p>Latitud: {{ parada.latitud }} </p><p>Longitud:{{ parada.longitud}} </p></div>"); 
-    });
-    
-    google.maps.Event.addListener(marcador, 'dragend', function(position) {
-        mostrarCoordenadas(position, map);
-    });
-    map.addOverlay(marcador);    
-
-    {% endfor %}
+    		{% endfor %}		
+    	{% endif %} 
     {% endif %}
-    /*
+    
+    /* La lista de posiciones de los colectivos - corregir
     {% if listaUnidades %}
     var point2 = new GLatLng(0,0);
     {% for unidad in listaUnidades %}

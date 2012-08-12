@@ -27,7 +27,7 @@
         {% block branding %}{% endblock %}
         </div>
         {% if user.is_active%}
-        <div id="user-tools" ALIGN=right>
+        <div id="user-tools" ALIGN=right STYLE="font-family: Arial; font-size: 12px;">
             {% trans 'Bienvenido,' %}
             <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
             {% block userlinks %}
@@ -67,7 +67,7 @@
         {% endif %}
 
     <!-- Content -->
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
+    <div id="content" STYLE="font-family: Arial;" class="{% block coltype %}colM{% endblock %}">
         {% block pretitle %}{% endblock %}
         {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
         {% block menu %} {% endblock %}
@@ -83,6 +83,10 @@
     {% block footer %}<div id="footer"></div>{% endblock %}
 </div>
 <!-- END Container -->
-
+{% if error %}
+	<script language='JavaScript'>
+		alert("{{ error }}");
+	</script>
+{% endif %}
 </body>
 </html>
