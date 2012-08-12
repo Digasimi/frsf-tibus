@@ -2,8 +2,8 @@
 
 {% block content %}
 <table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
-	<tr><td style="height: 100%; width: 50%;">
-		<table><thead> Unidades Existentes:</thead>
+	<tr><td style="height: 100%; width: 50%;" align=center ><table class="informationTable">
+	<thead> Unidades Existentes:</thead>
     	{% if listaUnidad %}
     		<tbody><tr><td> Linea</td><td> Unidad  </td><td> Apta movilidad Reducida </td></tr>
       		{% for unidad in listaUnidad %}<tr><td>{{ unidad.linea }}</td><td>{{ unidad.id_unidad_linea }}</td> <td>{{ unidad.aptoMovilidadReducida }}</td></tr>{% endfor %}</tbody>
@@ -35,9 +35,6 @@
     <BUTTON type=button name="accion" onclick="pregunta()" value="delUnidad" > Eliminar Unidad </BUTTON>
     </form>
   </td></tr>
-    {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
-    <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
-    </tr>{% endif %}
   </table></td></tr>
 </table>
 {% endblock %}

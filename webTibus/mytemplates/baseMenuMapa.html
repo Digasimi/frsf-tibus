@@ -2,39 +2,62 @@
 
 {% block extrahead %}
 <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<script type="text/javascript"
-    	src="https://maps.google.com/maps/api/js?sensor=true">
-	</script>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
   <script type="text/javascript">
-  //<![CDATA[
-  function initialize() {
-    //if (GBrowserIsCompatible()) {
-    	var latlng = new google.maps.LatLng(37.78333309725631,-122.44983673095703);
-    	var myOptions = {
-      		zoom: 16,
-      		center: latlng,
-      		mapTypeId: google.maps.MapTypeId.ROADMAP
-    	};
-    	var map = new google.maps.Map(document.getElementById("mapas"),myOptions);		
-    	var infoWindow = null;
-    	map.addControl(new google.maps.LargeMapControl());		//Movimientos de mapa
-    	map.addControl(new google.maps.ScaleControl());		//Muestra la escala de mapas
-    	map.addControl(new google.maps.OverviewMapControl()); 	//mapa pequeño
-
-   	{% block marcas %}{% endblock %}
-    
-    google.maps.Event.addListener(map, 'click', function(overly, latlng, overlaylatlng) {
-    {% block defFuncDblClick %}{% endblock %}
-    closeInfoWindow();     //codigo para cerrar ventana de info
-    });
-  }
-
   {% block funcDblClick %}{% endblock %}
-
-    //]]>
   </script>
+  
+  <script>
+      var point = new google.maps.LatLng(37.78333309725631,-122.44983673095703);
+      var markerPosition = new google.maps.LatLng(37.78333309725631,-122.44983673095703);
+      var markerImage = "http://google-maps-icons.googlecode.com/files/bus.png";
+      var marker;
+      var map;
+      var infoWindow = new google.maps.InfoWindow({ content: message[number],
+    	          			size: new google.maps.Size(50,50)
+    	        	    })
+
+      function initialize() {
+        var mapOptions = {
+          zoom: 13,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          center: point,
+          zoomControl: true,
+          panControl: true,
+          mapTypeControl: false,
+          scaleControl: true,
+          streetViewControl: false,
+          overviewMapControl: true
+        };
+
+        map = new google.maps.Map(document.getElementById('mapas'),
+                mapOptions);
+        
+        {% block marcas %}{% endblock %}
+        
+        google.maps.event.addListener(map, 'click', function(event) {
+        	map.setCenter(event.latLng);
+      	    //closeInfoWindow();     //codigo para cerrar ventana de info*/
+      	  	{% block defFuncDblClick %}{% endblock %}
+     	});
+      }
+      
+      function toggleBounce() {
+
+        if (marker.getAnimation() != null) {
+          marker.setAnimation(null);
+        } else {
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+
+      }
+
+      function closeInfoWindow() {
+          infoWindow.open();
+      }
+
+    </script>
   {% block extraScripts %}{% endblock %}
-</script>
 {% endblock %}
 
 {% block content %}

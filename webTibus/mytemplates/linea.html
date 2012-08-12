@@ -3,7 +3,7 @@
 {% block content %}
 <table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
 <tr>
-<td style="height: 100%; width: 50%;"><table>
+<td style="height: 100%; width: 50%;" align=center ><table class="informationTable">
     {% if listaLinea %}
 	<tr><td> Linea </td><td> Frecuencia </td><td> Empresa </td></tr>
       {% for linea in listaLinea %}
@@ -50,10 +50,6 @@
     <BUTTON type="submit" name="accion" value="delLinea" > Eliminar Linea </BUTTON>
     </form>
   </td></tr>
-  {% if error %} <tr style="text-align" border="1" cellpadding="2" cellspacing="2">
-    <td style="text-align: center;"><font color="red" size=4>Error: {{ error }}</font></td>
-  </tr>
-  {% endif %}
   </table></td></tr>
 </table>
 {% endblock %}
