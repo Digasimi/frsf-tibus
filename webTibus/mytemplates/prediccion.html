@@ -31,7 +31,7 @@ Parada Destino:
       {% for unidad in predicciones %}
         <tr><td>{{ unidad.colectivo }}</td><td>{{ unidad.tiempo }}</td><td>{{ unidad.lat }}</td><td>{{ unidad.lon }}</td></tr>
       {% endfor %}
-      <tr><td>Tiempos Calculados a {{ timeStamp }}</td></tr>
+      <tr><td COLSPAN="4">Tiempos Calculados a {{ timeStamp }}</td></tr>
     {% else %}
       <tr><td>No Hay predicciones disponibles.</td></tr>
     {% endif %}
