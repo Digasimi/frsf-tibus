@@ -64,7 +64,7 @@ class Parada(models.Model):
     longitud = models.FloatField()
     linea = models.ForeignKey(Recorrido)
     calle1 = models.CharField(verbose_name="calle1", max_length=100)
-    calle2 = models.CharField(verbose_name="calle2", max_length=100)
+    calle2 = models.CharField(verbose_name="calle2", max_length=100,null=True)
     proximaparada = models.IntegerField(null=True)
   
     class Meta:
@@ -198,8 +198,8 @@ class Presponse(object):
     def __init__ (self, c, t, la, lo):
     	self.colectivo = c
     	self.tiempo = t
-    	self.lat = la
-    	self.lon = lo
+    	self.lat = float(la)
+    	self.lon = float(lo)
 
     def __unicode__(self):
         return self.colectivo
@@ -253,9 +253,9 @@ class PresponseHandler(ContentHandler):
 		if self.isTiempoElement == 1:
 			self.tiempo += ch
 		if self.islatElement == 1:
-			self.lat = ch
+			self.lat += ch
 		if self.islonElement == 1:
-			self.lon = ch
+			self.lon += ch
 		if self.isTimeStampElement == 1:
 			self.timestamp += ch
 	
@@ -263,11 +263,11 @@ class PresponseHandler(ContentHandler):
 		if name == 'busId':
 			self.isColeElement= 0
 		if name == 'timeSec':
-			self.inTiempoContent = 0
+			self.isTiempoElement = 0
 		if name == 'lat':
-			self.inlatContent = 0
+			self.islatElement = 0
 		if name == 'lon':
-			self.inlonContent = 0
+			self.islonElement = 0
 		if name == 'prediction':
 			self.lista = self.lista + [Presponse(self.colectivo, self.tiempo,self.lat, self.lon)]
 		if name == 'timestamp':

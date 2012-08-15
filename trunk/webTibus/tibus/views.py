@@ -167,8 +167,7 @@ def linea(request):#pagina de ABM de lineas
                                                     calleTemp1 = valores[2]
                                                     calleTemp2 = valores[3]
                                                     ordenTemp = ordenTemp + 1
-                                                    newParada = Parada(orden = ordenTemp,  latitud = parLat, longitud = parLon, coordenadas = Point(parLat, parLon), linea = newLinea, calle1 = calleTemp1, calle2 = calleTemp2)  
-                                                    print "aca llega"
+                                                    newParada = Parada(orden = ordenTemp,  latitud = parLat, longitud = parLon, linea = newLinea, calle1 = calleTemp1, calle2 = calleTemp2)  
                                                     newParada.save()
                                                 except:
                                                     errores = errores + 1

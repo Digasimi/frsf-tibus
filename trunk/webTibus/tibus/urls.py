@@ -14,7 +14,6 @@ urlpatterns = patterns('tibus.views',
     (r'^prediccion$', 'prediccion'), 
     (r'^modelo$', 'modelo'), 
     (r'^empresa$', 'empresa'), 
-    (r'^usuario$', 'usuario'),  #falta corregir vista
+    (r'^usuario$', 'usuario'),
     (r'^ayuda$', 'ayuda'), 
-    #(r'^Archivos/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
 )
