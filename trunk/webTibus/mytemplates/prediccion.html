@@ -25,17 +25,33 @@ Parada Destino:
         </form>
     </td>
   </tr>
-    <tr><td align=center ><table class="informationTable">
+    <tr><td align=center >
+    <div id="tableContainer" class="tableContainer">
       {% if predicciones %}
-        <tr><td>Colectivo</td><td>Tiempo estimado [s]</td><td>Latitud</td><td>Longitud</td></tr>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
+      	<thead class="fixedHeader">
+			<tr>
+				<th><a href="#">Colectivo</a></th>
+				<th><a href="#">Tiempo estimado [s]</a></th>
+				<th><a href="#">Latitud</a></th>
+				<th><a href="#">Longitud</a></th>
+			</tr>
+		</thead>
+		<tbody class="scrollContent">
       {% for unidad in predicciones %}
-        <tr><td>{{ unidad.colectivo }}</td><td>{{ unidad.tiempo }}</td><td>{{ unidad.lat }}</td><td>{{ unidad.lon }}</td></tr>
+        <tr>
+        	<td>{{ unidad.colectivo }}</td>
+        	<td>{{ unidad.tiempo }}</td>
+        	<td>{{ unidad.lat }}</td>
+        	<td>{{ unidad.lon }}</td>
+       	</tr>
       {% endfor %}
-      <tr><td COLSPAN="4">Tiempos Calculados a {{ timeStamp }}</td></tr>
+      </tbody></table>
+      <a>Tiempos Calculados a {{ timeStamp }}</a>
     {% else %}
-      <tr><td>No Hay predicciones disponibles.</td></tr>
+      <a>No Hay predicciones disponibles</a>
     {% endif %}
-</table></td></tr>
+</div></td></tr>
 </table>
 {% endblock %}
 
