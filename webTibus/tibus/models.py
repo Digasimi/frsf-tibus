@@ -1,5 +1,5 @@
 
-from django.contrib.gis.db import models 
+from django.db import models 
 from django.contrib.auth.models import User
 from xml.sax.handler import ContentHandler
 
@@ -38,7 +38,6 @@ class Recorrido(models.Model):
         idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
         linea = models.CharField(verbose_name="nombre", max_length=50)
         frecuencia = models.IntegerField()
-        objects = models.GeoManager()
         empresa = models.ForeignKey(Empresa)
         
         class Meta:
@@ -59,7 +58,6 @@ class Recorrido(models.Model):
 class Parada(models.Model):
     idparada = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
     orden = models.IntegerField()
-    objects = models.GeoManager()
     latitud = models.FloatField()
     longitud = models.FloatField()
     linea = models.ForeignKey(Recorrido)
@@ -147,34 +145,6 @@ class TiempoRecorrido(models.Model):
 	
 	def _unicode_(self): 
 		return self.promedio
-
-class WorldBorders(models.Model):
-        # Regular Django fields corresponding to the attributes in the
-        # world borders shapefile.
-        name = models.CharField(max_length=50)
-        area = models.IntegerField()
-        pop2005 = models.IntegerField('Population 2005')
-        fips = models.CharField('FIPS Code', max_length=2)
-        iso2 = models.CharField('2 Digit ISO', max_length=2)
-        iso3 = models.CharField('3 Digit ISO', max_length=3)
-        un = models.IntegerField('United Nations Code')
-        region = models.IntegerField('Region Code')
-        subregion = models.IntegerField('Sub-Region Code')
-        lon = models.FloatField()
-        lat = models.FloatField()
-
-        # GeoDjango-specific: a geometry field (MultiPolygonField), and
-        # overriding the default manager with a GeoManager instance.
-        mpoly = models.MultiPolygonField()
-        objects = models.GeoManager()
-
-        # So the model is pluralized correctly in the admin.
-        class Meta:
-            verbose_name_plural = "World Borders"
-
-        # Returns the string representation of the model.
-        def __unicode__(self):
-            return self.name
 
 class MyListener(object):
     mensaje = ''
