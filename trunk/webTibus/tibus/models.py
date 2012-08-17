@@ -96,19 +96,6 @@ class Unidad(models.Model):
     class Meta:
         db_table = 'unidad'
     
-class PosicionActual(models.Model):
-	latitud = models.FloatField()
-	longitud = models.FloatField()
-	paradaasociada= models.ForeignKey(Parada,  related_name = "parada_asociada")
-	unidad = models.ForeignKey(Unidad, related_name = "numero_unidad", primary_key=True)
-	tiempo = models.DateTimeField()
-
-	class Meta:
-		db_table = 'posicionActual'
-          
-	def _unicode_(self):
-		return self.model_id
-
 class Estimacion():
     tiempo = 0
     desviacion = 0
