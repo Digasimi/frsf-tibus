@@ -61,9 +61,8 @@ class Parada(models.Model):
     latitud = models.FloatField()
     longitud = models.FloatField()
     linea = models.ForeignKey(Recorrido)
-    calle1 = models.CharField(verbose_name="calle1", max_length=100)
+    calle1 = models.CharField(verbose_name="calle1", max_length=100,null=True) #debe sacarse, no puede ser null
     calle2 = models.CharField(verbose_name="calle2", max_length=100,null=True)
-    proximaparada = models.IntegerField(null=True)
   
     class Meta:
         db_table = 'parada'

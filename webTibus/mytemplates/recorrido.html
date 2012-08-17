@@ -26,9 +26,10 @@
    		</SELECT></td>
    		<td> <BUTTON type="submit" name="accion" value="viewParada"> Buscar Parada </BUTTON> </td>
     </tr>
+    <tr><td><label for="id_calle1">Calle: </label> {{ form.calle1 }}</td></tr>
+    <tr><td><label for="id_calle2">Interseccion: </label> {{ form.calle2 }}</td></tr>
     </table>
-    <p> Nuevas Coordenadas: <div id="coor"></div>
-    </p>
+    <a> Nuevas Coordenadas: </a><div id="coor"></div>
     <BUTTON type="submit" name="accion" value="addParada"> Agregar Parada </BUTTON>
     <BUTTON type="submit" name="accion" value="editParada"> Modificar Parada </BUTTON>
     <BUTTON type="submit" name="accion" value="delParada" > Eliminar Parada </BUTTON>
