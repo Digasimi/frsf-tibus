@@ -11,14 +11,13 @@ from django.contrib.gis.geos import Point
 from django.db.utils import DatabaseError
 from django.db.models import Max
 from tibus.forms import FormularioParada,  FormularioRecorrido,  FormularioUnidad,  FormularioPrediccion,  FormularioEmpresa,  FormularioUsuario
-from tibus.models import Parada,  Recorrido,  Unidad,  TiempoRecorrido,  PosicionActual, Empresa, Usuario,  MyListener,  PresponseHandler
+from tibus.models import Parada,  Recorrido,  Unidad, TiempoRecorrido, Empresa, Usuario, MyListener,  PresponseHandler
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 from xml.sax import parseString,  SAXParseException
 
 def index(request): #pagina principal
-    return render_to_response('index.html',
-    {'admin': False})
+    return render_to_response('index.html',{'admin': False})
     
 def modelo(request): #pagina que explica el funcionamiento del modelo
     return render_to_response('modelo.html',  {'admin': False})
@@ -49,7 +48,6 @@ def prediccion(request): #pagina que mostrara las predicciones
             else:
                 newId= Recorrido.objects.get(linea = idLinea.upper())
                 listaParadas = Parada.objects.filter(linea = newId)
-                listaUnidades = PosicionActual.objects.filter(unidad__linea__linea = newId)
                 
                 #formato nuevo
                 conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
@@ -91,20 +89,18 @@ def prediccion(request): #pagina que mostrara las predicciones
             descripcionError = "No existe la parada"
         except Unidad.DoesNotExist:
             descripcionError = "No hay unidades existentes"
-        except PosicionActual.DoesNotExist:
-            descripcionError = "No hay unidades disponibles"
         except TiempoRecorrido.DoesNotExist:
             descripcionError = "No hay estimaciones"
     else:
         form = FormularioPrediccion()
-    return render_to_response('prediccion.html',  {'form':form, 'listaParadas': listaParadas, 'listaUnidades': listaUnidades,  'predicciones':listaPrediccion,  'error': descripcionError,  'admin': False,  'listaLineas':listaLineas, 'timeStamp': prediccionTimeStamp},  context_instance=RequestContext(request))
+    return render_to_response('prediccion.html',  {'form':form, 'listaParadas': listaParadas, 'predicciones':listaPrediccion,  'error': descripcionError,  'admin': False,  'listaLineas':listaLineas, 'timeStamp': prediccionTimeStamp},  context_instance=RequestContext(request))
     
 def ayuda(request):#pagina de ayuda
     return render_to_response('ayuda.html',  {'admin': False})
 
 @login_required
 def tadmin(request):#pagina de ABM de lineas
-    return HttpResponseRedirect('recorrido')
+    return HttpResponseRedirect('linea')
 
 @login_required
 def linea(request):#pagina de ABM de lineas
@@ -280,7 +276,95 @@ def recorrido(request): #Pagina de ABM de paradas
     c = {}
     c.update(csrf(request))
     idLinea = request.POST.get('linea')
-    return recorridoLinea(request, idLinea)
+    descripcionError = ""
+    datosUsuario = Usuario.objects.get(nombre = request.user)    
+    
+    if (datosUsuario.categoria == 'Administrador'):
+        listaLineas = Recorrido.objects.all().order_by('linea')
+        listaParadas = Parada.objects.all()
+    elif (datosUsuario.categoria == 'Empresa'):
+        listaLineas = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
+        if idLinea == '' or idLinea == None:
+            listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa)
+        else:
+            listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
+    
+    #logica
+    if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
+        try:
+            #if request.method == 'POST':
+                form = FormularioParada()
+                if idLinea == '' or idLinea == None:
+                    form = FormularioParada()
+                    descripcionError = "No ingreso la linea"
+                else:
+                    idLinea = idLinea.upper()
+                    newId= Recorrido.objects.get(linea = idLinea)
+                    listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
+                    if request.POST.get('accion') == 'viewLinea':
+                        form = FormularioParada()
+                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True}, context_instance=RequestContext(request))
+                    else:
+                        parOrden = request.POST.get('orden')
+                        if parOrden == None or parOrden == '':
+                            parOrden = 0
+                        try:
+                            if int(parOrden) >= 0:  #comprueba que el orden sea un entero mayor que 0
+                                if request.POST.get('accion') == 'viewParada':
+                                    parada = Parada.objects.filter(linea = newId,  orden = int(parOrden))
+                                elif request.POST.get('accion') == 'addParada':
+                                    parLat = float(request.POST.get('newlatitud'))
+                                    parLon = float(request.POST.get('newlongitud'))
+                                    calleT1 = request.POST.get('calle1')
+                                    calleT2 = request.POST.get('calle2')
+                                    if len(listaParadas) == 0: #comprueba que no sea la primer parada
+                                        parOrden = 1
+                                    elif parOrden != 0: #agrega la parada en una posicion especifica
+                                        for paradaTemp in listaParadas: 
+                                            if paradaTemp.ordenParada() > int(parOrden): 
+                                                paradaTemp.aumentarOrden()
+                                                paradaTemp.save()
+                                        listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
+                                    else: #agrega la parada al final del recorrido
+                                        parOrden = listaParadas.aggregate(orden=Max('orden')).get('orden') + 1
+                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId, calle1 = calleT1,calle2 = calleT2)  
+                                    newParada.save()
+                                elif request.POST.get('accion') == 'editParada': #sin revisar - Falta ver que pasa si se cambia el orden.
+                                    newParada = Parada.objects.get(orden = int(parOrden),  linea = newId)  
+                                    newParada.latitud = float(request.POST.get('newlatitud'))
+                                    newParada.longitud = float(request.POST.get('newlongitud'))
+                                    newParada.calle1 = request.POST.get('calle1')
+                                    newParada.calle2 = request.POST.get('calle2')
+                                    newParada.save()
+                                else: #if request.POST.get('accion') == 'delParada':  Asume que la accion por omision es borrar
+                                    #La confirmacion de la eliminacion es en el codigo html
+                                    newParada = Parada.objects.get(orden = parOrden,  linea = newId)  
+                                    newParada.delete()
+                                    #!reacomodar paradas                
+                                    for paradaTemp in listaParadas: 
+                                        if paradaTemp.ordenParada() > int(parOrden): 
+                                            paradaTemp.disminuirOrden()
+                                            paradaTemp.save()
+                                    listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
+                                #else:
+                                    #descripcionError = "Accion no valida"
+                            else:
+                                descripcionError = "El orden debe ser un numero entero mayor a 0"
+                        except ValueError:
+                            descripcionError = "El orden debe ser un numero entero"
+                        except TypeError:
+                            descripcionError = "Las coordenadas no pueden ser vacias"
+                    listaParadas = Parada.objects.filter(linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
+        #empiezan las excepciones
+        except Recorrido.DoesNotExist:
+            listaLinea = Recorrido.objects.all()
+            return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
+        except Parada.DoesNotExist:
+            form = FormularioParada()
+            descripcionError = "No existen paradas"
+    else:
+        descripcionError = "No posee permisos para ejecutar esta accion"
+    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 
 def ordenarListaParadas(listaParadas): #metodo para ordenar las paradas e evitar saltar el orden
@@ -528,11 +612,6 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                         except TypeError:
                             descripcionError = "Las coordenadas no pueden ser vacias"
                     listaParadas = Parada.objects.filter(linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
-            #else:
-                #form = FormularioParada()
-                #if idLinea != '':
-                    #newId= Recorrido.objects.get(linea = idLinea)
-                    #listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
         #empiezan las excepciones
         except Recorrido.DoesNotExist:
             listaLinea = Recorrido.objects.all()
