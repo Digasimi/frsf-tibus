@@ -223,29 +223,30 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
         if request.method == 'POST':
             try:
                 idLinea=request.POST.get('linea').upper()
-                if idLinea == '': #comprueba que se ingresa linea
+                if request.POST.get('accion') == 'viewUnidad':
+                    if idLinea == '': 
+                        listaUnidad = Unidad.objects.all().order_by('id_unidad_linea')
+                    else:
+                        listaUnidad = Unidad.objects.filter(linea = Recorrido.objects.get(linea = idLinea)).order_by('id_unidad_linea')
+                elif idLinea == '': #comprueba que se ingresa linea
                     descripcionError = "No ingreso la linea"
-                newId=request.POST.get('id_unidad_linea').upper()                
-                form = FormularioUnidad(request.POST)
-                if idLinea == '': #comprueba que la linea no sea vacia.
-                    descripcionError = "No ingreso la linea"
+                    form = FormularioUnidad(request.POST)
                 else:
                     newLinea = Recorrido.objects.get(linea = idLinea) #carga la linea.
-                    if request.POST.get('accion') == 'viewUnidad':
-                        listaUnidad = Unidad.objects.filter(linea = newLinea).order_by('id_unidad_linea')
-                    elif form.is_valid():
+                    newId=request.POST.get('id_unidad_linea').upper()
+                    if form.is_valid():
                         if request.POST.get('accion') == 'addUnidad':
                             newApto = request.POST.get('aptoMovilidadReducida') 
                             if not(newApto):
                                 newApto = 0;
                             try:
-                                newUnidad = Unidad.objects.get(linea = newLinea, idUnidad = newId) #da verdadero si la unidad ya existe
+                                newUnidad = Unidad.objects.get(linea = newLinea, id_unidad_linea = newId) #da verdadero si la unidad ya existe
                                 descripcionError = "Unidad ya existente"
                             except Unidad.DoesNotExist:
-                                newUnidad = Unidad(linea = newLinea,  aptoMovilidadReducida = newApto,  idUnidad = newId)
+                                newUnidad = Unidad(linea = newLinea,  aptoMovilidadReducida = newApto,  idunidad = idLinea + "_" + newId, id_unidad_linea = newId)
                                 newUnidad.save()
                         elif request.POST.get('accion') == 'editUnidad': 
-                            newUnidad = Unidad.objects.get(linea = newLinea,  idUnidad = newId)
+                            newUnidad = Unidad.objects.get(linea = newLinea,  id_unidad_linea = newId)
                             newApto = request.POST.get('aptoMovilidadReducida') 
                             if newApto:
                                 newUnidad.aptoMovilidadReducida = 1;
@@ -254,7 +255,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
                             newUnidad.save()
                         else: #if request.POST.get('accion') == 'delUnidad': Asume que la accion por omision es borrar
                             #La confirmacion de la eliminacion es en el codigo html
-                            newUnidad = Unidad.objects.get(linea = newLinea,  idUnidad = newId)
+                            newUnidad = Unidad.objects.get(linea = newLinea,  id_unidad_linea = newId)
                             newUnidad.delete()
                         #else:
                             #descripcionError = "Accion no valida: " + str(request.POST.get('accion'))
@@ -269,108 +270,18 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
             form = FormularioUnidad()
         else:
             form = FormularioUnidad()
+            listaUnidad = Unidad.objects.all().order_by('id_unidad_linea')
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
     return render_to_response('unidad.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUnidad':listaUnidad,  'admin': True,  'listaLinea': listaLinea},  context_instance=RequestContext(request))
 
 @login_required    
 def recorrido(request): #Pagina de ABM de paradas
-
-    #carga inicial
     c = {}
     c.update(csrf(request))
     idLinea = request.POST.get('linea')
-    descripcionError = ""
-    datosUsuario = Usuario.objects.get(nombre = request.user)
-    listaLineas = []
-    listaParadas = []
-    
-    if (datosUsuario.categoria == 'Administrador'):
-        listaLineas = Recorrido.objects.all().order_by('linea')
-        listaParadas = Parada.objects.all()
-    elif (datosUsuario.categoria == 'Empresa'):
-        listaLineas = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
-        if idLinea == '' or idLinea == None:
-            listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa)
-        else:
-            listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
-    
-    #logica
-    if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
-        try:
-            #if request.method == 'POST':
-                form = FormularioRecorrido(request.POST, request.FILES)
-                if idLinea == '' or idLinea == None:
-                    form = FormularioParada()
-                    descripcionError = "No ingreso la linea"
-                else:
-                    idLinea = idLinea.upper()
-                    newId= Recorrido.objects.get(linea = idLinea)
-                    listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
-                    if request.POST.get('accion') == 'viewLinea':
-                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True}, context_instance=RequestContext(request))
-                    else:
-                        parOrden = request.POST.get('orden')
-                        if parOrden == '':
-                            parOrden = 0
-                        try:
-                            if int(parOrden) >= 0:  #comprueba que el orden sea un entero mayor que 0
-                                if request.POST.get('accion') == 'viewParada':
-                                    parada = Parada.objects.filter(linea = newId,  orden = int(parOrden))
-                                elif request.POST.get('accion') == 'addParada':
-                                    parLat = float(request.POST.get('newlatitud'))
-                                    parLon = float(request.POST.get('newlongitud'))
-                                    if len(listaParadas) == 0: #comprueba que no sea la primer parada
-                                        parOrden = 1
-                                    elif parOrden != 0: #agrega la parada en una posicion especifica
-                                        for paradaTemp in listaParadas: 
-                                            if paradaTemp.ordenParada() > int(parOrden): 
-                                                paradaTemp.aumentarOrden()
-                                                paradaTemp.save()
-                                        listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
-                                    else: #agrega la parada al final del recorrido
-                                        parOrden = listaParadas.aggregate(orden=Max('orden')).get('orden') + 1
-                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId)  
-                                    newParada.save()
-                                elif request.POST.get('accion') == 'editParada': #sin revisar - Falta ver que pasa si se cambia el orden.
-                                    newParada = Parada.objects.get(orden = int(parOrden),  linea = newId)  
-                                    newParada.latitud = float(request.POST.get('newlatitud'))
-                                    newParada.longitud = float(request.POST.get('newlongitud'))
-                                    newParada.save()
-                                else: #if request.POST.get('accion') == 'delParada':  Asume que la accion por omision es borrar
-                                    #La confirmacion de la eliminacion es en el codigo html
-                                    newParada = Parada.objects.get(orden = parOrden,  linea = newId)  
-                                    newParada.delete()
-                                    #!reacomodar paradas                
-                                    for paradaTemp in listaParadas: 
-                                        if paradaTemp.ordenParada() > int(parOrden): 
-                                            paradaTemp.disminuirOrden()
-                                            paradaTemp.save()
-                                    listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
-                                #else:
-                                    #descripcionError = "Accion no valida"
-                            else:
-                                descripcionError = "El orden debe ser un numero entero mayor a 0"
-                        except ValueError:
-                            descripcionError = "El orden debe ser un numero entero"
-                        except TypeError:
-                            descripcionError = "Las coordenadas no pueden ser vacias"
-                    listaParadas = Parada.objects.filter(linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
-            #else:
-                #form = FormularioParada()
-                #if idLinea != '':
-                    #newId= Recorrido.objects.get(linea = idLinea)
-                    #listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
-        #empiezan las excepciones
-        except Recorrido.DoesNotExist:
-            listaLinea = Recorrido.objects.all()
-            return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
-        except Parada.DoesNotExist:
-            form = FormularioParada()
-            descripcionError = "No existen paradas"
-    else:
-        descripcionError = "No posee permisos para ejecutar esta accion"
-    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
+    return recorridoLinea(request, idLinea)
+
 
 def ordenarListaParadas(listaParadas): #metodo para ordenar las paradas e evitar saltar el orden
     i=1
@@ -533,6 +444,7 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
         descripcionError = "No posee permisos para ejecutar esta accion"        
     return render_to_response('usuario.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUsuarios':listaUsuario,  'admin': True,  'listaEmpresa' : listaEmpresa,  'listaCategoria':listaCategoria},  context_instance=RequestContext(request))
 
+@login_required
 def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     #carga inicial
     c = {}
@@ -554,7 +466,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
         try:
             #if request.method == 'POST':
-                form = FormularioRecorrido(request.POST, request.FILES)
+                form = FormularioParada()
                 if idLinea == '' or idLinea == None:
                     form = FormularioParada()
                     descripcionError = "No ingreso la linea"
@@ -563,10 +475,11 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                     newId= Recorrido.objects.get(linea = idLinea)
                     listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
                     if request.POST.get('accion') == 'viewLinea':
+                        form = FormularioParada()
                         return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True}, context_instance=RequestContext(request))
                     else:
                         parOrden = request.POST.get('orden')
-                        if parOrden == '':
+                        if parOrden == None or parOrden == '':
                             parOrden = 0
                         try:
                             if int(parOrden) >= 0:  #comprueba que el orden sea un entero mayor que 0
@@ -575,6 +488,8 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                                 elif request.POST.get('accion') == 'addParada':
                                     parLat = float(request.POST.get('newlatitud'))
                                     parLon = float(request.POST.get('newlongitud'))
+                                    calleT1 = request.POST.get('calle1')
+                                    calleT2 = request.POST.get('calle2')
                                     if len(listaParadas) == 0: #comprueba que no sea la primer parada
                                         parOrden = 1
                                     elif parOrden != 0: #agrega la parada en una posicion especifica
@@ -585,12 +500,14 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                                         listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
                                     else: #agrega la parada al final del recorrido
                                         parOrden = listaParadas.aggregate(orden=Max('orden')).get('orden') + 1
-                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, coordenadas = Point(parLat, parLon), linea = newId)  
+                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId, calle1 = calleT1,calle2 = calleT2)  
                                     newParada.save()
                                 elif request.POST.get('accion') == 'editParada': #sin revisar - Falta ver que pasa si se cambia el orden.
                                     newParada = Parada.objects.get(orden = int(parOrden),  linea = newId)  
                                     newParada.latitud = float(request.POST.get('newlatitud'))
                                     newParada.longitud = float(request.POST.get('newlongitud'))
+                                    newParada.calle1 = request.POST.get('calle1')
+                                    newParada.calle2 = request.POST.get('calle2')
                                     newParada.save()
                                 else: #if request.POST.get('accion') == 'delParada':  Asume que la accion por omision es borrar
                                     #La confirmacion de la eliminacion es en el codigo html
@@ -610,7 +527,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                             descripcionError = "El orden debe ser un numero entero"
                         except TypeError:
                             descripcionError = "Las coordenadas no pueden ser vacias"
-                    listaParadas = Parada.objects.filter(parada__linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
+                    listaParadas = Parada.objects.filter(linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
             #else:
                 #form = FormularioParada()
                 #if idLinea != '':
