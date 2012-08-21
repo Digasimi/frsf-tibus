@@ -310,6 +310,9 @@ def recorrido(request): #Pagina de ABM de paradas
                                     parLon = float(request.POST.get('newlongitud'))
                                     calleT1 = request.POST.get('calle1')
                                     calleT2 = request.POST.get('calle2')
+                                    activa = request.POST.get('paradaActiva')
+                                    if not(activa):
+                                        activa = 0
                                     if len(listaParadas) == 0: #comprueba que no sea la primer parada
                                         parOrden = 1
                                     elif parOrden != 0: #agrega la parada en una posicion especifica
@@ -320,7 +323,7 @@ def recorrido(request): #Pagina de ABM de paradas
                                         listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
                                     else: #agrega la parada al final del recorrido
                                         parOrden = listaParadas.aggregate(orden=Max('orden')).get('orden') + 1
-                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId, calle1 = calleT1,calle2 = calleT2)  
+                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId, calle1 = calleT1,calle2 = calleT2,paradaActiva = activa)  
                                     newParada.save()
                                 elif request.POST.get('accion') == 'editParada': #sin revisar - Falta ver que pasa si se cambia el orden.
                                     newParada = Parada.objects.get(orden = int(parOrden),  linea = newId)  
@@ -328,6 +331,10 @@ def recorrido(request): #Pagina de ABM de paradas
                                     newParada.longitud = float(request.POST.get('newlongitud'))
                                     newParada.calle1 = request.POST.get('calle1')
                                     newParada.calle2 = request.POST.get('calle2')
+                                    if request.POST.get('paradaActiva'):
+                                        newParada.paradaActiva = True
+                                    else:
+                                        newParada.paradaActiva = False  
                                     newParada.save()
                                 else: #if request.POST.get('accion') == 'delParada':  Asume que la accion por omision es borrar
                                     #La confirmacion de la eliminacion es en el codigo html
@@ -573,6 +580,9 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                                     parLon = float(request.POST.get('newlongitud'))
                                     calleT1 = request.POST.get('calle1')
                                     calleT2 = request.POST.get('calle2')
+                                    activa = request.POST.get('paradaActiva')
+                                    if not(activa):
+                                        activa = 0
                                     if len(listaParadas) == 0: #comprueba que no sea la primer parada
                                         parOrden = 1
                                     elif parOrden != 0: #agrega la parada en una posicion especifica
@@ -583,7 +593,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                                         listaParadas = ordenarListaParadas(Parada.objects.filter(linea = newId).order_by('orden'))
                                     else: #agrega la parada al final del recorrido
                                         parOrden = listaParadas.aggregate(orden=Max('orden')).get('orden') + 1
-                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId, calle1 = calleT1,calle2 = calleT2)  
+                                    newParada = Parada(orden = parOrden,  latitud = parLat, longitud = parLon, linea = newId, calle1 = calleT1,calle2 = calleT2,paradaActiva = activa)  
                                     newParada.save()
                                 elif request.POST.get('accion') == 'editParada': #sin revisar - Falta ver que pasa si se cambia el orden.
                                     newParada = Parada.objects.get(orden = int(parOrden),  linea = newId)  
@@ -591,6 +601,10 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                                     newParada.longitud = float(request.POST.get('newlongitud'))
                                     newParada.calle1 = request.POST.get('calle1')
                                     newParada.calle2 = request.POST.get('calle2')
+                                    if request.POST.get('paradaActiva'):
+                                        newParada.paradaActiva = True
+                                    else:
+                                        newParada.paradaActiva = False 
                                     newParada.save()
                                 else: #if request.POST.get('accion') == 'delParada':  Asume que la accion por omision es borrar
                                     #La confirmacion de la eliminacion es en el codigo html

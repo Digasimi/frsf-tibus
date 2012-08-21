@@ -8,6 +8,7 @@ class FormularioParada(forms.Form):
     longitud = forms.FloatField()
     calle1 = forms.CharField()
     calle2 = forms.CharField()
+    paradaActiva = forms.BooleanField(required=False)
     
     def aumentarOrden(self):
         self.orden = self.orden +1
