@@ -71,13 +71,13 @@ class Parada(models.Model):
         return self.orden
           
     def ordenParada(self):
-    	return self.orden
+        return self.orden
     
     def latitudParada(self):
-		return self.latitud
+        return self.latitud
       
     def longitudParada(self):
-		return self.longitud
+        return self.longitud
        
     def aumentarOrden(self):
         self.orden = self.orden + 1
@@ -103,7 +103,7 @@ class Estimacion():
     paradaasociada = 0
     
     def _unicode_(self):
-    	return self.unidad      
+        return self.unidad      
     
     def acumular(self, tiempoNew,  desviacionNew):
         self.tiempo = self.tiempo + tiempoNew
@@ -121,16 +121,16 @@ class Estimacion():
         
     
 class TiempoRecorrido(models.Model):
-	promedio = models.FloatField()
-	desstd = models.FloatField()
-	parada= models.ForeignKey(Parada,  related_name = "parada_origen", primary_key=True)
-	orden = models.IntegerField()
-	
-	class Meta:
-		db_table = 'promedios'
-	
-	def _unicode_(self): 
-		return self.promedio
+    promedio = models.FloatField()
+    desstd = models.FloatField()
+    parada= models.ForeignKey(Parada,  related_name = "parada_origen", primary_key=True)
+    orden = models.IntegerField()
+    
+    class Meta:
+        db_table = 'promedios'
+    
+    def _unicode_(self): 
+        return self.promedio
 
 class MyListener(object):
     mensaje = ''
@@ -143,7 +143,7 @@ class MyListener(object):
         self.mensaje = message
         
     def getMensaje(self):
-		return self.mensaje
+        return self.mensaje
 
 class Presponse(object):
     colectivo = ''
@@ -152,87 +152,87 @@ class Presponse(object):
     lon = 0
     
     def __init__ (self, c, t, la, lo):
-    	self.colectivo = c
-    	self.tiempo = t
-    	self.lat = float(la)
-    	self.lon = float(lo)
+        self.colectivo = c
+        self.tiempo = t
+        self.lat = float(la)
+        self.lon = float(lo)
 
     def __unicode__(self):
         return self.colectivo
     
 class PresponseHandler(ContentHandler):
-	lista = []
-	isColeElement= 0
- 	isTiempoElement = 0
- 	islatElement = 0
- 	islonElement = 0
- 	isTimeStampElement = 0
- 	colectivo = ""
- 	tiempo = ""
- 	lat = ""
- 	lon = "" 
- 	timestamp = ""
- 
- 	def __init__ (self):
- 		self.lista = []
- 		self.isColeElement= 0
- 		self.isTiempoElement = 0
- 		self.islatElement = 0
- 		self.islonElement = 0
- 		self.isTimeStampElement = 0
- 		self.colectivo = ""
- 		self.tiempo = ""
- 		self.lat = ""
- 		self.lon = ""
- 		self.timestamp = ""
- 		
-	def startElement(self, name, attrs):
-		if name == 'busId':
-			self.isColeElement= 1
-			self.colectivo = ""
-	 	elif name == 'timeSec':
-	 		self.isTiempoElement = 1
-	 		self.tiempo = ""
- 		elif name == 'lat':
- 			self.islatElement = 1
- 			self.lat = ""
- 		elif name == 'lon':
- 			self.islonElement = 1
- 			self.lon = ""
-		elif name == 'timestamp':
-			self.isTimeStampElement = 1
-			self.timestamp = ""
-	
-	def characters (self, ch):
-		if self.isColeElement== 1:
-			self.colectivo += ch
-		if self.isTiempoElement == 1:
-			self.tiempo += ch
-		if self.islatElement == 1:
-			self.lat += ch
-		if self.islonElement == 1:
-			self.lon += ch
-		if self.isTimeStampElement == 1:
-			self.timestamp += ch
-	
-	def endElement(self, name):
-		if name == 'busId':
-			self.isColeElement= 0
-		if name == 'timeSec':
-			self.isTiempoElement = 0
-		if name == 'lat':
-			self.islatElement = 0
-		if name == 'lon':
-			self.islonElement = 0
-		if name == 'prediction':
-			self.lista = self.lista + [Presponse(self.colectivo, self.tiempo,self.lat, self.lon)]
-		if name == 'timestamp':
-			self.isTimeStampElement = 0
-		if name == 'prediction-responde':
-			print self.lista
-	
-	def obtenerLista(self):
-		return self.lista
-	
-	def obtenerTimeStamp(self):
-		return self.timestamp
+    lista = []
+    isColeElement= 0
+    isTiempoElement = 0
+    islatElement = 0
+    islonElement = 0
+    isTimeStampElement = 0
+    colectivo = ""
+    tiempo = ""
+    lat = ""
+    lon = "" 
+    timestamp = ""
+    
+    def __init__ (self):
+        self.lista = []
+        self.isColeElement= 0
+        self.isTiempoElement = 0
+        self.islatElement = 0
+        self.islonElement = 0
+        self.isTimeStampElement = 0
+        self.colectivo = ""
+        self.tiempo = ""
+        self.lat = ""
+        self.lon = ""
+        self.timestamp = ""
+    
+    def startElement(self, name, attrs):
+        if name == 'busId':
+            self.isColeElement= 1
+            self.colectivo = ""
+        elif name == 'timeSec':
+            self.isTiempoElement = 1
+            self.tiempo = ""
+        elif name == 'lat':
+            self.islatElement = 1
+            self.lat = ""
+        elif name == 'lon':
+            self.islonElement = 1
+            self.lon = ""
+        elif name == 'timestamp':
+            self.isTimeStampElement = 1
+            self.timestamp = ""
+    
+    def characters (self, ch):
+        if self.isColeElement== 1:
+            self.colectivo += ch
+        if self.isTiempoElement == 1:
+            self.tiempo += ch
+        if self.islatElement == 1:
+            self.lat += ch
+        if self.islonElement == 1:
+            self.lon += ch
+        if self.isTimeStampElement == 1:
+            self.timestamp += ch
+    
+    def endElement(self, name):
+        if name == 'busId':
+            self.isColeElement= 0
+        if name == 'timeSec':
+            self.isTiempoElement = 0
+        if name == 'lat':
+            self.islatElement = 0
+        if name == 'lon':
+            self.islonElement = 0
+        if name == 'prediction':
+            self.lista = self.lista + [Presponse(self.colectivo, self.tiempo,self.lat, self.lon)]
+        if name == 'timestamp':
+            self.isTimeStampElement = 0
+        if name == 'prediction-responde':
+            print self.lista
+    
+    def obtenerLista(self):
+        return self.lista
+    
+    def obtenerTimeStamp(self):
+        return self.timestamp

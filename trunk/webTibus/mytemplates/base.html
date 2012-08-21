@@ -27,7 +27,7 @@
         {% block branding %}{% endblock %}
         </div>
         {% if user.is_active%}
-        <div id="user-tools" ALIGN=right STYLE="font-family: Arial; font-size: 12px;">
+        <div id="user-tools" align=right style="font-family: Arial; font-size: 12px;">
             {% trans 'Bienvenido,' %}
             <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
             {% block userlinks %}
@@ -51,7 +51,12 @@
                 {% endif %}
                 {% trans 'Desconectarse' %}</a>
             {% endblock %}
-       </div>
+         </div>
+        {% else %}
+        <div id="user-tools" ALIGN=right STYLE="font-family: Arial; font-size: 12px;">
+       		{% url 'login' as login_url %}
+            <a href="{{ login_url }}">{% trans 'Iniciar Sesion' %}</a>
+       	</div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>
