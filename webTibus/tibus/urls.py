@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls.defaults import patterns
 from django.contrib.gis import admin
 
 admin.autodiscover()

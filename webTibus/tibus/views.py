@@ -1,13 +1,10 @@
 # Create your views here.
 
 import stomp, time
-from django.contrib.auth.models import User
 from django.core.context_processors import csrf
-from django.http import HttpResponseRedirect,  Http404
+from django.http import HttpResponseRedirect
 from django.template import RequestContext
-from django.shortcuts import render_to_response,  get_object_or_404
-from django.core.urlresolvers import reverse
-from django.contrib.gis.geos import Point
+from django.shortcuts import render_to_response
 from django.db.utils import DatabaseError
 from django.db.models import Max
 from tibus.forms import FormularioParada,  FormularioRecorrido,  FormularioUnidad,  FormularioPrediccion,  FormularioEmpresa,  FormularioUsuario
@@ -26,7 +23,6 @@ def prediccion(request): #pagina que mostrara las predicciones
     #carga inicial
     c = {}
     c.update(csrf(request))
-    listaUnidades = []
     listaPrediccion = []
     descripcionError = ""
     prediccionTimeStamp = ""
@@ -130,9 +126,6 @@ def linea(request):#pagina de ABM de lineas
                 elif idLinea == '': #comprueba que se ingresa linea
                     descripcionError = "No ingreso la linea"
                 elif request.POST.get('accion') == 'viewLinea':          #no necesitaria el is_valid, solo que exista linea
-                    newId= Recorrido.objects.get(linea = idLinea)
-                    #listaParadas = Parada.objects.filter(linea = newId)
-                        #!corregir, no pasa la linea correctamente como parametro.
                     direccion = 'recorrido/' + idLinea #carga la pagina de edicion de paradas asociadas a la linea ingresada
                     form = FormularioParada() 
                     return HttpResponseRedirect(direccion)
@@ -499,7 +492,6 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
                     if request.POST.get('accion') == 'viewUsuario':
                         newApto = 0; #aca falta hacer algo
                     elif request.POST.get('accion') == 'rehabUsuario':
-                        newUsuario = Usuario.objects.get(nombre = idUsuario)
                         newUsuario.is_active = True
                         newUsuario.save()
                     elif request.POST.get('accion') == 'editUsuario': 
@@ -510,10 +502,17 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
                         else:
                             descripcionError = "Las passwords no coinciden"
                         newUsuario.save();
-                    else: #if request.POST.get('accion') == 'delEmpresa': Asume que la accion por omision es borrar
+                    elif request.POST.get('accion') == 'delUsuario': #Asume que la accion por omision es borrar
                         #La confirmacion de la eliminacion es en el codigo html
-                        newUsuario.is_active = False
-                        newUsuario.save()
+                        if ((newUsuario.categoria == "Administrador") and (Usuario.objects.filter(categoria = "Administrador").count() > 1)):
+                            descripcionError = "No se puede eliminar el ultimo usuario Administrador"
+                        elif ((newUsuario.categoria == "Empresa")and(newUsuario.nombre != datosUsuario.nombre)):
+                            descripcionError = "No se puede eliminar otro usuario de igual Jerarquia"
+                        elif((newUsuario.categoria == "Empresa")and(newUsuario.categoria == "Administrador")):
+                            descripcionError = "No se puede eliminar otro usuario de mayor Jerarquia"
+                        else:
+                            newUsuario.is_active = False
+                            newUsuario.save()
                 #else:
                     #descripcionError = "Accion no valida: " + str(request.POST.get('accion'))
                 listaUsuario=Usuario.objects.filter(is_active = True ).order_by('nombre')

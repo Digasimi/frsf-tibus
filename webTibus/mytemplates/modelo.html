@@ -3,9 +3,17 @@
 {% block content %}
         <div class="sombraTabla" align="center"><table >
             <tbody>
-                <tr style="font-style: italic; font-weight: bold; color: black;
-                    font-family: Lohit Punjabi;" align="center">
+                <tr style="color: black;" align="left">
                     <td style="height: 100%; width: 100%;">
-		      Mostrar Modelo
-	</td></tr></tbody></table></div>
+	                    <p>Como prioridad en el modelado del sistema se intento mantener la simpleza por sobre todo; ya que esto permite respuestas rápidas y simples, que son la finalidad del sistema; brindar información actualización y rápida sobre estimaciones de tiempos.</p>
+						<p>Primero se eligió una arquitectura cliente servidor para poder usar un estilo pregunta-respuesta de manera de tener simpleza en el tratamiento de consultas.</p>
+						<p>En el modelo, se definieron 3 elementos como base para desarrollar los modelos de estimación. Los elementos son: Colectivo, Parada como un par ordenado (latitud, longitud) y Recorrido, como una sucesión de paradas.</p> 
+						<p>En base a estos elementos, los modelos usan diferentes métodos para estimar los tiempos de arribo.</p>
+						<p>Modelo 1 – Modelo Dubby: Este modelo es un modelo de prueba que da una predicción constante. Su funcionalidad es probar la arquitectura y el funcionamiento del sistema.</p>
+						<p>Modelo 2 – Modelo de Promedios: Este modelo tomo como tiempo estimado un promedio de los tiempos registrado por las unidades anteriores para hacer el recorrido. Los parámetros de este modelo son el tiempo máximo de antigüedad de los datos usados como fuentes.</p>
+						<p>Modelo 3 – Modelo de Promedio Ponderado: Este modelo es similar al anterior, pero no hace promedio, sino que hace una ponderación del dato mas reciente con el dato almacenado. Los parámetros de este modelo son el tiempo máximo de antigüedad de los datos usados como fuentes y la ponderación del nuevo dato.</p>
+						<p>Modelo 4 – Modelo Predictor corrector: Este modelo usa el mismo sistema que el modelo 2, pero a ese tiempo hace una corrección ponderando las desviaciones de las mediciones mas recientes a fin de reflejar cambios mas rápidamente. Los parámetros de este modelo son el tiempo máximo de antigüedad de los datos usados como fuentes y la cantidad de mediciones usadas para medir el error o desviación reciente.</p>
+						<p>Modelo 5 – Modelo Predictor corrector ponderado: Combina los modelos 3 y 4, haciendo los mismos pasos que el modelo 4, pero en lugar de usar promedio usa una ponderación definida por el usuario. Los parámetros de este modelo son el tiempo máximo de antigüedad de los datos usados como fuentes y la cantidad de mediciones usadas para medir el error o desviación reciente, y las ponderaciones usadas en cada caso.</p> 
+						<p>A su vez, se dividen las mediciones según el día y horario, para reflejar las distintas características y exigencias del sistema de transporte.</p> 
+					</td></tr></tbody></table></div>
 {% endblock %}
