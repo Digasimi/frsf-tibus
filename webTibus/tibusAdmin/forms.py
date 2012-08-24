@@ -37,3 +37,9 @@ class FormularioUsuario(forms.Form):
     empresa = forms.CharField(required=False, widget=forms.HiddenInput)
     password = forms.CharField(widget=forms.PasswordInput)
     confirmacion = forms.CharField(widget=forms.PasswordInput)
+
+class FormularioPassword(forms.Form):
+    nombre = forms.CharField(widget=forms.HiddenInput)
+    oldPassword = forms.CharField(widget=forms.PasswordInput)
+    newPassword = forms.CharField(widget=forms.PasswordInput)
+    confirmacion = forms.CharField(widget=forms.PasswordInput)
