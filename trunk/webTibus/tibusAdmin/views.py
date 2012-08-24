@@ -5,7 +5,8 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Max
-from tibusAdmin.forms import FormularioParada,  FormularioRecorrido,  FormularioUnidad, FormularioEmpresa,  FormularioUsuario
+from tibusAdmin.forms import FormularioParada,  FormularioRecorrido,  FormularioUnidad, FormularioEmpresa,  FormularioUsuario,\
+    FormularioPassword
 from tibus.models import Parada,  Recorrido,  Unidad, Empresa, Usuario
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
@@ -29,7 +30,7 @@ def linea(request):#pagina de ABM de lineas
         listaLinea = Recorrido.objects.all().order_by('linea')
     elif (datosUsuario.categoria == 'Empresa'):
         listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
-        listaLinea = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
+        listaLinea = Recorrido.objects.filter(empresa = datosUsuario.empresa).order_by('linea')
     
     #logica
     if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
@@ -43,7 +44,6 @@ def linea(request):#pagina de ABM de lineas
                     descripcionError = "No ingreso la linea"
                 elif request.POST.get('accion') == 'viewLinea':          #no necesitaria el is_valid, solo que exista linea
                     direccion = 'recorrido/' + idLinea #carga la pagina de edicion de paradas asociadas a la linea ingresada
-                    form = FormularioParada() 
                     return HttpResponseRedirect(direccion)
                 elif form.is_valid():
                     if request.POST.get('accion') == 'addLinea':
@@ -356,7 +356,7 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
     datosUsuario = Usuario.objects.get(nombre = request.user)
     listaUsuario = []
     listaEmpresa = []
-    listaCategoria = ['']
+    listaCategoria = []
     
     if (datosUsuario.categoria == 'Administrador'):
         listaUsuario=Usuario.objects.filter(is_active = True ).order_by('nombre')
@@ -371,8 +371,8 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
     if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
-                idUsuario=request.POST.get('nombre').upper()
                 form = FormularioUsuario(request.POST)
+                idUsuario=request.POST.get('nombre').upper()
                 if idUsuario == '': #comprueba que el nombre no sea vacia.
                     descripcionError = "No ingreso el nombre del usuario"
                 elif request.POST.get('accion') == 'addUsuario':
@@ -380,17 +380,15 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
                         email=request.POST.get('email').lower()
                         categoria=request.POST.get('categoria')
                         if (request.POST.get('empresa') != ""):
-                            empresa= Empresa.objects.get(nombre = request.POST.get('empresa'))
+                            empresa = Empresa.objects.get(nombre = request.POST.get('empresa'))
                         else:
-                            empresa=''
+                            empresa = None
                         password=request.POST.get('password')
                         try:
                             newUsuario = Usuario.objects.get(nombre = idUsuario) #da verdadero si la linea ya existe.
                             descripcionError = "Usuario ya existente"
                         except:
                             if (password == request.POST.get('confirmacion')):
-                                #user = User.objects.create_user(idUsuario, email,  password)
-                                #user.save()
                                 newUsuario = Usuario(username = idUsuario, nombre = idUsuario,  mail = email,  categoria=categoria,  empresa=empresa)
                                 newUsuario.set_password(password)
                                 if (categoria =='Administrador'):
@@ -402,8 +400,8 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
                         descripcionError = "No ingreso datos validos"
                 else:
                     newUsuario = Usuario.objects.get(nombre = idUsuario)
-                    if request.POST.get('accion') == 'viewUsuario':
-                        newApto = 0; #aca falta hacer algo
+                    if request.POST.get('accion') == 'viewUsuario': #No se usa
+                        form = FormularioUsuario(email = request.POST.get('email').lower())
                     elif request.POST.get('accion') == 'rehabUsuario':
                         newUsuario.is_active = True
                         newUsuario.save()
@@ -541,3 +539,22 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
+
+@login_required
+def cambiarpassword(request):
+    descripcionError = ""
+    if request.method == 'POST':
+        form = FormularioPassword(request.POST)
+        usuario = Usuario.objects.get(nombre = request.user)
+        if(request.POST.get('newPassword')==request.POST.get('confirmacion')):
+            if(usuario.check_password(request.POST.get('oldPassword'))):
+                usuario.set_password(request.POST.get('newPassword'))
+                usuario.save()
+                descripcionError = 'La password se cambio con exito'
+            else:
+                descripcionError = 'El password ingresada no es la correcta'
+        else:
+            descripcionError = 'Los passwords no coinciden'
+    else:
+        form = FormularioPassword()
+    return render_to_response('change_password.html', {'usuario': request.user, 'form': form, 'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))

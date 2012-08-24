@@ -22,6 +22,7 @@
                 <tr style="color: black;" align="center">
                 	<td style="height: 100%; width: 100%;">
                 	<p>Usted esta intentando acceder a una zona</p><p>donde necesita identificarse</p>
+                	<p>Es sensible a Mayusculas y minusculas</p>
 	                     <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
 						  <div class="form-row">
 						    {% if not form.this_is_the_login_form.errors %}{{ form.username.errors }}{% endif %}
