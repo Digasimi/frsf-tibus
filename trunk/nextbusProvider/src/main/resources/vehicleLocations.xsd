@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+elementFormDefault="qualified">
+
+	<xs:element name="body">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="vehicle" type="vehiclePositionData" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="lastTime">
+					<xs:complexType>
+						<xs:attribute name="time" type="xs:unsignedLong" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		<xs:attribute name="copyright" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="vehiclePositionData">
+		<xs:attribute name="id" type="xs:string" use="required"/>
+		<xs:attribute name="routeTag" type="xs:string" />
+		<xs:attribute name="dirTag" type="xs:string" />
+		<xs:attribute name="lat" type="xs:decimal" use="required"/>
+		<xs:attribute name="lon" type="xs:decimal" use="required"/>
+		<xs:attribute name="secsSinceReport" type="xs:integer" use="required"/>
+		<xs:attribute name="predictable" type="xs:boolean" use="required"/>
+		<xs:attribute name="heading" type="xs:decimal" use="required"/>
+		<xs:attribute name="speedKmHr" type="xs:decimal" use="required"/>
+	</xs:complexType>
+</xs:schema>
