@@ -33,40 +33,44 @@ def prediccion(request): #pagina que mostrara las predicciones
         idLinea = request.POST.get('linea').upper()
         try:
             #compueba que esten los datos.
-            if idLinea == '':
-                descripcionError = "No ingreso la linea"
-            elif request.POST.get('orden')=='':
-                descripcionError = "No ingreso la parada"
-            else:
-                newId= Recorrido.objects.get(linea = idLinea.upper())
-                listaParadas = Parada.objects.filter(linea = newId)
-                
-                #formato nuevo
-                conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
-                conn.start()
-                conn.connect()
-                respuesta = '/temp-queue/respuesta'
-                mensaje = crearMensaje(idLinea,  request.POST.get('orden'))
-                conn.set_listener('list', MyListener())
-                conn.send(mensaje, destination='/queue/predictions.requests',headers={'reply-to':respuesta})
-                conn.subscribe(destination=respuesta, ack='auto')
-                mens = ""
-                lis1 = conn.get_listener('list')
-                timer = 0
-                while (mens == '' and timer < 6):
-                    time.sleep(1)
-                    timer=timer+1
-                    mens = lis1.getMensaje()
-                if (timer == 6):
-                    descripcionError = 'Tiempo de espera agotado'
+            if request.POST.get('accion')=="predecir":
+                if idLinea == '':
+                    descripcionError = "No ingreso la linea"
+                elif request.POST.get('orden')=='':
+                    descripcionError = "No ingreso la parada"
                 else:
-                    #parseString("<prediction-responde><prediction><colectivo>12</colectivo><tiempo>3</tiempo></prediction><prediction><colectivo>11</colectivo><tiempo>3.6</tiempo></prediction></prediction-responde>", parser)
-                    parseString(mens, parser)
-                    listaPrediccion = parser.obtenerLista()
-                    prediccionTimeStamp = parser.obtenerTimeStamp()
-                conn.unsubscribe(destination=respuesta)
-                conn.disconnect()
-        #empiezan las excepciones
+                    newId= Recorrido.objects.get(linea = idLinea.upper())
+                    listaParadas = Parada.objects.filter(linea = newId)
+                    
+                    #formato nuevo
+                    conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
+                    conn.start()
+                    conn.connect()
+                    respuesta = '/temp-queue/respuesta'
+                    mensaje = crearMensaje(idLinea,  request.POST.get('orden'))
+                    conn.set_listener('list', MyListener())
+                    conn.send(mensaje, destination='/queue/predictions.requests',headers={'reply-to':respuesta})
+                    conn.subscribe(destination=respuesta, ack='auto')
+                    mens = ""
+                    lis1 = conn.get_listener('list')
+                    timer = 0
+                    while (mens == '' and timer < 6):
+                        time.sleep(1)
+                        timer=timer+1
+                        mens = lis1.getMensaje()
+                    if (timer == 6):
+                        descripcionError = 'Tiempo de espera agotado'
+                    else:
+                        #parseString("<prediction-responde><prediction><colectivo>12</colectivo><tiempo>3</tiempo></prediction><prediction><colectivo>11</colectivo><tiempo>3.6</tiempo></prediction></prediction-responde>", parser)
+                        parseString(mens, parser)
+                        listaPrediccion = parser.obtenerLista()
+                        prediccionTimeStamp = parser.obtenerTimeStamp()
+                    conn.unsubscribe(destination=respuesta)
+                    conn.disconnect()
+            else:
+                if idLinea != '':
+                    listaParadas = Parada.objects.filter(linea__linea = idLinea.upper())
+            #empiezan las excepciones
         except SAXParseException:
             descripcionError = "Datos en formato incorrecto - Error de conexion con servidor"
         except ValueError:
