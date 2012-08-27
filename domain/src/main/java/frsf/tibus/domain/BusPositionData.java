@@ -12,25 +12,34 @@ import org.joda.time.DateTime;
 
 /**
  *
- * @author dani
+ * @author Daniel González
  */
+
 public class BusPositionData implements Serializable{
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 3150497970302555791L;
-	private String idColectivo;
+	private String busId;
     private Float lat, lon;
+    private Float heading;
     private DateTime date;
+    private String routeId;
 
-    public BusPositionData(String idColectivo, Float lat, Float lon, DateTime date) {
-        this.idColectivo = idColectivo;
-        this.lat = lat;
-        this.lon = lon;
-        this.date = date;
-    }
+    
 
-    public DateTime getDate() {
+    public BusPositionData(String busId, Float lat, Float lon, Float heading,
+			DateTime date, String routeId) {
+		super();
+		this.busId = busId;
+		this.lat = lat;
+		this.lon = lon;
+		this.heading = heading;
+		this.date = date;
+		this.routeId = routeId;
+	}
+
+	public DateTime getDate() {
         return date;
     }
 
@@ -39,7 +48,7 @@ public class BusPositionData implements Serializable{
     }
 
     public void setIdColectivo(String idColectivo) {
-        this.idColectivo = idColectivo;
+        this.busId = idColectivo;
     }
 
     public void setLat(Float lat) {
@@ -51,7 +60,7 @@ public class BusPositionData implements Serializable{
     }
 
     public String getIdColectivo() {
-        return idColectivo;
+        return busId;
     }
 
     public Float getLat() {
@@ -61,5 +70,21 @@ public class BusPositionData implements Serializable{
     public Float getLon() {
         return lon;
     }
+
+	public String getRouteId() {
+		return routeId;
+	}
+
+	public void setRouteId(String routeId) {
+		this.routeId = routeId;
+	}
+
+	public Float getHeading() {
+		return heading;
+	}
+
+	public void setHeading(Float heading) {
+		this.heading = heading;
+	}
 
 }
