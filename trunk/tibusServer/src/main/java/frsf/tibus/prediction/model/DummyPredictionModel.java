@@ -3,12 +3,11 @@
  * and open the template in the editor.
  */
 
-package frsf.tibus.modeloPrediccion.DummyModel;
+package frsf.tibus.prediction.model;
 
 import frsf.tibus.domain.BusPositionData;
 import frsf.tibus.domain.PredictionRequest;
 import frsf.tibus.domain.PredictionResponse;
-import frsf.tibus.modeloPrediccion.ModeloPrediccion;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -20,7 +19,7 @@ import org.joda.time.DateTime;
  *
  * @author Daniel González
  */
-public class DummyPredictionModel implements ModeloPrediccion {
+public class DummyPredictionModel implements PredictionModel {
 
    
 

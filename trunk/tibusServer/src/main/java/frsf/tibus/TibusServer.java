@@ -12,15 +12,16 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import frsf.tibus.listener.PositionDataListener;
 import frsf.tibus.listener.PredictionRequestListener;
-import frsf.tibus.modeloPrediccion.ModeloPrediccion;
-import frsf.tibus.modeloPrediccion.DummyModel.DummyPredictionModel;
+import frsf.tibus.prediction.model.DummyPredictionModel;
+import frsf.tibus.prediction.model.PredictionModel;
+import frsf.tibus.prediction.model.averagespeed.AverageSpeedModel;
 
 public class TibusServer {
 	
 	private ActiveMQConnectionFactory jmsConnectionFactory;
 	private PredictionRequestListener predictionListener;
 	private PositionDataListener positionListener;
-	private ModeloPrediccion modeloPrediccion;
+	private PredictionModel modeloPrediccion;
 	
 	public TibusServer() {
 		setupServer();
@@ -33,7 +34,7 @@ public class TibusServer {
 		jmsConnectionFactory = new ActiveMQConnectionFactory(messageBrokerUrl);
 	    Connection connection;
 		
-	    modeloPrediccion = new DummyPredictionModel();
+	    modeloPrediccion = new AverageSpeedModel();
 	    
 	    try {
 			connection = jmsConnectionFactory.createConnection();

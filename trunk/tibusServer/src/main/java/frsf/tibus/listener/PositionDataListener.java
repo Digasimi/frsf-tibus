@@ -14,7 +14,7 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
 import frsf.tibus.domain.BusPositionData;
-import frsf.tibus.modeloPrediccion.ModeloPrediccion;
+import frsf.tibus.prediction.model.PredictionModel;
 
 public class PositionDataListener implements MessageListener {
 	
@@ -23,9 +23,9 @@ public class PositionDataListener implements MessageListener {
 	private int ackMode = Session.AUTO_ACKNOWLEDGE;
 	private String requestQueueName = "busesPosition";
 	private MessageProducer responseProducer;
-	private ModeloPrediccion modelo;
+	private PredictionModel modelo;
 	
-	public PositionDataListener(Connection c, ModeloPrediccion modeloPrediccion) {
+	public PositionDataListener(Connection c, PredictionModel modeloPrediccion) {
 		modelo = modeloPrediccion;
 		try {						
 			this.predictionSession = c.createSession(this.transacted, ackMode);

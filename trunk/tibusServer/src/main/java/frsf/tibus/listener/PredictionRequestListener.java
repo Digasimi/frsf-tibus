@@ -21,7 +21,7 @@ import javax.xml.bind.Unmarshaller;
 
 import frsf.tibus.domain.PredictionRequest;
 import frsf.tibus.domain.PredictionResponse;
-import frsf.tibus.modeloPrediccion.ModeloPrediccion;
+import frsf.tibus.prediction.model.PredictionModel;
 
 public class PredictionRequestListener implements MessageListener {
 
@@ -30,13 +30,13 @@ public class PredictionRequestListener implements MessageListener {
 	private int ackMode = Session.AUTO_ACKNOWLEDGE;
 	private String requestQueueName = "predictions.requests";
 	private MessageProducer responseProducer;
-	private ModeloPrediccion modelo;
+	private PredictionModel modelo;
 	
 	private JAXBContext jc;
 	private Marshaller m;
 	private Unmarshaller um;;
 	
-	public PredictionRequestListener(Connection c, ModeloPrediccion modeloPrediccion) {
+	public PredictionRequestListener(Connection c, PredictionModel modeloPrediccion) {
 		modelo = modeloPrediccion;
 		try {						
 			this.predictionSession = c.createSession(this.transacted, ackMode);
