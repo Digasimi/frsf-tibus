@@ -59,7 +59,6 @@ def linea(request):#pagina de ABM de lineas
                                     descripcionError = "Linea ya existente"
                                 except Recorrido.DoesNotExist:
                                     newLinea.save()
-                                    logger.info("Linea agregada: " + idLinea)
                                     try:
                                         if (request.FILES['masivo'] != ''):
                                             nombreArchivo = request.FILES['masivo']
@@ -109,6 +108,7 @@ def linea(request):#pagina de ABM de lineas
             form = FormularioRecorrido()
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Error:" + descripcionError)
     return render_to_response('linea.html',  {'usuario': request.user,'form':form,  'error':descripcionError , 'listaEmpresa': listaEmpresa, 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
 
 @login_required    
@@ -120,6 +120,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
     descripcionError = ""
     datosUsuario = Usuario.objects.get(nombre = request.user)
     listaLinea = []
+    logger = logging.getLogger(__name__)
     
     if (datosUsuario.categoria == 'Administrador'):
         listaLinea = Recorrido.objects.all().order_by('linea')
@@ -181,6 +182,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
             listaUnidad = Unidad.objects.all().order_by('id_unidad_linea')
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Unidad: " + newId + " Error:" + descripcionError)
     return render_to_response('unidad.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUnidad':listaUnidad,  'admin': True,  'listaLinea': listaLinea},  context_instance=RequestContext(request))
 
 @login_required    
@@ -189,7 +191,8 @@ def recorrido(request): #Pagina de ABM de paradas
     c.update(csrf(request))
     idLinea = request.POST.get('linea')
     descripcionError = ""
-    datosUsuario = Usuario.objects.get(nombre = request.user)    
+    datosUsuario = Usuario.objects.get(nombre = request.user)
+    logger = logging.getLogger(__name__)    
     
     if (datosUsuario.categoria == 'Administrador'):
         listaLineas = Recorrido.objects.all().order_by('linea')
@@ -281,6 +284,7 @@ def recorrido(request): #Pagina de ABM de paradas
             descripcionError = "No existen paradas"
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 def ordenarListaParadas(listaParadas): #metodo para ordenar las paradas e evitar saltar el orden
@@ -301,6 +305,7 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
     listaEmpresa=Empresa.objects.all().order_by('nombre')
     descripcionError = ""
     datosUsuario = Usuario.objects.get(nombre = request.user)
+    logger = logging.getLogger(__name__)
     
     if (datosUsuario.categoria == 'Administrador'):
         listaEmpresa = Empresa.objects.all()        
@@ -343,7 +348,8 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
         else:
             form = FormularioEmpresa()
     else:
-        descripcionError = "No posee permisos para ejecutar esta accion"        
+        descripcionError = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Empresa: " + idEmpresa + " Error:" + descripcionError)        
     return render_to_response('empresa.html',  {'usuario': request.user,  'admin': True,'form':form,  'error': descripcionError,  'listaEmpresa':listaEmpresa},  context_instance=RequestContext(request))
 
 @login_required    
@@ -356,6 +362,7 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
     listaUsuario = []
     listaEmpresa = []
     listaCategoria = []
+    logger = logging.getLogger(__name__)
     
     if (datosUsuario.categoria == 'Administrador'):
         listaUsuario=Usuario.objects.filter(is_active = True ).order_by('nombre')
@@ -434,7 +441,8 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
         else:
             form = FormularioUsuario()
     else:
-        descripcionError = "No posee permisos para ejecutar esta accion"        
+        descripcionError = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Nombre_Usuario: " + idUsuario + " Error:" + descripcionError)        
     return render_to_response('usuario.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUsuarios':listaUsuario,  'admin': True,  'listaEmpresa' : listaEmpresa,  'listaCategoria':listaCategoria},  context_instance=RequestContext(request))
 
 @login_required
@@ -443,7 +451,8 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     c = {}
     c.update(csrf(request))
     descripcionError = ""
-    datosUsuario = Usuario.objects.get(nombre = request.user)    
+    datosUsuario = Usuario.objects.get(nombre = request.user)
+    logger = logging.getLogger(__name__)    
     
     if (datosUsuario.categoria == 'Administrador'):
         listaLineas = Recorrido.objects.all().order_by('linea')
@@ -535,6 +544,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
             descripcionError = "No existen paradas"
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 @login_required
