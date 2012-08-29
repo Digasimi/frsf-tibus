@@ -1,5 +1,5 @@
 # Django settings for webTibus project.
-import os.path 
+import os.path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -144,23 +144,48 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+       'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
         }
     },
     'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+        'default': {
+            'level':'INFO',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/tibus.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 5,
+            'formatter':'standard',
+        },  
+        'request_handler': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/django_tibus.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 5,
+            'formatter':'standard',
+        },
     },
     'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+        '': {
+            'handlers': ['default'],
+            'level': 'INFO',
+            'propagate': True
+        },
+        'django.request': { # Stop SQL debug from logging to main logger
+            'handlers': ['request_handler'],
+            'level': 'DEBUG',
+            'propagate': False
         },
     }
 }

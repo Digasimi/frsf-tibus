@@ -1,4 +1,5 @@
 # Create your views here.
+import logging
 
 from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
@@ -24,6 +25,7 @@ def linea(request):#pagina de ABM de lineas
     datosUsuario = Usuario.objects.get(nombre = request.user)
     listaLinea = []
     listaEmpresa = []
+    logger = logging.getLogger(__name__)
     
     if (datosUsuario.categoria == 'Administrador'):
         listaEmpresa = Empresa.objects.all()        
@@ -57,6 +59,7 @@ def linea(request):#pagina de ABM de lineas
                                     descripcionError = "Linea ya existente"
                                 except Recorrido.DoesNotExist:
                                     newLinea.save()
+                                    logger.info("Linea agregada: " + idLinea)
                                     try:
                                         if (request.FILES['masivo'] != ''):
                                             nombreArchivo = request.FILES['masivo']
@@ -219,9 +222,7 @@ def recorrido(request): #Pagina de ABM de paradas
                             parOrden = 0
                         try:
                             if int(parOrden) >= 0:  #comprueba que el orden sea un entero mayor que 0
-                                if request.POST.get('accion') == 'viewParada':
-                                    parada = Parada.objects.filter(linea = newId,  orden = int(parOrden))
-                                elif request.POST.get('accion') == 'addParada':
+                                if request.POST.get('accion') == 'addParada':
                                     parLat = float(request.POST.get('newlatitud'))
                                     parLon = float(request.POST.get('newlongitud'))
                                     calleT1 = request.POST.get('calle1')
@@ -327,9 +328,7 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
                             newEmpresa.save()
                 else:
                     newEmpresa = Empresa.objects.get(nombre = idEmpresa)
-                    if request.POST.get('accion') == 'viewEmpresa':
-                        newApto = 0; #aca falta hacer algo
-                    elif request.POST.get('accion') == 'editEmpresa': 
+                    if request.POST.get('accion') == 'editEmpresa': 
                         newEmpresa.mail = email;
                         newEmpresa.save();
                     else: #if request.POST.get('accion') == 'delEmpresa': Asume que la accion por omision es borrar
@@ -477,9 +476,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                             parOrden = 0
                         try:
                             if int(parOrden) >= 0:  #comprueba que el orden sea un entero mayor que 0
-                                if request.POST.get('accion') == 'viewParada':
-                                    parada = Parada.objects.filter(linea = newId,  orden = int(parOrden))
-                                elif request.POST.get('accion') == 'addParada':
+                                if request.POST.get('accion') == 'addParada':
                                     parLat = float(request.POST.get('newlatitud'))
                                     parLon = float(request.POST.get('newlongitud'))
                                     calleT1 = request.POST.get('calle1')

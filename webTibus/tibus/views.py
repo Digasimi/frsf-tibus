@@ -32,7 +32,6 @@ def prediccion(request): #pagina que mostrara las predicciones
         form = FormularioPrediccion(request.POST)
         idLinea = request.POST.get('linea').upper()
         try:
-            #compueba que esten los datos.
             if request.POST.get('accion')=="predecir":
                 if idLinea == '':
                     descripcionError = "No ingreso la linea"
@@ -61,7 +60,6 @@ def prediccion(request): #pagina que mostrara las predicciones
                     if (timer == 6):
                         descripcionError = 'Tiempo de espera agotado'
                     else:
-                        #parseString("<prediction-responde><prediction><colectivo>12</colectivo><tiempo>3</tiempo></prediction><prediction><colectivo>11</colectivo><tiempo>3.6</tiempo></prediction></prediction-responde>", parser)
                         parseString(mens, parser)
                         listaPrediccion = parser.obtenerLista()
                         prediccionTimeStamp = parser.obtenerTimeStamp()
