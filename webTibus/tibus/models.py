@@ -1,6 +1,5 @@
 
 from django.db import models 
-from django.contrib.auth.models import User
 from xml.sax.handler import ContentHandler
 
 import re
@@ -15,25 +14,7 @@ class Empresa(models.Model):
             
         class Meta:
             db_table = 'empresa'
-
-
-class Usuario(User):
-        nombre = models.CharField(max_length = 50,  primary_key=True)
-        mail = models.EmailField()
-        categoria = models.CharField(max_length = 50)
-        empresa = models.ForeignKey(Empresa,  null=True)
-    
-        def __unicode__(self):
-            return self.username
-    
-        class Meta:
-            db_table = 'usuario'
-        
-        class Admin:
-            pass
-
-# Create your models here.
-
+            
 class Recorrido(models.Model):
         idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
         linea = models.CharField(verbose_name="nombre", max_length=50)
@@ -53,7 +34,6 @@ class Recorrido(models.Model):
             
         def id(self):
             return self.idrecorrido
-
 
 class Parada(models.Model):
     idparada = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
@@ -96,30 +76,6 @@ class Unidad(models.Model):
       
     class Meta:
         db_table = 'unidad'
-    
-class Estimacion():
-    tiempo = 0
-    desviacion = 0
-    unidad = 0
-    paradaasociada = 0
-    
-    def _unicode_(self):
-        return self.unidad      
-    
-    def acumular(self, tiempoNew,  desviacionNew):
-        self.tiempo = self.tiempo + tiempoNew
-        self.desviacion = self.desviacion + desviacionNew
-
-    def tiempoInicial(self):
-        return (self.tiempo-self.desviacion)/60
-
-    def tiempoFinal(self):
-        return (self.tiempo+self.desviacion)/60
-        
-    def __init__(self, newUnidad, newParada):
-        self.unidad = newUnidad
-        self.paradaasociada = newParada
-        
     
 class TiempoRecorrido(models.Model):
     promedio = models.FloatField()
@@ -168,11 +124,13 @@ class PresponseHandler(ContentHandler):
     islatElement = 0
     islonElement = 0
     isTimeStampElement = 0
+    isErrorElemet = 0
     colectivo = ""
     tiempo = ""
     lat = ""
     lon = "" 
     timestamp = ""
+    error = ""
     
     def __init__ (self):
         self.lista = []
@@ -181,11 +139,13 @@ class PresponseHandler(ContentHandler):
         self.islatElement = 0
         self.islonElement = 0
         self.isTimeStampElement = 0
+        self.isErrorElemet = 0
         self.colectivo = ""
         self.tiempo = ""
         self.lat = ""
         self.lon = ""
         self.timestamp = ""
+        self.error = ""
     
     def startElement(self, name, attrs):
         if name == 'busId':
@@ -203,6 +163,9 @@ class PresponseHandler(ContentHandler):
         elif name == 'timestamp':
             self.isTimeStampElement = 1
             self.timestamp = ""
+        elif name == "error":
+            self.isErrorElemet = 1
+            self.error = ""   
     
     def characters (self, ch):
         if self.isColeElement== 1:
@@ -215,6 +178,8 @@ class PresponseHandler(ContentHandler):
             self.lon += ch
         if self.isTimeStampElement == 1:
             self.timestamp += ch
+        if self.isErrorElemet == 1:
+            self.error += ch
     
     def endElement(self, name):
         if name == 'busId':
@@ -229,6 +194,8 @@ class PresponseHandler(ContentHandler):
             self.lista = self.lista + [Presponse(self.colectivo, self.tiempo,self.lat, self.lon)]
         if name == 'timestamp':
             self.isTimeStampElement = 0
+        if name == "error":
+            self.isErrorElemet = 0
         if name == 'prediction-responde':
             print self.lista
     
