@@ -45,6 +45,7 @@ def linea(request):#pagina de ABM de lineas
                 elif idLinea == '': #comprueba que se ingresa linea
                     descripcionError = "No ingreso la linea"
                 elif request.POST.get('accion') == 'viewLinea':          #no necesitaria el is_valid, solo que exista linea
+                    Recorrido.objects.get(linea=idLinea)
                     direccion = 'recorrido/' + idLinea #carga la pagina de edicion de paradas asociadas a la linea ingresada
                     return HttpResponseRedirect(direccion)
                 elif form.is_valid():
@@ -104,11 +105,12 @@ def linea(request):#pagina de ABM de lineas
                 descripcionError = "La linea ingresada no existe"
             except Empresa.DoesNotExist:
                 descripcionError = "La empresa ingresada no existe"
+            logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Error:" + descripcionError)
         else:
             form = FormularioRecorrido()
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Error:" + descripcionError)
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Route Error:" + descripcionError)
     return render_to_response('linea.html',  {'usuario': request.user,'form':form,  'error':descripcionError , 'listaEmpresa': listaEmpresa, 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
 
 @login_required    
@@ -177,12 +179,13 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
             except Unidad.DoesNotExist:
                 descripcionError = "No existe/n unidad/es"
             form = FormularioUnidad()
+            logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Unidad: " + newId + " Error:" + descripcionError)
         else:
             form = FormularioUnidad()
             listaUnidad = Unidad.objects.all().order_by('id_unidad_linea')
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Unidad: " + newId + " Error:" + descripcionError)
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Bus Error:" + descripcionError)
     return render_to_response('unidad.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUnidad':listaUnidad,  'admin': True,  'listaLinea': listaLinea},  context_instance=RequestContext(request))
 
 @login_required    
@@ -205,10 +208,11 @@ def recorrido(request): #Pagina de ABM de paradas
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
     
     #logica
-    if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
-        try:
-            #if request.method == 'POST':
+    if request.method == 'POST':
+        if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
+            try:
                 form = FormularioParada()
+                parOrden = request.POST.get('orden')
                 if idLinea == '' or idLinea == None:
                     form = FormularioParada()
                     descripcionError = "No ingreso la linea"
@@ -252,9 +256,9 @@ def recorrido(request): #Pagina de ABM de paradas
                                     newParada.calle1 = request.POST.get('calle1')
                                     newParada.calle2 = request.POST.get('calle2')
                                     if request.POST.get('paradaActiva'):
-                                        newParada.paradaActiva = True
+                                        newParada.paradaactiva = True
                                     else:
-                                        newParada.paradaActiva = False  
+                                        newParada.paradaactiva = False  
                                     newParada.save()
                                 else: #if request.POST.get('accion') == 'delParada':  Asume que la accion por omision es borrar
                                     #La confirmacion de la eliminacion es en el codigo html
@@ -275,16 +279,19 @@ def recorrido(request): #Pagina de ABM de paradas
                         except TypeError:
                             descripcionError = "Las coordenadas no pueden ser vacias"
                     listaParadas = Parada.objects.filter(linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
-        #empiezan las excepciones
-        except Recorrido.DoesNotExist:
-            listaLinea = Recorrido.objects.all()
-            return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
-        except Parada.DoesNotExist:
-            form = FormularioParada()
-            descripcionError = "No existen paradas"
+            #empiezan las excepciones
+            except Recorrido.DoesNotExist:
+                listaLinea = Recorrido.objects.all()
+                return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
+            except Parada.DoesNotExist:
+                form = FormularioParada()
+                descripcionError = "No existen paradas"
+        else:
+            descripcionError = "No posee permisos para ejecutar esta accion"
+        logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
     else:
-        descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
+        form = FormularioParada()
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Stop Error:" + descripcionError)
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 def ordenarListaParadas(listaParadas): #metodo para ordenar las paradas e evitar saltar el orden
@@ -331,6 +338,7 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
                         except:
                             newEmpresa = Empresa(nombre = idEmpresa,  mail = email)
                             newEmpresa.save()
+                            logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Empresa: " + idEmpresa + " Error:" + descripcionError)
                 else:
                     newEmpresa = Empresa.objects.get(nombre = idEmpresa)
                     if request.POST.get('accion') == 'editEmpresa': 
@@ -345,11 +353,12 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
             #empiezan las excepciones
             except Empresa.DoesNotExist:
                 descripcionError = "No existe la empresa"
+            logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Empresa: " + idEmpresa + " Error:" + descripcionError)
         else:
             form = FormularioEmpresa()
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Empresa: " + idEmpresa + " Error:" + descripcionError)        
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Company Error:" + descripcionError)        
     return render_to_response('empresa.html',  {'usuario': request.user,  'admin': True,'form':form,  'error': descripcionError,  'listaEmpresa':listaEmpresa},  context_instance=RequestContext(request))
 
 @login_required    
@@ -438,11 +447,12 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
                 descripcionError = "No existe el usuario"
             except Empresa.DoesNotExist:
                 descripcionError = "No existe la empresa"
+            logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Nombre_Usuario: " + idUsuario + " Error:" + descripcionError)
         else:
             form = FormularioUsuario()
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Nombre_Usuario: " + idUsuario + " Error:" + descripcionError)        
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: User Error:" + descripcionError)        
     return render_to_response('usuario.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUsuarios':listaUsuario,  'admin': True,  'listaEmpresa' : listaEmpresa,  'listaCategoria':listaCategoria},  context_instance=RequestContext(request))
 
 @login_required
@@ -465,10 +475,11 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
     
     #logica
-    if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
-        try:
-            #if request.method == 'POST':
+    if request.method == 'POST':
+        if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
+            try:
                 form = FormularioParada()
+                parOrden = request.POST.get('orden')
                 if idLinea == '' or idLinea == None:
                     form = FormularioParada()
                     descripcionError = "No ingreso la linea"
@@ -512,9 +523,9 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                                     newParada.calle1 = request.POST.get('calle1')
                                     newParada.calle2 = request.POST.get('calle2')
                                     if request.POST.get('paradaActiva'):
-                                        newParada.paradaActiva = True
+                                        newParada.paradaactiva = True
                                     else:
-                                        newParada.paradaActiva = False 
+                                        newParada.paradaactiva = False  
                                     newParada.save()
                                 else: #if request.POST.get('accion') == 'delParada':  Asume que la accion por omision es borrar
                                     #La confirmacion de la eliminacion es en el codigo html
@@ -535,21 +546,25 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                         except TypeError:
                             descripcionError = "Las coordenadas no pueden ser vacias"
                     listaParadas = Parada.objects.filter(linea__linea = idLinea).order_by('orden') # para actualizar cambios en la lista de paradas
-        #empiezan las excepciones
-        except Recorrido.DoesNotExist:
-            listaLinea = Recorrido.objects.all()
-            return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
-        except Parada.DoesNotExist:
-            form = FormularioParada()
-            descripcionError = "No existen paradas"
+            #empiezan las excepciones
+            except Recorrido.DoesNotExist:
+                listaLinea = Recorrido.objects.all()
+                return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
+            except Parada.DoesNotExist:
+                form = FormularioParada()
+                descripcionError = "No existen paradas"
+        else:
+            descripcionError = "No posee permisos para ejecutar esta accion"
+        logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
     else:
-        descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
+        form = FormularioParada()
+    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Stop Error:" + descripcionError)
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 @login_required
 def cambiarpassword(request):
     descripcionError = ""
+    logger = logging.getLogger(__name__)
     if request.method == 'POST':
         form = FormularioPassword(request.POST)
         usuario = Usuario.objects.get(nombre = request.user)
@@ -564,4 +579,5 @@ def cambiarpassword(request):
             descripcionError = 'Los passwords no coinciden'
     else:
         form = FormularioPassword()
+    logger.info("Usuario: " + request.user +" Accion: ChangePassword Error:" + descripcionError)
     return render_to_response('change_password.html', {'usuario': request.user, 'form': form, 'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
