@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.utils import DatabaseError
 from tibus.forms import FormularioPrediccion
-from tibus.models import Parada,  Recorrido,  Unidad, TiempoRecorrido, MyListener,  PresponseHandler
+from tibus.models import Parada, Recorrido, Unidad, TiempoRecorrido, MyListener, PresponseHandler
 from xml.sax import parseString,  SAXParseException
 
 def index(request): #pagina principal

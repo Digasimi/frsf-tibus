@@ -8,9 +8,10 @@ from django.shortcuts import render_to_response
 from django.db.models import Max
 from tibusAdmin.forms import FormularioParada,  FormularioRecorrido,  FormularioUnidad, FormularioEmpresa,  FormularioUsuario,\
     FormularioPassword
-from tibus.models import Parada,  Recorrido,  Unidad, Empresa, Usuario
+from tibus.models import Parada, Recorrido, Unidad, Empresa
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
+from tibusAdmin.models import Usuario
 
 @login_required
 def tadmin(request):#pagina de ABM de lineas
@@ -110,7 +111,7 @@ def linea(request):#pagina de ABM de lineas
             form = FormularioRecorrido()
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Route Error:" + descripcionError)
+    logger.info("Usuario: " + datosUsuario.nombre +" in Route Error:" + descripcionError)
     return render_to_response('linea.html',  {'usuario': request.user,'form':form,  'error':descripcionError , 'listaEmpresa': listaEmpresa, 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
 
 @login_required    
@@ -185,7 +186,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
             listaUnidad = Unidad.objects.all().order_by('id_unidad_linea')
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Bus Error:" + descripcionError)
+    logger.info("Usuario: " + datosUsuario.nombre +" in Bus Error:" + descripcionError)
     return render_to_response('unidad.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUnidad':listaUnidad,  'admin': True,  'listaLinea': listaLinea},  context_instance=RequestContext(request))
 
 @login_required    
@@ -291,7 +292,7 @@ def recorrido(request): #Pagina de ABM de paradas
         logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
     else:
         form = FormularioParada()
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Stop Error:" + descripcionError)
+    logger.info("Usuario: " + datosUsuario.nombre +" in Stop Error:" + descripcionError)
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 def ordenarListaParadas(listaParadas): #metodo para ordenar las paradas e evitar saltar el orden
@@ -358,7 +359,7 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
             form = FormularioEmpresa()
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Company Error:" + descripcionError)        
+    logger.info("Usuario: " + datosUsuario.nombre +" in Company Error:" + descripcionError)        
     return render_to_response('empresa.html',  {'usuario': request.user,  'admin': True,'form':form,  'error': descripcionError,  'listaEmpresa':listaEmpresa},  context_instance=RequestContext(request))
 
 @login_required    
@@ -452,7 +453,7 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
             form = FormularioUsuario()
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: User Error:" + descripcionError)        
+    logger.info("Usuario: " + datosUsuario.nombre +" in User Error:" + descripcionError)        
     return render_to_response('usuario.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUsuarios':listaUsuario,  'admin': True,  'listaEmpresa' : listaEmpresa,  'listaCategoria':listaCategoria},  context_instance=RequestContext(request))
 
 @login_required
@@ -558,7 +559,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
         logger.info("Usuario: " + datosUsuario.nombre +" Accion: " + request.POST.get('accion') + " Linea: " + idLinea + " Parada: " + parOrden + " Error:" + descripcionError)
     else:
         form = FormularioParada()
-    logger.info("Usuario: " + datosUsuario.nombre +" Accion: Stop Error:" + descripcionError)
+    logger.info("Usuario: " + datosUsuario.nombre +" in Stop Error:" + descripcionError)
     return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
 
 @login_required
