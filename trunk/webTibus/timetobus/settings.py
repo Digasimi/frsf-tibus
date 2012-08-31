@@ -167,6 +167,14 @@ LOGGING = {
             'backupCount': 5,
             'formatter':'standard',
         },  
+         'registry': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/debug_tibus.log',
+            'maxBytes': 1024*1024*5, # 5 MB
+            'backupCount': 5,
+            'formatter':'standard',
+        }, 
         'request_handler': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
@@ -178,8 +186,8 @@ LOGGING = {
     },
     'loggers': {
         '': {
-            'handlers': ['default'],
-            'level': 'INFO',
+            'handlers': ['default','registry'],
+            'level': 'DEBUG',
             'propagate': True
         },
         'django.request': { # Stop SQL debug from logging to main logger
