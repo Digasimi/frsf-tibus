@@ -143,7 +143,7 @@ INSTALLED_APPS = (
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'simple': {
             'format': '%(levelname)s %(asctime)s %(message)s'
@@ -162,7 +162,7 @@ LOGGING = {
         'default': {
             'level':'INFO',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/tibus.log',
+            'filename': os.path.join(PROJECT_HOME,'logs/tibus.log'),
             'maxBytes': 1024*1024*5, # 5 MB
             'backupCount': 5,
             'formatter':'standard',
@@ -170,7 +170,7 @@ LOGGING = {
          'registry': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/debug_tibus.log',
+            'filename': os.path.join(PROJECT_HOME,'logs/debug_tibus.log'),
             'maxBytes': 1024*1024*5, # 5 MB
             'backupCount': 5,
             'formatter':'standard',
@@ -178,7 +178,7 @@ LOGGING = {
         'request_handler': {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/django_tibus.log',
+            'filename': os.path.join(PROJECT_HOME,'logs/django_tibus.log'),
             'maxBytes': 1024*1024*5, # 5 MB
             'backupCount': 5,
             'formatter':'standard',
