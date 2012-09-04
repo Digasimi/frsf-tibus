@@ -17,7 +17,7 @@
 		<td> <BUTTON type="submit" name="accion" value="viewLinea"> Mostrar Linea </BUTTON> </td>
       </tr>
       <tr>
-	  	<td><label for="id_orden"> Orden: </label> {{ form.orden }}
+	  	<td colspan="2"><label for="id_orden"> Orden: </label> {{ form.orden }}
     		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
    				<OPTION VALUE="">Seleccione un valor</OPTION>
       			{% for parada in listaParadas %}
@@ -27,8 +27,7 @@
    		<!--<td> <BUTTON type="submit" name="accion" value="viewParada"> Buscar Parada </BUTTON> </td>-->
     </tr>
     <tr><td><label for="id_paradaactiva">Parada Activa: </label>{{ form.paradaactiva }}</td></tr>
-    <tr><td><label for="id_calle1">Calle: </label> {{ form.calle1 }}</td></tr>
-    <tr><td><label for="id_calle2">Interseccion: </label> {{ form.calle2 }}</td></tr>
+    <tr><td><label for="id_calle1">Calle: </label> {{ form.calle1 }}</td><td><label for="id_calle2">Interseccion: </label> {{ form.calle2 }}</td></tr>
     </table>
     <a> Nuevas Coordenadas: </a><div id="coor"></div>
     <BUTTON type="submit" name="accion" value="addParada"> Agregar Parada </BUTTON>
@@ -41,7 +40,7 @@
     {% if linea %}
     {% if listaParadas %}
     <div id="tableContainer" class="tableContainer">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
+    <table class="scrollTable">
     <thead class="fixedHeader">
 		<tr>
 			<th><a href="#">Orden</a></th>
@@ -154,6 +153,20 @@ function mostrarCoordenadas(location, map) { //funcion javascript
         mostrarCoordenadas(event.latLng, map);
     });
     {% endfor %}
+    
+    var flightPlanCoordinates = [
+      {% for parada in listaParadas %}
+	    new google.maps.LatLng({{ parada.latitud }},{{ parada.longitud}}),
+      {% endfor %}
+	];
+	var flightPath = new google.maps.Polyline({
+	    path: flightPlanCoordinates,
+	    strokeColor: "#FF0000",
+	    strokeOpacity: 1.0,
+	    strokeWeight: 2
+	});
+
+ 	flightPath.setMap(map);
     {% endif %}   
 {% endif %}
 {% endblock %}

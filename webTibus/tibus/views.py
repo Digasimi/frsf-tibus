@@ -39,14 +39,14 @@ def prediccion(request): #pagina que mostrara las predicciones
                     descripcionError = "No ingreso la parada"
                 else:
                     newId= Recorrido.objects.get(linea = idLinea.upper())
-                    listaParadas = Parada.objects.filter(linea = newId)
+                    paradadestino = Parada.objects.get(linea = newId, orden = request.POST.get('orden'))
                     
                     #formato nuevo
                     conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
                     conn.start()
                     conn.connect()
                     respuesta = '/temp-queue/respuesta'
-                    mensaje = crearMensaje(idLinea,  request.POST.get('orden'))
+                    mensaje = crearMensaje(newId.id(),  paradadestino.id())
                     conn.set_listener('list', MyListener())
                     conn.send(mensaje, destination='/queue/predictions.requests',headers={'reply-to':respuesta})
                     conn.subscribe(destination=respuesta, ack='auto')

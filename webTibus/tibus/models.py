@@ -67,6 +67,9 @@ class Parada(models.Model):
     def disminuirOrden(self):
         self.orden = self.orden - 1
         return True
+    
+    def id(self):
+        return self.idparada
       
 class Unidad(models.Model):
     idunidad = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
