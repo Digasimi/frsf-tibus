@@ -93,4 +93,4 @@ def ayuda(request):#pagina de ayuda
     return render_to_response('ayuda.html',  {'admin': False})
 
 def crearMensaje(linea,  orden):
-    return '<prediction-request><linea>'+linea+'</linea><parada>'+orden+'</parada></prediction-request>'
+    return '<prediction-request><linea>' + str(linea) + '</linea><parada>' + str(orden) + '</parada></prediction-request>'
