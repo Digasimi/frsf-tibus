@@ -207,3 +207,6 @@ class PresponseHandler(ContentHandler):
     
     def obtenerTimeStamp(self):
         return self.timestamp
+    
+    def obtenerError(self):
+        return self.error

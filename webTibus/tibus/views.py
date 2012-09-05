@@ -53,11 +53,11 @@ def prediccion(request): #pagina que mostrara las predicciones
                     mens = ""
                     lis1 = conn.get_listener('list')
                     timer = 0
-                    while (mens == '' and timer < 6):
+                    while (mens == '' and timer < 15):
                         time.sleep(1)
                         timer=timer+1
                         mens = lis1.getMensaje()
-                    if (timer == 6):
+                    if (timer == 15):
                         descripcionError = 'Tiempo de espera agotado'
                     else:
                         parseString(mens, parser)
@@ -65,6 +65,7 @@ def prediccion(request): #pagina que mostrara las predicciones
                         prediccionTimeStamp = parser.obtenerTimeStamp()
                     conn.unsubscribe(destination=respuesta)
                     conn.disconnect()
+                    descripcionError = parser.obtenerError()
             else:
                 if idLinea != '':
                     listaParadas = Parada.objects.filter(linea__linea = idLinea.upper())
