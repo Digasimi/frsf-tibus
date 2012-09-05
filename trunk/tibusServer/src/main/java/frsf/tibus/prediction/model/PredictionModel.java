@@ -6,7 +6,6 @@
 package frsf.tibus.prediction.model;
 
 import frsf.tibus.domain.*;
-import java.util.ArrayList;
 
 /**
  *

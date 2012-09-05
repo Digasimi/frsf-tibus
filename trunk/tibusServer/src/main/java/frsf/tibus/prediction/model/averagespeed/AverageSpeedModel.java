@@ -17,10 +17,11 @@ import frsf.tibus.prediction.model.PredictionModel;
 public class AverageSpeedModel implements PredictionModel {
 	
 	private Session session;	
-	private HashMap<String, Route> routes; 
+	private HashMap<Integer, Route> routes;
 	
 	public AverageSpeedModel()
 	{
+		//configuracion de hibernate
 		SessionFactory sessionFactory;
 		Configuration configuration = new Configuration();
 	    configuration.configure();
@@ -35,10 +36,11 @@ public class AverageSpeedModel implements PredictionModel {
 	private void loadRoutes() 
 	{
 	    session.beginTransaction();
-				
-	    List result = session.createQuery( "from Route" ).list();
+		routes = new HashMap<Integer, Route>();	
+	    List<Route> result = session.createQuery( "from Route" ).list();
 		for ( Route route : (List<Route>) result ) {
 			System.out.println( "Recorrido (" + route.getRouteId() + ") : ");
+			routes.put(route.getRouteId(), route);
 		}
         session.getTransaction().commit();
 	}
@@ -50,7 +52,8 @@ public class AverageSpeedModel implements PredictionModel {
 
 	@Override
 	public PredictionResponse obtenerPrediccion(PredictionRequest r) {
-		return null;
+		Route route = routes.get(new Integer(r.getLinea()));
+		return route.getPredictions(r.getParada());
 	}
 
 }

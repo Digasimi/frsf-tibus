@@ -16,20 +16,30 @@ public class Stop {
 	private Float lat;
 	@Column(name="longitud")
 	private Float lon;
+
+	@Column(name="paradaActiva")
+	private Boolean predictable;
 	
 	@ManyToOne
 	@JoinColumn(name = "linea_id", nullable = false)
 	private Route route;
 	
-	public String getAlgo()
-	{
-		return "asfadsf";
-	}
-
+	@OneToOne(targetEntity=AverageSpeed.class, mappedBy = "stopId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private AverageSpeed averageSpeed;
 	
 	public Integer getStopId() {
 		return stopId;
 	}
+
+	public Boolean getPredictable() {
+		return predictable;
+	}
+
+
+	public void setPredictable(Boolean predictable) {
+		this.predictable = predictable;
+	}
+
 
 	public void setStopId(Integer stopId) {
 		this.stopId = stopId;
@@ -66,5 +76,18 @@ public class Stop {
 	public void setRoute(Route route) {
 		this.route = route;
 	}
+	
+	public AverageSpeed getAverageSpeed() {
+		return averageSpeed;
+	}
 
+
+	public void setAverageSpeed(AverageSpeed averageSpeed) {
+		this.averageSpeed = averageSpeed;
+	}
+
+	public Float getDistance(Stop s){ //Falta implementar calculo de distancia
+		return new Float(1);
+	}
+	
 }
