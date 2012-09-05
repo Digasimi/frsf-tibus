@@ -20,7 +20,8 @@ import org.joda.time.DateTime;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "prediction",
-    "timestamp"
+    "timestamp",
+    "error"
 })
 @XmlRootElement(name = "prediction-response")
 public class PredictionResponse implements Serializable{
@@ -30,6 +31,8 @@ public class PredictionResponse implements Serializable{
     @XmlElement(required = true)
     @XmlSchemaType(name = "dateTime")
     protected DateTime timestamp;
+    @XmlElement(required=false)
+    protected String error;
     
     public PredictionResponse()
     {
@@ -57,8 +60,18 @@ public class PredictionResponse implements Serializable{
     {
     	this.prediction.add(p);
     }
+
     
-    @XmlAccessorType(XmlAccessType.FIELD)
+    public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+
+	@XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "busId",
         "timeSec",
@@ -70,19 +83,19 @@ public class PredictionResponse implements Serializable{
         @XmlElement(required = true)
         protected String busId;
         @XmlElement(required = true)
-        protected BigInteger timeSec;
+        protected Integer timeSec;
         @XmlElement(required = true)
-        protected BigDecimal lat;
+        protected Float lat;
         @XmlElement(required = true)
-        protected BigDecimal lon;
+        protected Float lon;
 
         public Prediction()
         {
         	
         }
         
-        public Prediction(String busId, BigInteger timeSec, BigDecimal lat,
-				BigDecimal lon) {
+        public Prediction(String busId, Integer timeSec, Float lat,
+				Float lon) {
 			super();
 			this.busId = busId;
 			this.timeSec = timeSec;
@@ -98,30 +111,31 @@ public class PredictionResponse implements Serializable{
             this.busId = value;
         }
 
-        public BigInteger getTimeSec() {
+        public Integer getTimeSec() {
             return timeSec;
         }
 
-        public void setTimeSec(BigInteger value) {
+        public void setTimeSec(Integer value) {
             this.timeSec = value;
         }
 
-        public BigDecimal getLat() {
+        public Float getLat() {
             return lat;
         }
 
-        public void setLat(BigDecimal value) {
+        public void setLat(Float value) {
             this.lat = value;
         }
 
-        public BigDecimal getLon() {
+        public Float getLon() {
             return lon;
         }
 
-        public void setLon(BigDecimal value) {
+        public void setLon(Float value) {
             this.lon = value;
         }
 
     }
+
 
 }
