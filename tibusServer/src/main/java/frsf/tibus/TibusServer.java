@@ -12,7 +12,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 
 import frsf.tibus.listener.PositionDataListener;
 import frsf.tibus.listener.PredictionRequestListener;
-import frsf.tibus.prediction.model.DummyPredictionModel;
 import frsf.tibus.prediction.model.PredictionModel;
 import frsf.tibus.prediction.model.averagespeed.AverageSpeedModel;
 
@@ -40,8 +39,8 @@ public class TibusServer {
 			connection = jmsConnectionFactory.createConnection();
 			connection.start();
 			
-			predictionListener = new PredictionRequestListener(connection, modeloPrediccion);
-			positionListener = new PositionDataListener(connection, modeloPrediccion);
+			setPredictionListener(new PredictionRequestListener(connection, modeloPrediccion));
+			setPositionListener(new PositionDataListener(connection, modeloPrediccion));
 			
 			
             
@@ -53,6 +52,26 @@ public class TibusServer {
         
 
 		
+	}
+
+
+	public PredictionRequestListener getPredictionListener() {
+		return predictionListener;
+	}
+
+
+	public void setPredictionListener(PredictionRequestListener predictionListener) {
+		this.predictionListener = predictionListener;
+	}
+
+
+	public PositionDataListener getPositionListener() {
+		return positionListener;
+	}
+
+
+	public void setPositionListener(PositionDataListener positionListener) {
+		this.positionListener = positionListener;
 	}
 	
 }
