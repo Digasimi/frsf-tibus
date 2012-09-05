@@ -311,19 +311,19 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
     #carga inicial
     c = {}
     c.update(csrf(request))
-    listaEmpresa=Empresa.objects.all().order_by('nombre')
+    listaEmpresa=[]
     descripcionError = ""
     datosUsuario = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)
     
     if (datosUsuario.categoria == 'Administrador'):
-        listaEmpresa = Empresa.objects.all()        
-    elif (datosUsuario.categoria == 'Empresa'):
-        listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
-    superadmin = (datosUsuario.categoria == 'Administrador')
+        listaEmpresa = Empresa.objects.all().order_by('nombre')        
+        superadmin = True
+    else:
+        superadmin = False
         
     #logica
-    if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
+    if (datosUsuario.categoria == 'Administrador'):
         if request.method == 'POST':
             try:
                 idEmpresa=request.POST.get('nombre').upper()
@@ -360,9 +360,10 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
         else:
             form = FormularioEmpresa()
     else:
+        form = FormularioEmpresa()
         descripcionError = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + datosUsuario.nombre +" in Company Error:" + descripcionError)        
-    return render_to_response('empresa.html',  {'usuario': request.user,  'admin': True,'form':form,  'error': descripcionError,  'listaEmpresa':listaEmpresa, 'superadmin':superadmin},  context_instance=RequestContext(request))
+    return render_to_response('empresa.html',  {'usuario': request.user, 'admin': True,'form':form,  'error': descripcionError,  'listaEmpresa':listaEmpresa, 'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required    
 def usuario(request): #pagina de ABM de unidades - faltan excepciones
@@ -377,17 +378,15 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
     logger = logging.getLogger(__name__)
     
     if (datosUsuario.categoria == 'Administrador'):
-        listaUsuario=Usuario.objects.filter(is_active = True ).order_by('nombre')
-        listaEmpresa = Empresa.objects.all()        
+        listaUsuario=Usuario.objects.filter(is_active = True).order_by('nombre')
+        listaEmpresa = Empresa.objects.all().order_by('nombre')        
         listaCategoria = ['Administrador', 'Empresa']
-    elif (datosUsuario.categoria == 'Empresa'):
-        listaUsuario=Usuario.objects.filter(is_active = True,  empresa = datosUsuario.empresa).order_by('nombre')
-        listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
-        listaCategoria = ['Empresa']
-    superadmin = (datosUsuario.categoria == 'Administrador')
+        superadmin = True
+    else:
+        superadmin = False
         
     #logica
-    if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
+    if (datosUsuario.categoria == 'Administrador'):
         if request.method == 'POST':
             try:
                 form = FormularioUsuario(request.POST)
@@ -455,6 +454,7 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
         else:
             form = FormularioUsuario()
     else:
+        form = FormularioUsuario()
         descripcionError = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + datosUsuario.nombre +" in User Error:" + descripcionError)        
     return render_to_response('usuario.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUsuarios':listaUsuario,  'admin': True,  'listaEmpresa' : listaEmpresa,  'listaCategoria':listaCategoria, 'superadmin':superadmin},  context_instance=RequestContext(request))
