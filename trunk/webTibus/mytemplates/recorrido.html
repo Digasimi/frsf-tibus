@@ -118,13 +118,16 @@ function mostrarCoordenadas(location, map) { //funcion javascript
     }
 {% endblock %}
    
-{% block defFuncDblClick %}    
-            marker = new google.maps.Marker({
-                map:map,
-                draggable:true,
-                position: event.latLng,
-                icon: markerImage
-            });
+{% block defFuncDblClick %}  
+			if (marker == null)  
+	            marker = new google.maps.Marker({
+	                map:map,
+	                draggable:true,
+	                position: event.latLng,
+	                icon: markerImage
+	            });
+            else
+            	marker.setPosition(event.latLng);
             mostrarCoordenadas(event.latLng,map)
 {% endblock %}
 

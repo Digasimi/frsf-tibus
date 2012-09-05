@@ -34,6 +34,7 @@ def linea(request):#pagina de ABM de lineas
     elif (datosUsuario.categoria == 'Empresa'):
         listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
         listaLinea = Recorrido.objects.filter(empresa = datosUsuario.empresa).order_by('linea')
+    superadmin = (datosUsuario.categoria == 'Administrador')
     
     #logica
     if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
@@ -112,7 +113,7 @@ def linea(request):#pagina de ABM de lineas
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + datosUsuario.nombre +" in Route Error:" + descripcionError)
-    return render_to_response('linea.html',  {'usuario': request.user,'form':form,  'error':descripcionError , 'listaEmpresa': listaEmpresa, 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
+    return render_to_response('linea.html',  {'usuario': request.user,'form':form, 'error':descripcionError , 'listaEmpresa': listaEmpresa, 'listaLinea': listaLinea, 'admin': True, 'superadmin':superadmin },  context_instance=RequestContext(request))
 
 @login_required    
 def unidad(request): #pagina de ABM de unidades - faltan excepciones
@@ -129,7 +130,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
         listaLinea = Recorrido.objects.all().order_by('linea')
     elif (datosUsuario.categoria == 'Empresa'):
         listaLinea = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
-        
+    superadmin = (datosUsuario.categoria == 'Administrador')
     #logica
     if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
         if request.method == 'POST':
@@ -187,7 +188,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + datosUsuario.nombre +" in Bus Error:" + descripcionError)
-    return render_to_response('unidad.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUnidad':listaUnidad,  'admin': True,  'listaLinea': listaLinea},  context_instance=RequestContext(request))
+    return render_to_response('unidad.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUnidad':listaUnidad,  'admin': True,  'listaLinea': listaLinea,'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required    
 def recorrido(request): #Pagina de ABM de paradas
@@ -207,7 +208,7 @@ def recorrido(request): #Pagina de ABM de paradas
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa)
         else:
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
-    
+    superadmin = (datosUsuario.categoria == 'Administrador')
     #logica
     if request.method == 'POST':
         if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
@@ -223,7 +224,7 @@ def recorrido(request): #Pagina de ABM de paradas
                     listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
                     if request.POST.get('accion') == 'viewLinea':
                         form = FormularioParada()
-                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True}, context_instance=RequestContext(request))
+                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
                     else:
                         parOrden = request.POST.get('orden')
                         if parOrden == None or parOrden == '':
@@ -283,7 +284,7 @@ def recorrido(request): #Pagina de ABM de paradas
             #empiezan las excepciones
             except Recorrido.DoesNotExist:
                 listaLinea = Recorrido.objects.all()
-                return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
+                return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True, 'superadmin':superadmin},  context_instance=RequestContext(request))
             except Parada.DoesNotExist:
                 form = FormularioParada()
                 descripcionError = "No existen paradas"
@@ -293,7 +294,7 @@ def recorrido(request): #Pagina de ABM de paradas
     else:
         form = FormularioParada()
     logger.info("Usuario: " + datosUsuario.nombre +" in Stop Error:" + descripcionError)
-    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
+    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
 
 def ordenarListaParadas(listaParadas): #metodo para ordenar las paradas e evitar saltar el orden
     i=1
@@ -319,6 +320,7 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
         listaEmpresa = Empresa.objects.all()        
     elif (datosUsuario.categoria == 'Empresa'):
         listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
+    superadmin = (datosUsuario.categoria == 'Administrador')
         
     #logica
     if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
@@ -360,7 +362,7 @@ def empresa(request): #pagina de ABM de unidades - faltan excepciones
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + datosUsuario.nombre +" in Company Error:" + descripcionError)        
-    return render_to_response('empresa.html',  {'usuario': request.user,  'admin': True,'form':form,  'error': descripcionError,  'listaEmpresa':listaEmpresa},  context_instance=RequestContext(request))
+    return render_to_response('empresa.html',  {'usuario': request.user,  'admin': True,'form':form,  'error': descripcionError,  'listaEmpresa':listaEmpresa, 'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required    
 def usuario(request): #pagina de ABM de unidades - faltan excepciones
@@ -382,6 +384,7 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
         listaUsuario=Usuario.objects.filter(is_active = True,  empresa = datosUsuario.empresa).order_by('nombre')
         listaEmpresa = Empresa.objects.filter(nombre = datosUsuario.empresa)   
         listaCategoria = ['Empresa']
+    superadmin = (datosUsuario.categoria == 'Administrador')
         
     #logica
     if (datosUsuario.categoria == 'Administrador' or datosUsuario.categoria == 'Empresa'):
@@ -454,7 +457,7 @@ def usuario(request): #pagina de ABM de unidades - faltan excepciones
     else:
         descripcionError = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + datosUsuario.nombre +" in User Error:" + descripcionError)        
-    return render_to_response('usuario.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUsuarios':listaUsuario,  'admin': True,  'listaEmpresa' : listaEmpresa,  'listaCategoria':listaCategoria},  context_instance=RequestContext(request))
+    return render_to_response('usuario.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUsuarios':listaUsuario,  'admin': True,  'listaEmpresa' : listaEmpresa,  'listaCategoria':listaCategoria, 'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required
 def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
@@ -474,6 +477,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa)
         else:
             listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
+    superadmin = (datosUsuario.categoria == 'Administrador')
     
     #logica
     if request.method == 'POST':
@@ -490,7 +494,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                     listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
                     if request.POST.get('accion') == 'viewLinea':
                         form = FormularioParada()
-                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True}, context_instance=RequestContext(request))
+                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
                     else:
                         parOrden = request.POST.get('orden')
                         if parOrden == None or parOrden == '':
@@ -550,7 +554,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
             #empiezan las excepciones
             except Recorrido.DoesNotExist:
                 listaLinea = Recorrido.objects.all()
-                return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True},  context_instance=RequestContext(request))
+                return render_to_response('linea.html',  {'usuario': request.user,'form':FormularioRecorrido(),  'error': "No ingreso una linea valida" , 'listaLinea': listaLinea,  'admin': True, 'superadmin':superadmin},  context_instance=RequestContext(request))
             except Parada.DoesNotExist:
                 form = FormularioParada()
                 descripcionError = "No existen paradas"
@@ -560,7 +564,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     else:
         form = FormularioParada()
     logger.info("Usuario: " + datosUsuario.nombre +" in Stop Error:" + descripcionError)
-    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True}, context_instance=RequestContext(request))
+    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
 
 @login_required
 def cambiarpassword(request):

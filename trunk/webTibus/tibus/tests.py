@@ -5,7 +5,6 @@ when you run "manage.py test".
 """
 
 from django.test import TestCase
-from tibus.views import *
 
 class SimpleTest(TestCase):
     def test_basic_addition(self):
