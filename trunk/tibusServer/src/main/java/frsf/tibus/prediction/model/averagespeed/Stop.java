@@ -84,10 +84,13 @@ public class Stop {
 
 	public void setAverageSpeed(AverageSpeed averageSpeed) {
 		this.averageSpeed = averageSpeed;
-	}
-
-	public Float getDistance(Stop s){ //Falta implementar calculo de distancia
-		return new Float(1);
-	}
+	}	
 	
+	public boolean equals(Stop s)
+	{
+		if(this.getStopId().equals(s.getStopId()))
+			return true;
+		else
+			return false;
+	}
 }
