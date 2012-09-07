@@ -77,7 +77,8 @@ public class Route {
 				{
 					Double time = new Double(0);
 					Stop tempStop1, tempStop2;
-					for(int i = bus.getCurrentStop().getOrder(); i < destination.getOrder();i++){
+					for(int i = bus.getCurrentStop().getOrder(); i < destination.getOrder();i++)
+					{
 						tempStop1 = getStopByOrder(i);
 						tempStop2 = getNextStop(tempStop1);
 						
@@ -94,7 +95,7 @@ public class Route {
 		}
 		
 		if(result.getPrediction().isEmpty())
-			result.setError("No hay predicciones");
+			result.setError("No hay estimaciones disponibles");
 		
 		return result;
 	}
@@ -110,8 +111,8 @@ public class Route {
 	}
 	
 	public Stop getStopByOrder(Integer order){
-		if(order <= this.stops.size())
-			return stops.get(order-1);
+		if(order < this.stops.size())
+			return stops.get(order);
 		else
 			return null;
 	}
@@ -172,7 +173,7 @@ public class Route {
 		Integer destinationOrder = destination.getOrder();
 		
 		if(startOrder <= destinationOrder)
-			if(startOrder == destinationOrder+1)
+			if(startOrder +1 == destinationOrder)
 				return true;
 			else
 				return false;
