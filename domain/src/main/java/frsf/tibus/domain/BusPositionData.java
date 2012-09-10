@@ -9,6 +9,8 @@ import java.io.Serializable;
 
 import org.joda.time.DateTime;
 
+import com.bbn.openmap.proj.coords.LatLonPoint;
+
 
 /**
  *
@@ -20,16 +22,16 @@ public class BusPositionData implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 3150497970302555791L;
-	private String busId;
+	private Integer busId;
     private Float lat, lon;
     private Float heading;
     private DateTime date;
-    private String routeId;
+    private Integer routeId;
 
     
 
-    public BusPositionData(String busId, Float lat, Float lon, Float heading,
-			DateTime date, String routeId) {
+    public BusPositionData(Integer busId, Float lat, Float lon, Float heading,
+			DateTime date, Integer routeId) {
 		super();
 		this.busId = busId;
 		this.lat = lat;
@@ -47,7 +49,7 @@ public class BusPositionData implements Serializable{
         this.date = date;
     }
 
-    public void setIdColectivo(String idColectivo) {
+    public void setIdColectivo(Integer idColectivo) {
         this.busId = idColectivo;
     }
 
@@ -59,7 +61,7 @@ public class BusPositionData implements Serializable{
         this.lon = lon;
     }
 
-    public String getIdColectivo() {
+    public Integer getIdColectivo() {
         return busId;
     }
 
@@ -71,11 +73,11 @@ public class BusPositionData implements Serializable{
         return lon;
     }
 
-	public String getRouteId() {
+	public Integer getRouteId() {
 		return routeId;
 	}
 
-	public void setRouteId(String routeId) {
+	public void setRouteId(Integer routeId) {
 		this.routeId = routeId;
 	}
 
@@ -85,6 +87,10 @@ public class BusPositionData implements Serializable{
 
 	public void setHeading(Float heading) {
 		this.heading = heading;
+	}
+
+	public LatLonPoint getCoordinates() {
+		return new LatLonPoint.Float(lat, lon);
 	}
 
 }

@@ -15,7 +15,13 @@
 		<artifactId>joda-time</artifactId>
 		<version>2.1</version>
 	</dependency>
-            
+  
+  	<dependency>
+		<groupId>com.bbn</groupId>
+		<artifactId>openmap</artifactId>
+		<version>5.0.0</version>
+	</dependency>
+	          
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -23,6 +29,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
 
   <build>
    <!-- For annotations and other Java5 stuff -->
