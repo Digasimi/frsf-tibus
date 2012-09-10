@@ -1,6 +1,7 @@
 package frsf.tibus.prediction.model.averagespeed;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.persistence.*;
 import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
 
+import frsf.tibus.domain.BusPositionData;
 import frsf.tibus.domain.PredictionResponse;
 import frsf.tibus.domain.PredictionResponse.Prediction;
 
@@ -25,45 +27,46 @@ public class Route {
 	private List<Stop> stops;
 	
 	@Transient
-	private List<Bus> buses;
+	private HashMap<Integer,Bus> buses;
+	
+	@Transient
+	final private Float distanceTolerance = (float) 50;
+	
+	@Transient
+	final private Integer headingDifferenceTolerance = 90;
 	
 
 	public Route()
 	{
 		stops = new ArrayList<Stop>();
-		buses = new ArrayList<Bus>();
+		buses = new HashMap<Integer,Bus>();
 	}
 	
 	public Integer getRouteId() {
 		return routeId;
 	}
 
-
 	public void setRouteId(Integer routeId) {
 		this.routeId = routeId;
 	}
-
 
 	public List<Stop> getStops() {
 		return stops;
 	}
 
-
 	public void setStops(List<Stop> stops) {
 		this.stops = stops;
 	}
 
-
-	public List<Bus> getBuses() {
+	public HashMap<Integer,Bus> getBuses() {
 		return buses;
 	}
 
-
-	public void setBuses(List<Bus> buses) {
+	public void setBuses(HashMap<Integer,Bus> buses) {
 		this.buses = buses;
 	}
 
-
+	
 	public PredictionResponse getPredictions(String stopId) {
 		
 		PredictionResponse result = new PredictionResponse();
@@ -71,7 +74,7 @@ public class Route {
 		
 		if (destination != null)
 		{
-			for(Bus bus: buses)
+			for(Bus bus: buses.values())
 			{
 				if (bus.getCurrentStop().getOrder() <= destination.getOrder())
 				{
@@ -148,15 +151,54 @@ public class Route {
 	
 	/**
 	 * 
-	 * @param start
+	 * @param stop
 	 * @return
 	 */
-	public Stop getNextStop(Stop start) {
-		if(start.getOrder() < stops.size())
-			return stops.get(start.getOrder()+1);
+	public Stop getNextStop(Stop stop) {
+		if(stops.contains(stop))
+			//Si stop no es la ultima parada
+			if(stop.getOrder() < stops.size()-1)
+				return this.getStopByOrder(stop.getOrder()+1);
+			else
+				return this.getFirstStop();
 		else
-			return stops.get(0);		
+			return null;
 	}
+	
+	/**
+	 * 
+	 * @param stop
+	 * @return
+	 */
+	public Stop getPreviousStop(Stop stop) {
+		if(stops.contains(stop))
+			//Si stop es la primera parada
+			if(stop.getOrder() == 0)
+				return this.getLastStop();
+			else
+				return this.getStopByOrder(stop.getOrder());
+		else
+			return null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Stop getFirstStop()
+	{
+		return stops.get(0);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Stop getLastStop()
+	{
+		return stops.get(stops.size()-1);
+	}
+	
 
 	/**
 	 * Determina si dos paradas son consecutivas. Se calcula en el sentido de circulación del 
@@ -178,9 +220,69 @@ public class Route {
 			else
 				return false;
 		else
+			//Si el origen es la ultima parada y el destino es la primera
 			if(startOrder == stops.size() && destinationOrder == 1)
 				return true;
 			else
 				return false;
 	}
+
+	public void processBusPosition(BusPositionData busPosition) {
+		
+		Bus bus = buses.get(busPosition);
+		
+		if(bus != null)
+		{
+			bus.processPosition(busPosition);
+		}
+		else
+		{
+			bus = new Bus(busPosition.getIdColectivo(), this);
+			buses.put(busPosition.getIdColectivo(), bus);
+			bus.processPosition(busPosition);
+		}		
+	}
+
+	/**
+	 * Encuentra la parada mas cercana a busPosition
+	 * @param busPosition
+	 * @param currentStop
+	 * @return
+	 */
+	public Stop findNearestStop(BusPositionData busPosition, Stop currentStop) {
+		
+		Stop previousStop = this.getPreviousStop(currentStop);
+		
+		for(Stop stop = currentStop; stop.equals(previousStop); stop = this.getNextStop(stop))
+		{
+			Double distance = stop.distance(busPosition.getCoordinates());
+			Double headingDifference = Math.abs(calculateHeading(stop)-busPosition.getHeading());
+			
+			if(distance < this.distanceTolerance && headingDifference < this.headingDifferenceTolerance)
+				return stop;
+		}
+		return null;
+	}
+
+	/**
+	 * Calcula la direccion de la parada en el sentido del recorrido
+	 * @param stop
+	 * @return
+	 */
+	public Double calculateHeading(Stop stop) 
+	{
+		Stop nextStop = this.getNextStop(stop);
+		
+		if(nextStop != null)
+		{
+			LatLonPoint stopCoordinates = new LatLonPoint.Float(stop.getLat(), stop.getLon());
+			Double heading = Length.DECIMAL_DEGREE.fromRadians(stopCoordinates.azimuth(new LatLonPoint.Float(nextStop.getLat(), nextStop.getLon()))); 
+			return heading;
+		}
+		else
+			return null;
+		
+		
+	}
+
 }

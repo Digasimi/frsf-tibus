@@ -46,12 +46,14 @@ public class AverageSpeedModel implements PredictionModel {
 	}
 
 	@Override
-	public void procesarNuevaPosicion(BusPositionData busPosition) {
-				
+	public void procesarNuevaPosicion(BusPositionData busPosition) 
+	{
+		routes.get(busPosition.getRouteId()).processBusPosition(busPosition);
 	}
 
 	@Override
-	public PredictionResponse obtenerPrediccion(PredictionRequest r) {
+	public PredictionResponse obtenerPrediccion(PredictionRequest r) 
+	{
 		Route route = routes.get(new Integer(r.getLinea()));
 		return route.getPredictions(r.getParada());
 	}
