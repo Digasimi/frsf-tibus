@@ -1,10 +1,20 @@
 package frsf.tibus.prediction.model.averagespeed;
 
+import frsf.tibus.domain.BusPositionData;
+
 public class Bus {
+	
 	Route route;
 	Integer id;
 	Float lat, lon;
 	Stop currentStop;
+	
+	public Bus(Integer id, Route route) {
+		super();
+		this.route = route;
+		this.id = id;
+		this.currentStop = null;
+	}
 	
 	public Stop getCurrentStop() {
 		return currentStop;
@@ -29,5 +39,16 @@ public class Bus {
 	}
 	public void setLon(Float lon) {
 		this.lon = lon;
+	}
+
+	public void processPosition(BusPositionData busPosition) 
+	{
+		if(currentStop == null)
+		{
+			Stop nearestStop = route.findNearestStop(busPosition, currentStop);
+			
+			if(nearestStop != null)
+				currentStop = nearestStop;
+		}		
 	}
 }

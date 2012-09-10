@@ -22,6 +22,29 @@
         <scope>compile</scope>
     </dependency>
     
+    <!-- GEOGRAPHIC UTILITIES -->
+<!--     <dependency> -->
+<!-- 		<groupId>org.geotoolkit</groupId> -->
+<!-- 		<artifactId>geotk-referencing</artifactId> -->
+<!-- 		<version>3.19-geoapi-3.0</version> -->
+<!-- 	</dependency> -->
+	
+<!-- 	<dependency> -->
+<!-- 		<groupId>org.geotoolkit</groupId> -->
+<!-- 		<artifactId>geotk-referencing</artifactId> -->
+<!-- 		<version>3.19-geoapi-3.0</version> -->
+<!-- 	</dependency> -->
+	
+	<dependency>
+		<groupId>com.bbn</groupId>
+		<artifactId>openmap</artifactId>
+		<version>5.0.0</version>
+	</dependency>
+	
+            
+            
+            
+	<!-- DB ACCESS -->
     <dependency>
 		<groupId>postgresql</groupId>
 		<artifactId>postgresql</artifactId>

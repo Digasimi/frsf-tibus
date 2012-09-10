@@ -2,6 +2,9 @@ package frsf.tibus.prediction.model.averagespeed;
 
 import javax.persistence.*;
 
+import com.bbn.openmap.proj.Length;
+import com.bbn.openmap.proj.coords.LatLonPoint;
+
 @Entity
 @Table(name="parada")
 public class Stop {
@@ -16,9 +19,6 @@ public class Stop {
 	private Float lat;
 	@Column(name="longitud")
 	private Float lon;
-
-	@Column(name="paradaActiva")
-	private Boolean predictable;
 	
 	@ManyToOne
 	@JoinColumn(name = "linea_id", nullable = false)
@@ -26,20 +26,10 @@ public class Stop {
 	
 	@OneToOne(targetEntity=AverageSpeed.class, mappedBy = "stopId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	private AverageSpeed averageSpeed;
-	
+
 	public Integer getStopId() {
 		return stopId;
 	}
-
-	public Boolean getPredictable() {
-		return predictable;
-	}
-
-
-	public void setPredictable(Boolean predictable) {
-		this.predictable = predictable;
-	}
-
 
 	public void setStopId(Integer stopId) {
 		this.stopId = stopId;
@@ -81,7 +71,6 @@ public class Stop {
 		return averageSpeed;
 	}
 
-
 	public void setAverageSpeed(AverageSpeed averageSpeed) {
 		this.averageSpeed = averageSpeed;
 	}	
@@ -93,4 +82,12 @@ public class Stop {
 		else
 			return false;
 	}
+
+	public Double distance(LatLonPoint coordinates) {
+		Double distance = Length.METER.fromRadians(new LatLonPoint.Float(lat,lon)
+			.distance(coordinates));
+		return distance;
+	}
+
+	
 }
