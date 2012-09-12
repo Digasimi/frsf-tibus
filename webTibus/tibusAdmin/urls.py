@@ -5,8 +5,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('tibusAdmin.views',
     (r'^admin$', 'tadmin'),
-    (r'^recorrido$', 'recorrido'), 
-    (r'^recorrido/(?P<idLinea>\w+)/$', 'recorridoLinea'),
+    (r'^recorrido(?P<idLinea>\w+)$', 'recorridoLinea'),
     (r'^linea$', 'linea'), 
     (r'^unidad$', 'unidad'), 
     (r'^empresa$', 'empresa'), 
