@@ -7,7 +7,6 @@ package frsf.tibus.smsclient;
 
 import frsf.tibus.domain.PredictionRequest;
 import frsf.tibus.domain.PredictionResponse;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -57,7 +56,7 @@ public class PredictionRequester implements MessageListener {
             //Now create the actual message you want to send
             ObjectMessage objMessage = session.createObjectMessage();
 
-            objMessage.setObject(new PredictionRequest(1,""));
+            objMessage.setObject(new PredictionRequest());
 
 
             //Set the reply to field to the temp queue you created above, this is the queue the server
@@ -89,7 +88,7 @@ public class PredictionRequester implements MessageListener {
 
             if (message instanceof ObjectMessage) {
                 PredictionResponse pr = (PredictionResponse) ((ObjectMessage)message).getObject();
-                 System.out.println("messageText = " + pr.getTiempoPrediccion());
+                 System.out.println("messageText = " + pr.getPrediction());
                 }
             } catch (JMSException ex) 
             {

@@ -136,6 +136,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
         if request.method == 'POST':
             try:
                 idLinea=request.POST.get('linea').upper()
+                form = FormularioUnidad(request.POST)
                 if request.POST.get('accion') == 'viewUnidad':
                     if idLinea == '': 
                         listaUnidad = Unidad.objects.all().order_by('id_unidad_linea')
@@ -143,7 +144,6 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
                         listaUnidad = Unidad.objects.filter(linea = Recorrido.objects.get(linea = idLinea)).order_by('id_unidad_linea')
                 elif idLinea == '': #comprueba que se ingresa linea
                     descripcionError = "No ingreso la linea"
-                    form = FormularioUnidad(request.POST)
                 else:
                     newLinea = Recorrido.objects.get(linea = idLinea) #carga la linea.
                     newId=request.POST.get('id_unidad_linea').upper()
@@ -186,6 +186,7 @@ def unidad(request): #pagina de ABM de unidades - faltan excepciones
             form = FormularioUnidad()
             listaUnidad = Unidad.objects.all().order_by('id_unidad_linea')
     else:
+        form = FormularioUnidad()
         descripcionError = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + datosUsuario.nombre +" in Bus Error:" + descripcionError)
     return render_to_response('unidad.html',  {'usuario': request.user,'form':form,  'error': descripcionError,  'listaUnidad':listaUnidad,  'admin': True,  'listaLinea': listaLinea,'superadmin':superadmin},  context_instance=RequestContext(request))
