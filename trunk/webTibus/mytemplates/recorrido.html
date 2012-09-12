@@ -4,38 +4,27 @@
  <table style="text-align: left; height: 100%; width: 90%;">
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
-  <form name = "formParada" action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
-      Coordenadas Actuales: 
-    <table>
-      <tr>
-        <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
-        <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formParada.id_linea.value = document.formParada.lineaCombo.options[document.formParada.lineaCombo.selectedIndex].value;document.formParada.lineaCombo.value=document.formParada.lineaCombo.options[document.formParada.lineaCombo.selectedIndex].value">
-	         <OPTION VALUE="">Seleccione un valor</OPTION>
-     		 {% for linea in listaLineas %}
-       		 <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
-      		{% endfor %}
-    	</SELECT></td>
-		<td> <BUTTON type="submit" name="accion" value="viewLinea"> Mostrar Linea </BUTTON> </td>
-      </tr>
-      <tr>
-	  	<td colspan="2"><label for="id_orden"> Orden: </label> {{ form.orden }}
-    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
-   				<OPTION VALUE="">Seleccione un valor</OPTION>
-      			{% for parada in listaParadas %}
-       			<OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
-      			{% endfor %}
-   		</SELECT></td>
-   		<!--<td> <BUTTON type="submit" name="accion" value="viewParada"> Buscar Parada </BUTTON> </td>-->
-    </tr>
-    <tr><td><label for="id_paradaactiva">Parada Activa: </label>{{ form.paradaactiva }}</td></tr>
-    <tr><td><label for="id_calle1">Calle: </label> {{ form.calle1 }}</td><td><label for="id_calle2">Interseccion: </label> {{ form.calle2 }}</td></tr>
-    </table>
-    <a> Nuevas Coordenadas: </a><div id="coor"></div>
-    <BUTTON type="submit" name="accion" value="addParada"> Agregar Parada </BUTTON>
-    <BUTTON type="submit" name="accion" value="editParada"> Modificar Parada </BUTTON>
-    <BUTTON type="submit" name="accion" value="delParada" > Eliminar Parada </BUTTON>
-    </form>
-  </td></tr>
+	  <form name = "formParada" action="" method="post" onSubmit = "return confirmacion(this, accion)">{% csrf_token %}
+	        <a>Coordenadas Actuales:</a> 
+		    <table>
+			    <tr>
+				  	<td colspan="2"><label for="id_orden"> Orden: </label> {{ form.orden }}
+			    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
+			   				<OPTION VALUE="">Seleccione un valor</OPTION>
+			      			{% for parada in listaParadas %}
+			       			<OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
+			      			{% endfor %}
+			   		</SELECT></td>
+			    </tr>
+			    <tr><td><label for="id_paradaactiva">Parada Activa: </label>{{ form.paradaactiva }}</td></tr>
+			    <tr><td><label for="id_calle1">Calle: </label> {{ form.calle1 }}</td><td><label for="id_calle2">Interseccion: </label> {{ form.calle2 }}</td></tr>
+		    </table>
+		    <a> Nuevas Coordenadas: </a><div id="coor"></div>
+		    <BUTTON type="submit" name="accion" value="addParada"> Agregar Parada </BUTTON>
+		    <BUTTON type="submit" name="accion" value="editParada"> Modificar Parada </BUTTON>
+		    <BUTTON type="submit" name="accion" value="delParada" > Eliminar Parada </BUTTON>
+		    <input type="button" name="volver" id="volver" value="Volver" onClick="javaScript:history.back();">
+	  </form></td></tr>
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;"> Recorrido: </td></tr>
   <tr><td align=center >
     {% if linea %}

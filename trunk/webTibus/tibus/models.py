@@ -16,24 +16,24 @@ class Empresa(models.Model):
             db_table = 'empresa'
             
 class Recorrido(models.Model):
-        idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
-        linea = models.CharField(verbose_name="nombre", max_length=50)
-        frecuencia = models.IntegerField()
-        empresa = models.ForeignKey(Empresa)
+    idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
+    linea = models.CharField(verbose_name="nombre", max_length=50)
+    frecuencia = models.IntegerField()
+    empresa = models.ForeignKey(Empresa)
+    
+    class Meta:
+        db_table = 'recorrido'
+    
+    def __unicode__(self):
+        return self.linea
         
-        class Meta:
-            db_table = 'recorrido'
+    def validar(self):
+        if self.linea == "" or self.frecuencia == "" or re.search("[^a-zA-Z0-9]", self.linea) :
+            return False
+        return True
         
-        def __unicode__(self):
-            return self.linea
-            
-        def validar(self):
-            if self.linea == "" or self.frecuencia == "" or re.search("[^a-zA-Z0-9]", self.linea) :
-                return False
-            return True
-            
-        def id(self):
-            return self.idrecorrido
+    def id(self):
+        return self.idrecorrido
 
 class Parada(models.Model):
     idparada = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
