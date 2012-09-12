@@ -362,16 +362,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     descripcionError = ""
     datosUsuario = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)    
-    
-    if (datosUsuario.categoria == 'Administrador'):
-        listaLineas = Recorrido.objects.all().order_by('linea')
-        listaParadas = Parada.objects.all()
-    elif (datosUsuario.categoria == 'Empresa'):
-        listaLineas = Recorrido.objects.filter(empresa=datosUsuario.empresa).order_by('linea')
-        if idLinea == '' or idLinea == None:
-            listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa)
-        else:
-            listaParadas = Parada.objects.filter(linea__empresa = datosUsuario.empresa,  linea__linea = idLinea)
+    listaParadas = Parada.objects.filter(linea__linea = idLinea)
     superadmin = (datosUsuario.categoria == 'Administrador')
     
     #logica
@@ -389,7 +380,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
                     listaParadas = Parada.objects.filter(linea = newId).order_by('orden')
                     if request.POST.get('accion') == 'viewLinea':
                         form = FormularioParada()
-                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
+                        return render_to_response('recorrido.html', {'form': form,  'linea': idLinea, 'listaParadas': listaParadas,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
                     else:
                         parOrden = request.POST.get('orden')
                         if parOrden == None or parOrden == '':
@@ -459,7 +450,7 @@ def recorridoLinea(request, idLinea): #Pagina de ABM de paradas
     else:
         form = FormularioParada()
     logger.info("Usuario: " + datosUsuario.nombre +" in Stop Error:" + descripcionError)
-    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaLineas': listaLineas, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
+    return render_to_response('recorrido.html', {'usuario': request.user,'form': form,  'linea': idLinea, 'listaParadas': listaParadas ,  'error': descripcionError,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
 
 @login_required
 def cambiarpassword(request):
