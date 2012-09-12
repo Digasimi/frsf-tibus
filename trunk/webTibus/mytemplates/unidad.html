@@ -29,30 +29,31 @@
     	{% endif %}
   	</div></td>
 	<td><table>
-  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
-  <form name="formUnidad" action="" method="post">{% csrf_token %}
-      Unidad Actual: 
-    <table>
-        <tr>
-            <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
-            <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formUnidad.id_linea.value = document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value;document.formUnidad.lineaCombo.value=document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value">
-            <OPTION VALUE="">Seleccione un valor</OPTION> 
-            {% for linea in listaLinea %}
-                <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
-            {% endfor %}
-            </SELECT></td>
-            <!--  <td> <BUTTON type="submit" name="accion" value="viewUnidad"> Buscar Unidades </BUTTON> </td>-->
-        </tr>
-        <tr>
-            <td> <label for="id_unidad_linea"> Identificador: </label> {{ form.id_unidad_linea }} </td>
-            <td> <label for="id_apto"> Apto para movilidad reducida: </label> {{ form.aptoMovilidadReducida }} </td>
-        </tr>
-    </table>
-    <BUTTON type="submit" name="accion" value="addUnidad"> Agregar Unidad </BUTTON>
-    <BUTTON type="submit" name="accion" value="editUnidad"> Modificar Unidad </BUTTON>
-    <BUTTON type=button name="accion" onclick="pregunta()" value="delUnidad" > Eliminar Unidad </BUTTON>
-    </form>
-  </td></tr>
+		  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
+		  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
+		  <form name="formUnidad" action="" method="post">{% csrf_token %}
+		      Unidad Actual: 
+		    <table>
+		        <tr>
+		            <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
+		            <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formUnidad.id_linea.value = document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value;document.formUnidad.lineaCombo.value=document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value">
+		            <OPTION VALUE="">Seleccione un valor</OPTION> 
+		            {% for linea in listaLinea %}
+		                <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+		            {% endfor %}
+		            </SELECT></td>
+		            <!--  <td> <BUTTON type="submit" name="accion" value="viewUnidad"> Buscar Unidades </BUTTON> </td>-->
+		        </tr>
+		        <tr>
+		            <td> <label for="id_unidad_linea"> Identificador: </label> {{ form.id_unidad_linea }} </td>
+		            <td> <label for="id_apto"> Apto para movilidad reducida: </label> {{ form.aptoMovilidadReducida }} </td>
+		        </tr>
+		    </table>
+		    <BUTTON type="submit" name="accion" value="addUnidad"> Agregar Unidad </BUTTON>
+		    <BUTTON type="submit" name="accion" value="editUnidad"> Modificar Unidad </BUTTON>
+		    <BUTTON type=button name="accion" onclick="pregunta()" value="delUnidad" > Eliminar Unidad </BUTTON>
+		    </form>
+		  </td></tr>
   </table></td></tr>
 </table>
 {% endblock %}

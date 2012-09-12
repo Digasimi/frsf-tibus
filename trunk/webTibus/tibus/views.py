@@ -53,7 +53,7 @@ def prediccion(request): #pagina que mostrara las predicciones
                     mens = ""
                     lis1 = conn.get_listener('list')
                     timer = 0
-                    while (mens == '' and timer < 15):
+                    while (mens == '' and timer <= 15):
                         time.sleep(1)
                         timer=timer+1
                         mens = lis1.getMensaje()
