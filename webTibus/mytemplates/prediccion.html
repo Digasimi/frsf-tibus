@@ -9,18 +9,18 @@ Parada Destino:
               <tr> <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
                     <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formPrediccion.id_linea.value = document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;document.formPrediccion.lineaCombo.value=document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;this.form.submit()">
                     	<OPTION VALUE="">Seleccione un valor</OPTION> 
-                      {% for linea in listaLineas %}
-                       	<OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+                      {% for route in listaLinea %}
+                       	<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
                       {% endfor %}
                     </SELECT></td>
                     <td> <label for="id_orden"> Parada: </label> {{ form.orden }}     
                     <SELECT NAME="paradaCombo" SIZE=1 onchange="document.formPrediccion.id_orden.value = document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value;document.formPrediccion.paradaCombo.value=document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value">
                     	<OPTION VALUE="">Seleccione un valor</OPTION>
-                      {% for parada in listaParadas %}
-                       	<OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
+                      {% for stop in listaParada %}
+                       	<OPTION VALUE="{{ stop.orden }}">{{ stop.orden }}</OPTION>
                       {% endfor %}
                     </SELECT></td>
-                <td><BUTTON type="submit" name="accion" value="predecir">Predecir</BUTTON> </td></tr>
+                <td><BUTTON type="submit" name="action" value="prediction">Predecir</BUTTON> </td></tr>
             </table>
         </form>
     </td>
@@ -37,10 +37,10 @@ Parada Destino:
 			</tr>
 		</thead>
 		<tbody class="scrollContent">
-      {% for unidad in predicciones %}
+      {% for bus in predicciones %}
         <tr>
-        	<td>{{ unidad.colectivo }}</td>
-        	<td>{{ unidad.tiempo }}</td>
+        	<td>{{ bus.colectivo }}</td>
+        	<td>{{ bus.tiempo }}</td>
        	</tr>
       {% endfor %}
       </tbody></table>

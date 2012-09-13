@@ -27,12 +27,12 @@ class Recorrido(models.Model):
     def __unicode__(self):
         return self.linea
         
-    def validar(self):
+    def validate(self):
         if self.linea == "" or self.frecuencia == "" or re.search("[^a-zA-Z0-9]", self.linea) :
             return False
         return True
         
-    def id(self):
+    def getId(self):
         return self.idrecorrido
 
 class Parada(models.Model):
@@ -51,24 +51,24 @@ class Parada(models.Model):
     def _unicode_(self):
         return self.orden
           
-    def ordenParada(self):
+    def getOrder(self):
         return self.orden
     
-    def latitudParada(self):
+    def getLat(self):
         return self.latitud
       
-    def longitudParada(self):
+    def getLon(self):
         return self.longitud
        
-    def aumentarOrden(self):
+    def upOneOrder(self):
         self.orden = self.orden + 1
         return True
         
-    def disminuirOrden(self):
+    def downOneOrder(self):
         self.orden = self.orden - 1
         return True
     
-    def id(self):
+    def getId(self):
         return self.idparada
       
 class Unidad(models.Model):
@@ -93,58 +93,58 @@ class TiempoRecorrido(models.Model):
         return self.promedio
 
 class MyListener(object):
-    mensaje = ''
+    message = ''
   
     def on_error(self, headers, message):
         print ('received an error %s' % message)
 
     def on_message(self, headers, message):
         print ('received a message %s' % message)
-        self.mensaje = message
+        self.message = message
         
-    def getMensaje(self):
-        return self.mensaje
+    def getMessage(self):
+        return self.message
 
 class Presponse(object):
-    colectivo = ''
-    tiempo = 0
+    bus = ''
+    time = 0
     lat = 0
     lon = 0
     
     def __init__ (self, c, t, la, lo):
-        self.colectivo = c
-        self.tiempo = t
+        self.bus = c
+        self.time = t
         self.lat = float(la)
         self.lon = float(lo)
 
     def __unicode__(self):
-        return self.colectivo
+        return self.bus
     
 class PresponseHandler(ContentHandler):
-    lista = []
+    list = []
     isColeElement= 0
-    isTiempoElement = 0
+    isTimeElement = 0
     islatElement = 0
     islonElement = 0
     isTimeStampElement = 0
     isErrorElemet = 0
-    colectivo = ""
-    tiempo = ""
+    bus = ""
+    time = ""
     lat = ""
     lon = "" 
     timestamp = ""
     error = ""
     
     def __init__ (self):
-        self.lista = []
+        self.list = []
         self.isColeElement= 0
-        self.isTiempoElement = 0
+        self.isTimeElement = 0
         self.islatElement = 0
         self.islonElement = 0
         self.isTimeStampElement = 0
         self.isErrorElemet = 0
-        self.colectivo = ""
-        self.tiempo = ""
+        self.bus = ""
+        self.time = ""
         self.lat = ""
         self.lon = ""
         self.timestamp = ""
@@ -153,10 +153,10 @@ class PresponseHandler(ContentHandler):
     def startElement(self, name, attrs):
         if name == 'busId':
             self.isColeElement= 1
-            self.colectivo = ""
+            self.bus = ""
         elif name == 'timeSec':
-            self.isTiempoElement = 1
-            self.tiempo = ""
+            self.isTimeElement = 1
+            self.time = ""
         elif name == 'lat':
             self.islatElement = 1
             self.lat = ""
@@ -172,9 +172,9 @@ class PresponseHandler(ContentHandler):
     
     def characters (self, ch):
         if self.isColeElement== 1:
-            self.colectivo += ch
-        if self.isTiempoElement == 1:
-            self.tiempo += ch
+            self.bus += ch
+        if self.isTimeElement == 1:
+            self.time += ch
         if self.islatElement == 1:
             self.lat += ch
         if self.islonElement == 1:
@@ -188,25 +188,25 @@ class PresponseHandler(ContentHandler):
         if name == 'busId':
             self.isColeElement= 0
         if name == 'timeSec':
-            self.isTiempoElement = 0
+            self.isTimeElement = 0
         if name == 'lat':
             self.islatElement = 0
         if name == 'lon':
             self.islonElement = 0
         if name == 'prediction':
-            self.lista = self.lista + [Presponse(self.colectivo, self.tiempo,self.lat, self.lon)]
+            self.list = self.list + [Presponse(self.bus, self.time,self.lat, self.lon)]
         if name == 'timestamp':
             self.isTimeStampElement = 0
         if name == "error":
             self.isErrorElemet = 0
         if name == 'prediction-responde':
-            print self.lista
+            print self.list
     
-    def obtenerLista(self):
-        return self.lista
+    def getLista(self):
+        return self.list
     
-    def obtenerTimeStamp(self):
+    def getTimeStamp(self):
         return self.timestamp
     
-    def obtenerError(self):
+    def getError(self):
         return self.error

@@ -5,7 +5,7 @@
 <tr>
 <td style="height: 100%; width: 50%;" align=center >
 	<div id="tableContainer" class="tableContainer">
-	{% if listaLinea %}
+	{% if routeList %}
 		<table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
 			<thead class="fixedHeader">
 		        <tr>
@@ -15,11 +15,11 @@
 	        	</tr>
 	       	</thead>
 	       	<tbody class="scrollContent">
-		      {% for linea in listaLinea %}
+		      {% for route in routeList %}
 		        <tr>
-		        	<td style="width: 30%;">{{ linea.linea }}</td>
-		        	<td style="width: 30%;">{{ linea.frecuencia }}</td>
-		        	<td>{{ linea.empresa }}</td>
+		        	<td style="width: 30%;">{{ route.linea }}</td>
+		        	<td style="width: 30%;">{{ route.frecuencia }}</td>
+		        	<td>{{ route.empresa }}</td>
 	        	</tr>
 		      {% endfor %}
 	        </tbody>
@@ -32,28 +32,28 @@
 <td><table>
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
-  <form name = "formLinea" action="" method="post" onSubmit = "return confirmacion(this)" enctype="multipart/form-data">{% csrf_token %}
+  <form name = "formLinea" action="" method="post" onSubmit = "return confirmation(this)" enctype="multipart/form-data">{% csrf_token %}
       Linea Actual: 
     <table>
     	<tr>
 	        <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
         		<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
         			<OPTION VALUE="">Seleccione un valor</OPTION> 
-        			{% for empresa in listaEmpresa %}
-            		<OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
+        			{% for company in companyList %}
+            		<OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
         			{% endfor %}
       		</SELECT></td>
-      		<td><BUTTON type="submit" name="accion" value="viewEmpresa"> Buscar Empresa </BUTTON> </td>
+      		<td><BUTTON type="submit" name="action" value="viewCompany"> Buscar Empresa </BUTTON> </td>
     	</tr>
       <tr>
 		<td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
 	    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
     		<OPTION VALUE="">Seleccione un valor</OPTION>  
-      		{% for linea in listaLinea %}
-      		<OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+      		{% for route in routeList %}
+      		<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
       	{% endfor %}
     	</SELECT></td>
-    	<td> <BUTTON type="submit" name="accion" value="viewLinea"> Buscar Linea </BUTTON> </td>
+    	<td> <BUTTON type="submit" name="action" value="viewRoute"> Buscar Linea </BUTTON> </td>
       </tr>
       <tr>
         <td><label for="id_orden"> Frecuencia: </label> {{ form.frecuencia }} </td>
@@ -62,9 +62,9 @@
     <tr><td><label for="id_masivo">Carga masiva de paradas:</label>{{ form.masivo}}</td></tr> 
     <tr><td><font face="univers" size="1"><p>Las paradas deben estan en orden y una por linea con el formato:</p><p>Latitud; Longitud;Calle;Interseccion</p></font></td></tr> 
     </table>
-    <BUTTON type="submit" name="accion" value="addLinea"> Agregar Linea </BUTTON>
-    <BUTTON type="submit" name="accion" value="editLinea"> Modificar Linea </BUTTON>
-    <BUTTON type="submit" name="accion" value="delLinea" > Eliminar Linea </BUTTON>
+    <BUTTON type="submit" name="action" value="addRoute"> Agregar Linea </BUTTON>
+    <BUTTON type="submit" name="action" value="editRoute"> Modificar Linea </BUTTON>
+    <BUTTON type="submit" name="action" value="delRoute" > Eliminar Linea </BUTTON>
     </form>
   </td></tr>
   </table></td></tr>
@@ -72,8 +72,8 @@
 {% endblock %}
 
 {% block funcDblClick %}
-    function confirmacion(form){
-        if (form.accion[0].value != "viewLinea"){
+    function confirmation(form){
+        if (form.accion[0].value != "viewRoute"){
             var answer = confirm("Confirma el cambio que desea realizar")
             if (answer)
             {
