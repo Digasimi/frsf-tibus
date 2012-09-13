@@ -5,7 +5,7 @@
 	<tr><td style="height: 100%; width: 50%;" align=center >
 	<a>Unidades Existentes</a>
 	<div id="tableContainer" class="tableContainer">
-    	{% if listaUnidad %}
+    	{% if busList %}
 		<table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
 			<thead class="fixedHeader">
 				<tr>
@@ -15,11 +15,11 @@
 				</tr>
 			</thead>
 			<tbody class="scrollContent">
-      		{% for unidad in listaUnidad %}
+      		{% for bus in busList %}
       			<tr>
-      				<td>{{ unidad.linea }}</td>
-      				<td>{{ unidad.id_unidad_linea }}</td>
-      				<td>{{ unidad.aptoMovilidadReducida }}</td>
+      				<td>{{ bus.linea }}</td>
+      				<td>{{ bus.id_unidad_linea }}</td>
+      				<td>{{ bus.aptoMovilidadReducida }}</td>
      				</tr>
 			{% endfor %}
       		</tbody>
@@ -38,20 +38,19 @@
 		            <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
 		            <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formUnidad.id_linea.value = document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value;document.formUnidad.lineaCombo.value=document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value">
 		            <OPTION VALUE="">Seleccione un valor</OPTION> 
-		            {% for linea in listaLinea %}
-		                <OPTION VALUE="{{ linea.linea }}">{{ linea.linea }}</OPTION>
+		            {% for route in routeList %}
+		                <OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
 		            {% endfor %}
 		            </SELECT></td>
-		            <!--  <td> <BUTTON type="submit" name="accion" value="viewUnidad"> Buscar Unidades </BUTTON> </td>-->
 		        </tr>
 		        <tr>
 		            <td> <label for="id_unidad_linea"> Identificador: </label> {{ form.id_unidad_linea }} </td>
 		            <td> <label for="id_apto"> Apto para movilidad reducida: </label> {{ form.aptoMovilidadReducida }} </td>
 		        </tr>
 		    </table>
-		    <BUTTON type="submit" name="accion" value="addUnidad"> Agregar Unidad </BUTTON>
-		    <BUTTON type="submit" name="accion" value="editUnidad"> Modificar Unidad </BUTTON>
-		    <BUTTON type=button name="accion" onclick="pregunta()" value="delUnidad" > Eliminar Unidad </BUTTON>
+		    <BUTTON type="submit" name="action" value="addBus"> Agregar Unidad </BUTTON>
+		    <BUTTON type="submit" name="action" value="editBus"> Modificar Unidad </BUTTON>
+		    <BUTTON type=button name="action" onclick="confirmation()" value="delBus" > Eliminar Unidad </BUTTON>
 		    </form>
 		  </td></tr>
   </table></td></tr>
@@ -59,9 +58,9 @@
 {% endblock %}
 
 {% block funcDblClick %}
-    function pregunta(){
+    function confirmation(){
         if (confirm("Esta seguro de querer eliminar este registro?")){
-            document.formUnidad.accion = "delUnidad"
+            document.formUnidad.action = "delBus"
             document.formUnidad.submit();
         }
     }{% endblock %}

@@ -47,6 +47,10 @@
                 {% trans 'Desconectarse' %}</a>
             {% endblock %}
          </div>
+        {% else %}
+        <div id="user-tools" align=right style="font-family: Arial; font-size: 12px;">
+        	<a href="login">Iniciar Sesion</a>
+       	</div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>

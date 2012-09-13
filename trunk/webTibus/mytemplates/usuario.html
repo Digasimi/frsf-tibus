@@ -6,7 +6,7 @@
         <td style="text-align: center; height: 100%; width: 50%;"align=center >
         <a>Usuarios Existentes</a>
         <div id="tableContainer" class="tableContainer">
-        {% if listaUsuarios %}
+        {% if userList %}
         <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
 			<thead class="fixedHeader">
 				<tr>
@@ -17,12 +17,12 @@
 				</tr>
 			</thead>
 			<tbody class="scrollContent">
-			{% for usuario in listaUsuarios %}
+			{% for user in userList %}
 			<tr>
-				<td>{{ usuario.nombre }}</td>
-				<td>{{ usuario.mail}}</td>
-				<td>{{ usuario.categoria }}</td>
-				<td>{{ usuario.empresa }}</td>
+				<td>{{ user.nombre }}</td>
+				<td>{{ user.mail}}</td>
+				<td>{{ user.categoria }}</td>
+				<td>{{ user.empresa }}</td>
 			</tr>
 			{% endfor %}
 			</tbody></table>
@@ -48,22 +48,22 @@
                     <td> <label for="categoria"> Categoria: </label> {{ form.categoria }} 
                     <SELECT NAME="tipoCombo" SIZE=1 onchange="document.formUsuario.id_categoria.value = document.formUsuario.tipoCombo.options[document.formUsuario.tipoCombo.selectedIndex].value;document.formUsuario.tipoCombo.value=document.formUsuario.tipoCombo.options[document.formUsuario.tipoCombo.selectedIndex].value">
                      		<OPTION VALUE="">Seleccione un valor</OPTION>
-                        {% for categoria in listaCategoria %}
-                            <OPTION VALUE="{{ categoria }}">{{ categoria }}</OPTION>
+                        {% for category in categoryList %}
+                            <OPTION VALUE="{{ category }}">{{ category }}</OPTION>
                         {% endfor %}
                     </SELECT></td>
                     <td> <label for="empresa"> Empresa: </label> {{ form.empresa }} 
                     <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formUsuario.id_empresa.value = document.formUsuario.empresaCombo.options[document.formUsuario.empresaCombo.selectedIndex].value;document.formUsuario.empresaCombo.value=document.formUsuario.empresaCombo.options[document.formUsuario.empresaCombo.selectedIndex].value">
                     		<OPTION VALUE="">Seleccione un valor</OPTION> 
-                        {% for empresa in listaEmpresa %}
-                            <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
+                        {% for company in companyList %}
+                            <OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
                         {% endfor %}
                         </SELECT></td>
                 </tr></table>
-                <BUTTON type="submit" name="accion" value="addUsuario"> Agregar Usuario </BUTTON>
-                <BUTTON type="submit" name="accion" value="editUsuario"> Modificar Email Usuario </BUTTON>
-                <BUTTON type="submit" name="accion" value="rehabUsuario"> Rehabilitar Usuario </BUTTON>
-                <BUTTON type=button name="accion" onclick="pregunta()" value="delUsuario" > Eliminar Usuario </BUTTON>
+                <BUTTON type="submit" name="action" value="addUser"> Agregar Usuario </BUTTON>
+                <BUTTON type="submit" name="action" value="editUser"> Modificar Email Usuario </BUTTON>
+                <BUTTON type="submit" name="action" value="rehabUser"> Rehabilitar Usuario </BUTTON>
+                <BUTTON type=button name="action" onclick="confirmation()" value="delUser" > Eliminar Usuario </BUTTON>
             </form></tr>
         </tbody></table>
     </td></tr>
@@ -72,9 +72,9 @@
 
 {% block extrahead %}
 <script type="text/javascript">
-    function pregunta(){
+    function confirmation(){
         if (confirm("Esta seguro de querer eliminar este registro?")){
-            document.formUsuario.accion = "delUsuario"
+            document.formUsuario.action = "delUser"
             document.formUsuario.submit();
         }
     }</script>{% endblock %}

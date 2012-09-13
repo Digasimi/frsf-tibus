@@ -11,8 +11,8 @@
 				  	<td colspan="2"><label for="id_orden"> Orden: </label> {{ form.orden }}
 			    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
 			   				<OPTION VALUE="">Seleccione un valor</OPTION>
-			      			{% for parada in listaParadas %}
-			       			<OPTION VALUE="{{ parada.orden }}">{{ parada.orden }}</OPTION>
+			      			{% for stop in stopList %}
+			       			<OPTION VALUE="{{ stop.orden }}">{{ stop.orden }}</OPTION>
 			      			{% endfor %}
 			   		</SELECT></td>
 			    </tr>
@@ -20,15 +20,15 @@
 			    <tr><td><label for="id_calle1">Calle: </label> {{ form.calle1 }}</td><td><label for="id_calle2">Interseccion: </label> {{ form.calle2 }}</td></tr>
 		    </table>
 		    <a> Nuevas Coordenadas: </a><div id="coor"></div>
-		    <BUTTON type="submit" name="accion" value="addParada"> Agregar Parada </BUTTON>
-		    <BUTTON type="submit" name="accion" value="editParada"> Modificar Parada </BUTTON>
-		    <BUTTON type="submit" name="accion" value="delParada" > Eliminar Parada </BUTTON>
-		    <input type="button" name="volver" id="volver" value="Volver" onClick="javaScript:history.back();">
+		    <BUTTON type="submit" name="action" value="addStop"> Agregar Parada </BUTTON>
+		    <BUTTON type="submit" name="action" value="editStop"> Modificar Parada </BUTTON>
+		    <BUTTON type=button name="action" onclick="confirmation()" value="delStop" > Eliminar Parada </BUTTON>
+		    <input type="button" name="back" id="back" value="Volver" onClick="javaScript:history.back();">
 	  </form></td></tr>
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;"> Recorrido: </td></tr>
   <tr><td align=center >
-    {% if linea %}
-    {% if listaParadas %}
+    {% if route %}
+    {% if stopList %}
     <div id="tableContainer" class="tableContainer">
     <table class="scrollTable">
     <thead class="fixedHeader">
@@ -39,8 +39,8 @@
 		</tr>
 	</thead>
 	<tbody class="scrollContent">
-      {% for parada in listaParadas %}
-        <tr><td>{{ parada.orden }}</td><td>{{ parada.latitud }}</td><td>{{ parada.longitud }}</td></tr>
+      {% for stop in stopList %}
+        <tr><td>{{ stop.orden }}</td><td>{{ stop.latitud }}</td><td>{{ stop.longitud }}</td></tr>
       {% endfor %}
      </tbody></table></div>
     {% else %}
@@ -52,19 +52,10 @@
 {% endblock %}
 
 {% block funcDblClick %}
-    function confirmacion(form){
-        if (form.accion[0].value != "viewLinea" && form.accion[0].value !="viewParada"){
-            var answer = confirm("Confirma el cambio que desea realizar")
-            if (answer)
-            {
-                alert("aca confirma");
-                return (true);
-            }
-            else
-            {
-                alert("aca no confirma");
-                return (false);
-            }
+    function confirmation(){
+        if (confirm("Esta seguro de querer eliminar este registro?")){
+            document.formParada.action = "delStop"
+            document.formParada.submit();
         }
     }
     
@@ -122,10 +113,10 @@ function mostrarCoordenadas(location, map) { //funcion javascript
 {% endblock %}
 
 {% block marcas %}
-    {% if linea %}
-    {% if listaParadas %}
-    {% for parada in listaParadas %}
-    markerPosition = new google.maps.LatLng({{ parada.latitud }},{{ parada.longitud}});
+    {% if route %}
+    {% if stopList %}
+    {% for stop in stopList %}
+    markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
         marker = new google.maps.Marker({
         map:map,
         draggable:true,
@@ -148,8 +139,8 @@ function mostrarCoordenadas(location, map) { //funcion javascript
     {% endfor %}
     
     var flightPlanCoordinates = [
-      {% for parada in listaParadas %}
-	    new google.maps.LatLng({{ parada.latitud }},{{ parada.longitud}}),
+      {% for stop in stopList %}
+	    new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}}),
       {% endfor %}
 	];
 	var flightPath = new google.maps.Polyline({

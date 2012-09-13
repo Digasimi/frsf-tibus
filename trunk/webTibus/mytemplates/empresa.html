@@ -6,7 +6,7 @@
   <td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi; width: 50%;" align=center >
   <a>Empresas Existentes:</a>
   <div id="tableContainer" class="tableContainer">
-	{% if listaEmpresa %}
+	{% if companyList %}
 	<table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
 		<thead class="fixedHeader">
 	        <tr>
@@ -15,10 +15,10 @@
 	        </tr>
         </thead>
         <tbody class="scrollContent">
-        {% for empresa in listaEmpresa %}
+        {% for company in companyList %}
         <tr>
-        	<td style="width: 50%;">{{ empresa.nombre }}</td>
-        	<td>{{ empresa.mail}}</td>
+        	<td style="width: 50%;">{{ company.nombre }}</td>
+        	<td>{{ company.mail}}</td>
         </tr>
         {% endfor %}
         </tbody></table>
@@ -34,18 +34,18 @@
 	            <td> <label for="id_empresa"> Empresa: </label> {{ form.nombre }} 
 	            <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
 	            	<OPTION VALUE="">Seleccione un valor</OPTION> 
-	            {% for empresa in listaEmpresa %}
-	                <OPTION VALUE="{{ empresa.nombre }}">{{ empresa.nombre }}</OPTION>
+	            {% for company in companyList %}
+	                <OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
 	            {% endfor %}
 	            </SELECT></td>
-	            <td> <BUTTON type="submit" name="accion" value="viewEmpresa"> Buscar Empresa </BUTTON> </td>
+	            <td> <BUTTON type="submit" name="action" value="viewCompany"> Buscar Empresa </BUTTON> </td>
 	        </tr>
 	        <tr>
 	            <td> <label for="email"> Email: </label> {{ form.email }} </td>
 	        </tr></table>
-	        <BUTTON type="submit" name="accion" value="addEmpresa"> Agregar Empresa </BUTTON>
-	        <BUTTON type="submit" name="accion" value="editEmpresa"> Modificar Empresa </BUTTON>
-	        <BUTTON type=button name="accion" onclick="pregunta()" value="delEmpresa" > Eliminar Empresa </BUTTON>
+	        <BUTTON type="submit" name="action" value="addCompany"> Agregar Empresa </BUTTON>
+	        <BUTTON type="submit" name="action" value="editCompany"> Modificar Empresa </BUTTON>
+	        <BUTTON type=button name="action" onclick="confirmation()" value="delCompany" > Eliminar Empresa </BUTTON>
 	    </form></tr>
     </tbody></table>
 </td>
@@ -55,9 +55,9 @@
 
 {% block extrahead %}
 <script type="text/javascript">
-    function pregunta(){
+    function confirmation(){
         if (confirm("Esta seguro de querer eliminar este registro?")){
-            document.formEmpresa.accion = "delEmpresa"
+            document.formEmpresa.action = "delCompany"
             document.formEmpresa.submit();
         }
     }</script>{% endblock %}
