@@ -47,7 +47,7 @@ def prediction(request): #pagina que mostrara las predicciones
                     conn.start()
                     conn.connect()
                     responseQueue = '/temp-queue/responseQueue'
-                    msg = createMessage(temporaryRoute.getId(),  destinyStop.getId())
+                    msg = createMessage(temporaryRoute.getLinea(),  destinyStop.getId())
                     conn.set_listener('list', MyListener())
                     conn.send(msg, destination='/queue/predictions.requests',headers={'reply-to':responseQueue})
                     conn.subscribe(destination=responseQueue, ack='auto')

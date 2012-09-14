@@ -34,6 +34,9 @@ class Recorrido(models.Model):
         
     def getId(self):
         return self.idrecorrido
+    
+    def getLinea(self):
+        return self.linea
 
 class Parada(models.Model):
     idparada = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
