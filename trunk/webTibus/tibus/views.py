@@ -96,4 +96,4 @@ def tibushelp(request):#pagina de ayuda
     return render_to_response('ayuda.html',  {'admin': False})
 
 def createMessage(route,  order):
-    return '<prediction-request><route>' + str(route) + '</route><parada>' + str(order) + '</parada></prediction-request>'
+    return '<prediction-request><linea>' + str(route) + '</linea><parada>' + str(order) + '</parada></prediction-request>'
