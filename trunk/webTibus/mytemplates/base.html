@@ -42,7 +42,7 @@
                 {% if logout_url %}
                     <a href="{{ logout_url }}">
                 {% else %}
-                    <a href="{{ root_path }}logout/">
+                    <a href="{{ root_path }}logout">
                 {% endif %}
                 {% trans 'Desconectarse' %}</a>
             {% endblock %}
@@ -54,9 +54,6 @@
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>
-    <!-- END Header 
-    {% block breadcrumbs %}<div class="breadcrumbs">{% if title %} &rsaquo; {{ title }}{% endif %}<a href="/accounts/logout/"> - Desconectar</a></div>
-{% endblock %}-->
     {% endif %}
 
         {% if messages %}

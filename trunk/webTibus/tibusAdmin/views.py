@@ -203,6 +203,7 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
     errorDescription = ""
     userData = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)
+    form = CompanyForm()
     
     if (userData.categoria == 'Administrador'):
         companyList = Empresa.objects.all().order_by('nombre')        
@@ -214,41 +215,19 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
     if (userData.categoria == 'Administrador'):
         if request.method == 'POST':
             try:
-                companyName=request.POST.get('nombre').upper()
-                companyEmail=request.POST.get('companyEmail').lower()
-                form = CompanyForm(request.POST)
-                if companyName == '': #comprueba que el nombre no sea vacia.
-                    errorDescription = "No ingreso la empresa"
-                elif request.POST.get('action') == 'addCompany':
-                    if companyEmail == "": #comprobar direccion de mail, no comprueba formato.
-                        errorDescription = "No ingreso datos validos"
-                    else:
-                        try:
-                            temporaryCompany = Empresa.objects.get(nombre = companyName) #da verdadero si la route ya existe.
-                            errorDescription = "Empresa ya existente"
-                        except:
-                            temporaryCompany = Empresa(nombre = companyName,  mail = companyEmail)
-                            temporaryCompany.save()
-                            logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Empresa: " + companyName + " Error:" + errorDescription)
-                else:
-                    temporaryCompany = Empresa.objects.get(nombre = companyName)
-                    if request.POST.get('action') == 'editCompany': 
-                        temporaryCompany.mail = companyEmail;
-                        temporaryCompany.save();
-                    else: #if request.POST.get('action') == 'delEmpresa': Asume que la accion por omision es borrar
-                        #La confirmacion de la eliminacion es en el codigo html
-                        temporaryCompany.delete()
-                #else:
-                    #errorDescription = "Accion no valida: " + str(request.POST.get('action'))
+                if request.POST.get('action') == 'addCompany':
+                    return HttpResponseRedirect('empresadata0?add')
+                elif request.POST.get('action') == 'editCompany':
+                    temporaryCompany = Empresa.objects.get(nombre = request.POST.get('nombre'))                    
+                    return HttpResponseRedirect('empresadata'+ str(temporaryCompany.getId()) +'?edit')                #else:
+                elif request.POST.get('action') == 'delCompany':
+                    temporaryCompany = Empresa.objects.get(nombre = request.POST.get('nombre'))                    
+                    return HttpResponseRedirect('empresadata'+ str(temporaryCompany.getId()) +'?delete')                #else:
                 companyList=Empresa.objects.all().order_by('nombre')
             #empiezan las excepciones
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la empresa"
-            logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Empresa: " + companyName + " Error:" + errorDescription)
-        else:
-            form = CompanyForm()
     else:
-        form = CompanyForm()
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Company Error:" + errorDescription)        
     return render_to_response('empresa.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription,  'companyList':companyList, 'superadmin':superadmin},  context_instance=RequestContext(request))
@@ -454,3 +433,48 @@ def changepassword(request):
         form = PassworForm()
     logger.info("Usuario: " + request.user +" Accion: ChangePassword Error:" + errorDescription)
     return render_to_response('change_password.html', {'temporaryUser': request.user, 'form': form, 'error': errorDescription,  'admin': True}, context_instance=RequestContext(request))
+
+@login_required    
+def companydata(request, companyId): #pagina de ABM de unidades - faltan excepciones
+    #carga inicial
+    c = {}
+    c.update(csrf(request))
+    errorDescription = ""
+    userData = Usuario.objects.get(nombre = request.user)
+    logger = logging.getLogger(__name__)
+    form = CompanyForm()
+
+    #logica
+    if (userData.categoria == 'Administrador'):
+        if request.method == 'POST' or companyId == 0:
+            try:
+                form = CompanyForm(request.POST)
+                if form.is_valid():
+                    companyName = form.cleaned_data['nombre'].upper()
+                    companyEmail = form.cleaned_data['email'].lower()
+                    action = form.cleaned_data['action'].lower()
+                    if action == 'add':
+                        temporaryCompany = Empresa(nombre = companyName,  mail = companyEmail)
+                        temporaryCompany.save();
+                    elif action == 'edit':
+                        temporaryCompany = Empresa.objects.get(idempresa = companyId)
+                        temporaryCompany.nombre = companyName
+                        temporaryCompany.mail = companyEmail
+                        temporaryCompany.save();
+                    elif action == 'delete':
+                        temporaryCompany = Empresa.objects.get(idempresa = companyId)
+                        temporaryCompany.delete()
+                    else:
+                        errorDescription = "Accion no valida"
+                    logger.info("Usuario: " + userData.nombre +" Accion: " + action + "company Empresa: " + companyName + " Error:" + errorDescription)
+                    return HttpResponseRedirect('empresa')
+                #empiezan las excepciones
+                else:
+                    errorDescription = "Datos Incompletos o Invalidos"
+            except Empresa.DoesNotExist:
+                errorDescription = "No existe la empresa"
+    else:
+        form = CompanyForm()
+        errorDescription = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + userData.nombre +" in CompanyData Error:" + errorDescription)        
+    return render_to_response('empresadata.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True },  context_instance=RequestContext(request))

@@ -26,7 +26,7 @@ Parada Destino:
     </td>
   </tr>
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  <tr><td><a>Tiempos Calculados a {{ timeStamp }}</a></td></tr>
+  {% if timeStamp %}<tr><td><a>Tiempos Calculados a {{ timeStamp }}</a></td></tr>{% endif %}
   <tr><td align=center >
     <div id="tableContainer" class="tableContainer">
       {% if predicciones %}

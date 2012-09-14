@@ -10,10 +10,14 @@ from tibus.models import Parada, Recorrido, Unidad, TiempoRecorrido, MyListener,
 from xml.sax import parseString,  SAXParseException
 
 def index(request): #pagina principal
-    return render_to_response('index.html',{'admin': False})
+    c={}
+    c.update(csrf(request))
+    return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
     
 def model(request): #pagina que explica el funcionamiento del modelo
-    return render_to_response('modelo.html',  {'admin': False})
+    c={}
+    c.update(csrf(request))
+    return render_to_response('modelo.html',  {'admin': False},  context_instance=RequestContext(request))
     
 def prediction(request): #pagina que mostrara las predicciones
     #carga inicial
@@ -93,7 +97,9 @@ def prediction(request): #pagina que mostrara las predicciones
     return render_to_response('prediccion.html',  {'route': routeName ,'form':form, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'routeList':routeList, 'timeStamp': timeStampPrediction},  context_instance=RequestContext(request))
     
 def tibushelp(request):#pagina de ayuda
-    return render_to_response('ayuda.html',  {'admin': False})
+    c={}
+    c.update(csrf(request))
+    return render_to_response('ayuda.html',  {'admin': False},  context_instance=RequestContext(request))
 
 def createMessage(route,  order):
     return '<prediction-request><linea>' + str(route) + '</linea><parada>' + str(order) + '</parada></prediction-request>'

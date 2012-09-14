@@ -11,6 +11,9 @@ class Empresa(models.Model):
         
         def __unicode__(self):
             return self.nombre
+        
+        def getId(self):
+            return self.idempresa
             
         class Meta:
             db_table = 'empresa'
