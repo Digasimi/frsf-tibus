@@ -81,6 +81,7 @@ public class RouteTest extends TestCase {
 		s.setLat((float) 1.0);
 		s.setLon((float) 1.0);
 		s.setOrder(1);
+		s.setStopId(1);
 		ArrayList<Stop> stops = new ArrayList<Stop>();
 		stops.add(s);
 		route.setStops(stops);
@@ -99,24 +100,81 @@ public class RouteTest extends TestCase {
 		s1.setLat((float) 0.0);
 		s1.setLon((float) 0.0);
 		s1.setOrder(0);
+		s1.setStopId(0);
 		
 		Stop s2 = new Stop();
 		s2.setLat((float) 1.0);
 		s2.setLon((float) 0.0);
 		s2.setOrder(1);
+		s2.setStopId(1);
+		
+		Stop s3 = new Stop();
+		s3.setLat((float) 1.0);
+		s3.setLon((float) 1.0);
+		s3.setOrder(2);
+		s3.setStopId(2);
+		
+		Stop s4 = new Stop();
+		s4.setLat((float) 0.0);
+		s4.setLon((float) 1.0);
+		s4.setOrder(3);
+		s4.setStopId(3);
 		
 		ArrayList<Stop> stops = new ArrayList<Stop>();
 		stops.add(s1);
 		stops.add(s2);
-		route.setStops(stops);
+		stops.add(s3);
+		stops.add(s4);
+		route.setStops(stops);		
 		
-		Double result = route.calculateHeading(s1);
-		Double expected = (double) 0;
-		
-		assertEquals((double)0, route.calculateHeading(s1));
-		assertEquals((double)180, route.calculateHeading(s2));
+		assertEquals((double)0, route.calculateHeading(s1), 0.1);
+		assertEquals((double)90, route.calculateHeading(s2), 0.1);
+		assertEquals((double)180, route.calculateHeading(s3), 0.1);
+		assertEquals((double)270, route.calculateHeading(s4), 0.1);
 		
 	}
+	
+	public void testNextStop()
+	{
+		route = new Route();
+		
+		Stop s1 = new Stop();
+		s1.setLat((float) 0.0);
+		s1.setLon((float) 0.0);
+		s1.setOrder(0);
+		s1.setStopId(0);
+		
+		Stop s2 = new Stop();
+		s2.setLat((float) 1.0);
+		s2.setLon((float) 0.0);
+		s2.setOrder(1);
+		s2.setStopId(1);
+		
+		Stop s3 = new Stop();
+		s3.setLat((float) 1.0);
+		s3.setLon((float) 1.0);
+		s3.setOrder(2);
+		s3.setStopId(2);
+		
+		Stop s4 = new Stop();
+		s4.setLat((float) 0.0);
+		s4.setLon((float) 1.0);
+		s4.setOrder(3);
+		s4.setStopId(3);
+		
+		ArrayList<Stop> stops = new ArrayList<Stop>();
+		stops.add(s1);
+		stops.add(s2);
+		stops.add(s3);
+		stops.add(s4);
+		route.setStops(stops);		
+		
+		assertEquals(s2, route.getNextStop(s1));
+		assertEquals(s3, route.getNextStop(s2));
+		assertEquals(s4, route.getNextStop(s3));
+		assertEquals(s1, route.getNextStop(s4));
+	}
+
 	
 	
 	

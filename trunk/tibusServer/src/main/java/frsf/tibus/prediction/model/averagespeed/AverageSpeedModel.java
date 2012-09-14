@@ -33,6 +33,7 @@ public class AverageSpeedModel implements PredictionModel {
 		loadRoutes();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadRoutes() 
 	{
 	    session.beginTransaction();
@@ -48,7 +49,8 @@ public class AverageSpeedModel implements PredictionModel {
 	@Override
 	public void procesarNuevaPosicion(BusPositionData busPosition) 
 	{
-		routes.get(busPosition.getRouteId()).processBusPosition(busPosition);
+		Route r = routes.get(new Integer(busPosition.getRouteId()));
+		r.processBusPosition(busPosition);
 	}
 
 	@Override

@@ -18,27 +18,23 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
  */
 
 public class BusPositionData implements Serializable{
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 3150497970302555791L;
 	private Integer busId;
     private Float lat, lon;
     private Float heading;
     private DateTime date;
-    private Integer routeId;
-
-    
+    private String routeName;
 
     public BusPositionData(Integer busId, Float lat, Float lon, Float heading,
-			DateTime date, Integer routeId) {
+			DateTime date, String routeName) {
 		super();
 		this.busId = busId;
 		this.lat = lat;
 		this.lon = lon;
 		this.heading = heading;
 		this.date = date;
-		this.routeId = routeId;
+		this.routeName = routeName;
 	}
 
 	public DateTime getDate() {
@@ -73,12 +69,12 @@ public class BusPositionData implements Serializable{
         return lon;
     }
 
-	public Integer getRouteId() {
-		return routeId;
+	public String getRouteId() {
+		return routeName;
 	}
 
-	public void setRouteId(Integer routeId) {
-		this.routeId = routeId;
+	public void setRouteId(String routeId) {
+		this.routeName = routeId;
 	}
 
 	public Float getHeading() {
