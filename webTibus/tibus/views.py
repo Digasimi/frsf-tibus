@@ -23,14 +23,14 @@ def prediction(request): #pagina que mostrara las predicciones
     errorDescription = ""
     timeStampPrediction = ""
     parser = PresponseHandler()
-    
-    routeList = Recorrido.objects.all().order_by('route')
+    routeName = ""
+    routeList = Recorrido.objects.all().order_by('linea')
     stopList = Parada.objects.all()
     
     #logica
     if request.method == 'POST':
         form = PredictionForm(request.POST)
-        routeName = request.POST.get('route').upper()
+        routeName = request.POST.get('linea').upper()
         try:
             if request.POST.get('action')=="prediction":
                 if routeName == '':
@@ -38,8 +38,9 @@ def prediction(request): #pagina que mostrara las predicciones
                 elif request.POST.get('orden')=='':
                     errorDescription = "No ingreso la parada"
                 else:
-                    temporaryRoute= Recorrido.objects.get(route = routeName.upper())
-                    destinyStop = Parada.objects.get(route = temporaryRoute, orden = request.POST.get('orden'))
+                    temporaryRoute= Recorrido.objects.get(linea = routeName.upper())
+                    stopList = Parada.objects.filter(linea = temporaryRoute)
+                    destinyStop = Parada.objects.get(linea = temporaryRoute, orden = request.POST.get('orden'))
                     
                     #formato nuevo
                     conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
@@ -88,7 +89,8 @@ def prediction(request): #pagina que mostrara las predicciones
             errorDescription = "No hay estimaciones"
     else:
         form = PredictionForm()
-    return render_to_response('prediccion.html',  {'form':form, 'listaParada': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'listaLinea':routeList, 'timeStamp': timeStampPrediction},  context_instance=RequestContext(request))
+        routeName = None
+    return render_to_response('prediccion.html',  {'route': routeName ,'form':form, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'routeList':routeList, 'timeStamp': timeStampPrediction},  context_instance=RequestContext(request))
     
 def tibushelp(request):#pagina de ayuda
     return render_to_response('ayuda.html',  {'admin': False})
