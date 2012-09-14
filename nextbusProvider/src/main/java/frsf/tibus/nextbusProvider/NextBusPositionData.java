@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "vehiclePositionData")
-public class VehiclePositionData {
+public class NextBusPositionData {
 
     @XmlAttribute(name = "id", required = true)
     protected String id;
@@ -52,15 +52,15 @@ public class VehiclePositionData {
     @XmlAttribute(name = "dirTag")
     protected String dirTag;
     @XmlAttribute(name = "lat", required = true)
-    protected BigDecimal lat;
+    protected Float lat;
     @XmlAttribute(name = "lon", required = true)
-    protected BigDecimal lon;
+    protected Float lon;
     @XmlAttribute(name = "secsSinceReport", required = true)
-    protected BigInteger secsSinceReport;
+    protected Integer secsSinceReport;
     @XmlAttribute(name = "predictable", required = true)
     protected boolean predictable;
     @XmlAttribute(name = "heading", required = true)
-    protected BigDecimal heading;
+    protected Float heading;
     @XmlAttribute(name = "speedKmHr", required = true)
     protected BigDecimal speedKmHr;
 
@@ -144,7 +144,7 @@ public class VehiclePositionData {
      *     {@link BigDecimal }
      *     
      */
-    public BigDecimal getLat() {
+    public Float getLat() {
         return lat;
     }
 
@@ -156,7 +156,7 @@ public class VehiclePositionData {
      *     {@link BigDecimal }
      *     
      */
-    public void setLat(BigDecimal value) {
+    public void setLat(Float value) {
         this.lat = value;
     }
 
@@ -168,7 +168,7 @@ public class VehiclePositionData {
      *     {@link BigDecimal }
      *     
      */
-    public BigDecimal getLon() {
+    public Float getLon() {
         return lon;
     }
 
@@ -180,7 +180,7 @@ public class VehiclePositionData {
      *     {@link BigDecimal }
      *     
      */
-    public void setLon(BigDecimal value) {
+    public void setLon(Float value) {
         this.lon = value;
     }
 
@@ -192,7 +192,7 @@ public class VehiclePositionData {
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getSecsSinceReport() {
+    public Integer getSecsSinceReport() {
         return secsSinceReport;
     }
 
@@ -204,7 +204,7 @@ public class VehiclePositionData {
      *     {@link BigInteger }
      *     
      */
-    public void setSecsSinceReport(BigInteger value) {
+    public void setSecsSinceReport(Integer value) {
         this.secsSinceReport = value;
     }
 
@@ -232,7 +232,7 @@ public class VehiclePositionData {
      *     {@link BigDecimal }
      *     
      */
-    public BigDecimal getHeading() {
+    public Float getHeading() {
         return heading;
     }
 
@@ -244,7 +244,7 @@ public class VehiclePositionData {
      *     {@link BigDecimal }
      *     
      */
-    public void setHeading(BigDecimal value) {
+    public void setHeading(Float value) {
         this.heading = value;
     }
 

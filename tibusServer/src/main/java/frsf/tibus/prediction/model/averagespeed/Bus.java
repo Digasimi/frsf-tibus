@@ -43,12 +43,14 @@ public class Bus {
 
 	public void processPosition(BusPositionData busPosition) 
 	{
+		Stop nearestStop;
 		if(currentStop == null)
-		{
-			Stop nearestStop = route.findNearestStop(busPosition, currentStop);
-			
-			if(nearestStop != null)
-				currentStop = nearestStop;
-		}		
+			nearestStop = route.findNearestStop(busPosition);
+		else
+			nearestStop = route.findNearestStop(busPosition, currentStop);
+		
+		if(nearestStop != null)
+			currentStop = nearestStop;
+		
 	}
 }

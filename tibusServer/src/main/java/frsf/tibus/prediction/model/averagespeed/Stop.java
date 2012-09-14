@@ -77,8 +77,11 @@ public class Stop {
 	
 	public boolean equals(Stop s)
 	{
-		if(this.getStopId().equals(s.getStopId()))
-			return true;
+		if(s != null)
+			if(this.getStopId().equals(s.getStopId()))
+				return true;
+			else
+				return false;
 		else
 			return false;
 	}

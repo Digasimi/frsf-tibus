@@ -2,10 +2,16 @@ package frsf.tibus.prediction.model.averagespeed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 
 import java.util.List;
 
 import javax.persistence.*;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import com.bbn.openmap.proj.Length;
 import com.bbn.openmap.proj.coords.LatLonPoint;
@@ -76,21 +82,36 @@ public class Route {
 		{
 			for(Bus bus: buses.values())
 			{
-				if (bus.getCurrentStop().getOrder() <= destination.getOrder())
+				if(bus.getCurrentStop() != null)
 				{
-					Double time = new Double(0);
-					Stop tempStop1, tempStop2;
-					for(int i = bus.getCurrentStop().getOrder(); i < destination.getOrder();i++)
+					if (getStopOrder(bus.getCurrentStop()) <= getStopOrder(destination))
 					{
-						tempStop1 = getStopByOrder(i);
-						tempStop2 = getNextStop(tempStop1);
-						
-						time += (getDistance(tempStop1, tempStop2)/
-								tempStop1.getAverageSpeed().getAverageSpeed());						
+						Double time = new Double(0);
+						Stop tempStop1, tempStop2;
+						for(int i = getStopOrder(bus.getCurrentStop()); i < getStopOrder(destination);i++)
+						{
+							tempStop1 = getStopByOrder(i);
+							tempStop2 = getNextStop(tempStop1);
+							
+							time += getDistance(tempStop1, tempStop2)/new Double(1.0);
+	//								tempStop1.getAverageSpeed().getAverageSpeed());						
+						}
+						result.addPrediction(new Prediction(bus.getId().toString(),new Integer(time.intValue()), 
+								bus.getLat(), bus.getLon()));
 					}
-					result.addPrediction(new Prediction(bus.getId().toString(),new Integer(time.intValue()), bus.getLat(), bus.getLon()));
 				}
 			}
+			 DateTimeFormatter dateFormat = new DateTimeFormatterBuilder()
+			 .appendDayOfWeekText()
+			 .appendLiteral(' ')
+	            .appendDayOfMonth(2)	            
+	            .appendLiteral(" de ")
+	            .appendMonthOfYearText()
+	            .appendLiteral(" de ")
+	            .appendYear(4, 4)
+	            .toFormatter();
+			dateFormat.withLocale(new Locale("es_ES"));
+			result.setTimestamp(dateFormat.print(new DateTime()));
 		}
 		else
 		{
@@ -101,6 +122,14 @@ public class Route {
 			result.setError("No hay estimaciones disponibles");
 		
 		return result;
+	}
+
+	public Integer getStopOrder(Stop s) {
+		for(int i = 0; i < stops.size(); i++)
+			if(stops.get(i).equals(s))
+				return i;
+	
+		return null;
 	}
 
 	public Stop getStopById(String stopId){
@@ -157,8 +186,8 @@ public class Route {
 	public Stop getNextStop(Stop stop) {
 		if(stops.contains(stop))
 			//Si stop no es la ultima parada
-			if(stop.getOrder() < stops.size()-1)
-				return this.getStopByOrder(stop.getOrder()+1);
+			if(getStopOrder(stop) < stops.size()-1)
+				return this.getStopByOrder(getStopOrder(stop)+1);
 			else
 				return this.getFirstStop();
 		else
@@ -173,10 +202,10 @@ public class Route {
 	public Stop getPreviousStop(Stop stop) {
 		if(stops.contains(stop))
 			//Si stop es la primera parada
-			if(stop.getOrder() == 0)
+			if(getStopOrder(stop) == 0)
 				return this.getLastStop();
 			else
-				return this.getStopByOrder(stop.getOrder());
+				return this.getStopByOrder(getStopOrder(stop));
 		else
 			return null;
 	}
@@ -211,8 +240,8 @@ public class Route {
 	 */
 
 	public boolean consecutive(Stop start, Stop destination) {
-		Integer startOrder = start.getOrder();
-		Integer destinationOrder = destination.getOrder();
+		Integer startOrder = getStopOrder(start);
+		Integer destinationOrder = getStopOrder(destination);
 		
 		if(startOrder <= destinationOrder)
 			if(startOrder +1 == destinationOrder)
@@ -227,9 +256,9 @@ public class Route {
 				return false;
 	}
 
-	public void processBusPosition(BusPositionData busPosition) {
-		
-		Bus bus = buses.get(busPosition);
+	public void processBusPosition(BusPositionData busPosition) 
+	{
+		Bus bus = buses.get(busPosition.getIdColectivo());
 		
 		if(bus != null)
 		{
@@ -253,13 +282,19 @@ public class Route {
 		
 		Stop previousStop = this.getPreviousStop(currentStop);
 		
-		for(Stop stop = currentStop; stop.equals(previousStop); stop = this.getNextStop(stop))
+		for(Stop stop = currentStop; !stop.equals(previousStop); stop = this.getNextStop(stop))
 		{
 			Double distance = stop.distance(busPosition.getCoordinates());
-			Double headingDifference = Math.abs(calculateHeading(stop)-busPosition.getHeading());
+			Double stopHeading = calculateHeading(stop);
+			Float busHeading = busPosition.getHeading();
 			
-			if(distance < this.distanceTolerance && headingDifference < this.headingDifferenceTolerance)
-				return stop;
+			if(stopHeading != null && busHeading != null)
+			{
+				Double headingDifference = Math.abs(stopHeading - busHeading);
+				
+				if(distance < this.distanceTolerance && headingDifference < this.headingDifferenceTolerance)
+					return stop;
+			}
 		}
 		return null;
 	}
@@ -276,13 +311,21 @@ public class Route {
 		if(nextStop != null)
 		{
 			LatLonPoint stopCoordinates = new LatLonPoint.Float(stop.getLat(), stop.getLon());
-			Double heading = Length.DECIMAL_DEGREE.fromRadians(stopCoordinates.azimuth(new LatLonPoint.Float(nextStop.getLat(), nextStop.getLon()))); 
+			Double heading = Length.DECIMAL_DEGREE.fromRadians(stopCoordinates.azimuth(new LatLonPoint.Float(nextStop.getLat(), nextStop.getLon())));
+			
+			if(heading < 0)
+				heading = 360 + heading;
+			
 			return heading;
 		}
 		else
 			return null;
 		
 		
+	}
+
+	public Stop findNearestStop(BusPositionData busPosition) {
+		return this.findNearestStop(busPosition, this.getFirstStop());
 	}
 
 }

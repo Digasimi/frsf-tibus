@@ -45,11 +45,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link VehiclePositionData }
+     * Create an instance of {@link NextBusPositionData }
      * 
      */
-    public VehiclePositionData createVehiclePositionData() {
-        return new VehiclePositionData();
+    public NextBusPositionData createVehiclePositionData() {
+        return new NextBusPositionData();
     }
 
     /**

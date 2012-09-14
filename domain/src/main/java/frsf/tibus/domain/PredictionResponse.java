@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-import org.joda.time.DateTime;
+
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
@@ -28,7 +28,7 @@ public class PredictionResponse implements Serializable{
 	protected List<PredictionResponse.Prediction> prediction;
     @XmlElement(required = true)
     @XmlSchemaType(name = "dateTime")
-    protected DateTime timestamp;
+    protected String timestamp;
     @XmlElement(required=false)
     protected String error;
     
@@ -45,11 +45,11 @@ public class PredictionResponse implements Serializable{
     }
 
     
-    public DateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-        public void setTimestamp(DateTime value) {
+        public void setTimestamp(String value) {
         this.timestamp = value;
     }
 
