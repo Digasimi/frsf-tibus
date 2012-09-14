@@ -17,7 +17,7 @@ import frsf.tibus.prediction.model.PredictionModel;
 public class AverageSpeedModel implements PredictionModel {
 	
 	private Session session;	
-	private HashMap<Integer, Route> routes;
+	private HashMap<String, Route> routes;
 	
 	public AverageSpeedModel()
 	{
@@ -37,11 +37,11 @@ public class AverageSpeedModel implements PredictionModel {
 	private void loadRoutes() 
 	{
 	    session.beginTransaction();
-		routes = new HashMap<Integer, Route>();	
+		routes = new HashMap<String, Route>();	
 	    List<Route> result = session.createQuery( "from Route" ).list();
 		for ( Route route : (List<Route>) result ) {
 			System.out.println( "Recorrido (" + route.getRouteId() + ") : ");
-			routes.put(route.getRouteId(), route);
+			routes.put(route.getRouteName(), route);
 		}
         session.getTransaction().commit();
 	}
@@ -49,14 +49,14 @@ public class AverageSpeedModel implements PredictionModel {
 	@Override
 	public void procesarNuevaPosicion(BusPositionData busPosition) 
 	{
-		Route r = routes.get(new Integer(busPosition.getRouteId()));
+		Route r = routes.get(busPosition.getRouteId());
 		r.processBusPosition(busPosition);
 	}
 
 	@Override
 	public PredictionResponse obtenerPrediccion(PredictionRequest r) 
 	{
-		Route route = routes.get(new Integer(r.getLinea()));
+		Route route = routes.get(r.getLinea());
 		return route.getPredictions(r.getParada());
 	}
 

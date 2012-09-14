@@ -77,7 +77,7 @@ public class App
 			    			timestamp.minusSeconds(data.getSecsSinceReport());
 			    			
 			    			r.setObject(new BusPositionData(new Integer(data.getId()), data.getLat(), 
-			    					data.getLon(), data.getHeading(), timestamp,"3" /*data.getRouteTag()*/));
+			    					data.getLon(), data.getHeading(), timestamp,data.getRouteTag()));
 			    			p.send(r);
 		    			}
 		    		}

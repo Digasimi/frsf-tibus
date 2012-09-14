@@ -27,6 +27,9 @@ public class Route {
 	@Column(name="idrecorrido")
 	private Integer routeId;
 	
+	@Column(name="linea")
+	private String routeName;
+	
 	@OneToMany(targetEntity=Stop.class, mappedBy = "route", 
 			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@OrderBy("orden asc")
@@ -326,6 +329,14 @@ public class Route {
 
 	public Stop findNearestStop(BusPositionData busPosition) {
 		return this.findNearestStop(busPosition, this.getFirstStop());
+	}
+
+	public String getRouteName() {
+		return routeName;
+	}
+
+	public void setRouteName(String routeName) {
+		this.routeName = routeName;
 	}
 
 }
