@@ -259,7 +259,7 @@
                 <div class="shadowblockmenu">
                     <table><tbody><tr>
                         <td><A HREF="index">Presentación</a></td>
-                        <td><A HREF="admin">Administración</a></td>
+                        {% if user.is_active%}<td><A HREF="admin">Administración</a></td>{% endif %}
                         <td><A HREF="prediccion">Predicción</a></td>
                         <td><A HREF="modelo">Modelo</a></td>
                         <td><A HREF="ayuda">Ayuda</a></td>
@@ -282,5 +282,3 @@
     </tbody>
 </table>
 {% endblock %}
-
-

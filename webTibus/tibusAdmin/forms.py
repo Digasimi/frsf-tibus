@@ -27,8 +27,10 @@ class BusForm(forms.Form):
     id_unidad_linea = forms.IntegerField()
 
 class CompanyForm(forms.Form):
+    idcompany = forms.IntegerField(widget=forms.HiddenInput, required=False)
     nombre = forms.CharField()
     email = forms.EmailField()
+    action = forms.CharField(widget=forms.HiddenInput)
     
 class UserForm(forms.Form):
     nombre = forms.CharField()

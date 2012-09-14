@@ -37,9 +37,9 @@ LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
 
 #Aca van las variables relacionadas al logeo de usuario
-LOGIN_URL = '/login/'
+LOGIN_URL = '/login'
 
-LOGOUT_URL = '/logout/'
+LOGOUT_URL = '/logout'
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
