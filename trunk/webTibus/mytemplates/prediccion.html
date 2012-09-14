@@ -9,14 +9,14 @@ Parada Destino:
               <tr> <td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
                     <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formPrediccion.id_linea.value = document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;document.formPrediccion.lineaCombo.value=document.formPrediccion.lineaCombo.options[document.formPrediccion.lineaCombo.selectedIndex].value;this.form.submit()">
                     	<OPTION VALUE="">Seleccione un valor</OPTION> 
-                      {% for route in listaLinea %}
+                      {% for route in routeList %}
                        	<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
                       {% endfor %}
                     </SELECT></td>
                     <td> <label for="id_orden"> Parada: </label> {{ form.orden }}     
                     <SELECT NAME="paradaCombo" SIZE=1 onchange="document.formPrediccion.id_orden.value = document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value;document.formPrediccion.paradaCombo.value=document.formPrediccion.paradaCombo.options[document.formPrediccion.paradaCombo.selectedIndex].value">
                     	<OPTION VALUE="">Seleccione un valor</OPTION>
-                      {% for stop in listaParada %}
+                      {% for stop in stopList %}
                        	<OPTION VALUE="{{ stop.orden }}">{{ stop.orden }}</OPTION>
                       {% endfor %}
                     </SELECT></td>
@@ -52,9 +52,9 @@ Parada Destino:
 {% endblock %}
 
 {% block marcas %}   
-    {% if linea %}
-    	{% if listaParadas %}
-    		{% for parada in listaParadas %}
+    {% if route %}
+    	{% if stopList %}
+    		{% for parada in stopList %}
     			markerPosition = new google.maps.LatLng({{ parada.latitud }},{{ parada.longitud}});
        			marker = new google.maps.Marker({
         			map:map,
@@ -69,8 +69,8 @@ Parada Destino:
     	{% endif %} 
     	
     	var flightPlanCoordinates = [
-	      {% for parada in listaParadas %}
-		    new google.maps.LatLng({{ parada.latitud }},{{ parada.longitud}}),
+	      {% for stop in stopList %}
+		    new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}}),
 	      {% endfor %}
 		];
 		var flightPath = new google.maps.Polyline({
