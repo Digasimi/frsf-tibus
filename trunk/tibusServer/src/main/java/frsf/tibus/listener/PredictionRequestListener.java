@@ -19,6 +19,9 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+
 import frsf.tibus.domain.PredictionRequest;
 import frsf.tibus.domain.PredictionResponse;
 import frsf.tibus.prediction.model.PredictionModel;
@@ -63,6 +66,7 @@ public class PredictionRequestListener implements MessageListener {
 	
 	@Override
 	public void onMessage(Message request) {
+		DateTime comienzo = new DateTime();
 		try {
 			if(request instanceof ObjectMessage)
 			{
@@ -105,5 +109,10 @@ public class PredictionRequestListener implements MessageListener {
 		catch (Exception e) {
 			e.printStackTrace();
 		}		
+		
+		Period duracion = new Period(comienzo,new DateTime());
+		System.out.println("Tiempo procesamiento Sec= " + duracion.getSeconds());
+		System.out.println("Tiempo procesamiento Milis= " + duracion.getMillis());
 	}
+	
 }

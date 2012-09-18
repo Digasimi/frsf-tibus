@@ -69,12 +69,12 @@ public class BusPositionData implements Serializable{
         return lon;
     }
 
-	public String getRouteId() {
+	public String getRouteName() {
 		return routeName;
 	}
 
-	public void setRouteId(String routeId) {
-		this.routeName = routeId;
+	public void setRouteName(String routeName) {
+		this.routeName = routeName;
 	}
 
 	public Float getHeading() {

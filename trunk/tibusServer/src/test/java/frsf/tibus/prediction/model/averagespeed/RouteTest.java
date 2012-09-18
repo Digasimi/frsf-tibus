@@ -1,10 +1,14 @@
 package frsf.tibus.prediction.model.averagespeed;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import frsf.tibus.domain.PredictionResponse;
-import frsf.tibus.domain.PredictionResponse.Prediction;
 
 import junit.framework.TestCase;
 
@@ -16,6 +20,7 @@ public class RouteTest extends TestCase {
 		super(name);
 	}
 
+	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
 		Stop stop1 = new Stop();
@@ -46,34 +51,41 @@ public class RouteTest extends TestCase {
 		route.setBuses(buses);
 	}
 
+	@Test
 	public void testGetPredictions() {
 		PredictionResponse p = route.getPredictions("2"); 
 		assertEquals(1000,p.getPrediction().get(0).getTimeSec().intValue(),1);
 		assertTrue(p.getError()==null);
 	}
 	
-	public void testGetDistanciaParadasConsecutivas()
-	{
-		assertEquals(new Double(1000),route.getDistance(route.getStopByOrder(0), route.getStopByOrder(1)),1);		
-	}
-	
+	@Test
 	public void testNoPredictionsAvailable() {
 		String error = route.getPredictions("3").getError();
 		assertTrue(error != null);
 	}
 	
+	@Test
 	public void testCalculateHeadingWithoutStops()
 	{
 		route = new Route();
 		Stop s = new Stop();
 		s.setLat((float) 1.0);
 		s.setLon((float) 1.0);
-		Double result = route.calculateHeading(s);
+
+		try{
+			route.calculateHeading(null);
+			fail();
+		}
+		catch (IllegalArgumentException e){		}
 		
-		assertNull(result);
+		try{
+			route.calculateHeading(s);
+			fail();
+		}
+		catch (IllegalArgumentException e){		}
 	}
 	
-	
+	@Test
 	public void testCalculateHeadingWithOneStop()
 	{
 		route = new Route();
@@ -86,12 +98,19 @@ public class RouteTest extends TestCase {
 		stops.add(s);
 		route.setStops(stops);
 		
+		try{
+			route.calculateHeading(null);
+			fail();
+		}
+		catch (IllegalArgumentException e){		}
+		
 		Double result = route.calculateHeading(s);
 		Double expected = (double) 0;
 		
 		assertEquals(expected, result);
 	}
 	
+	@Test
 	public void testCalculateHeadingWithTwoStops()
 	{
 		route = new Route();
@@ -134,6 +153,7 @@ public class RouteTest extends TestCase {
 		
 	}
 	
+	@Test
 	public void testNextStop()
 	{
 		route = new Route();
@@ -145,38 +165,188 @@ public class RouteTest extends TestCase {
 		s1.setStopId(0);
 		
 		Stop s2 = new Stop();
-		s2.setLat((float) 1.0);
-		s2.setLon((float) 0.0);
+		s2.setLat((float) 0.001);
+		s2.setLon((float) 0.000);
 		s2.setOrder(1);
 		s2.setStopId(1);
 		
 		Stop s3 = new Stop();
-		s3.setLat((float) 1.0);
-		s3.setLon((float) 1.0);
+		s3.setLat((float) 0.001);
+		s3.setLon((float) 0.001);
 		s3.setOrder(2);
 		s3.setStopId(2);
 		
 		Stop s4 = new Stop();
 		s4.setLat((float) 0.0);
-		s4.setLon((float) 1.0);
+		s4.setLon((float) 0.001);
 		s4.setOrder(3);
 		s4.setStopId(3);
 		
 		ArrayList<Stop> stops = new ArrayList<Stop>();
+		
+		//Recorrido sin paradas
+		try {
+			route.getNextStop(s1);
+			fail();
+		}
+		catch (IllegalArgumentException e){		}
+		
+		try {
+			route.getNextStop(null);
+			fail();
+		}
+		catch (IllegalArgumentException e){		}
+		
+		
+		//Recorrido con una parada
 		stops.add(s1);
+		route.setStops(stops);
+		assertEquals(s1, route.getNextStop(s1));
+		
 		stops.add(s2);
 		stops.add(s3);
 		stops.add(s4);
 		route.setStops(stops);		
 		
+		//Recorrido con mas de una parada
 		assertEquals(s2, route.getNextStop(s1));
 		assertEquals(s3, route.getNextStop(s2));
 		assertEquals(s4, route.getNextStop(s3));
 		assertEquals(s1, route.getNextStop(s4));
 	}
-
 	
+	@Test
+	public void testDistance()
+	{
+		route = new Route();
+		
+		Stop s1 = new Stop();
+		s1.setLat((float) 0.0);
+		s1.setLon((float) 0.0);
+		s1.setStopId(0);
+		
+		Stop s2 = new Stop();
+		s2.setLat((float) 0.001);
+		s2.setLon((float) 0.000);
+		s2.setStopId(1);
+		
+		Stop s3 = new Stop();
+		s3.setLat((float) 0.001);
+		s3.setLon((float) 0.001);
+		s3.setStopId(2);
+		
+		Stop s4 = new Stop();
+		s4.setLat((float) 0.0);
+		s4.setLon((float) 0.001);
+		s4.setStopId(3);
+		
+		ArrayList<Stop> stops = new ArrayList<Stop>();
+		
+		stops.add(s1);
+		stops.add(s2);
+		stops.add(s3);
+		stops.add(s4);
+		route.setStops(stops);
+		
+		//Distancia entre paradas consecutivas
+		assertEquals(111.1, route.getDistance(s1, s2), 1);
+		
+		//Distancia a la misma parada
+		assertEquals(0.0, route.getDistance(s1, s1));
+		
+		assertEquals(111.1, route.getDistance(s2, s3), 1);
+		assertEquals(111.1*2, route.getDistance(s1, s3), 1);
+		assertEquals(111.1*3, route.getDistance(s2, s1), 1);
+	}
 	
+	@Test
+	public void testConsecutive()
+	{
+		route = new Route();
+		
+		Stop s1 = new Stop();
+		s1.setLat((float) 0.0);
+		s1.setLon((float) 0.0);
+		s1.setStopId(0);
+		
+		Stop s2 = new Stop();
+		s2.setLat((float) 0.001);
+		s2.setLon((float) 0.000);
+		s2.setStopId(1);
+		
+		Stop s3 = new Stop();
+		s3.setLat((float) 0.001);
+		s3.setLon((float) 0.001);
+		s3.setStopId(2);
+		
+		Stop s4 = new Stop();
+		s4.setLat((float) 0.0);
+		s4.setLon((float) 0.001);
+		s4.setStopId(3);
+		
+		ArrayList<Stop> stops = new ArrayList<Stop>();
+		
+		stops.add(s1);
+		stops.add(s2);
+		stops.add(s3);
+		stops.add(s4);
+		route.setStops(stops);
+		
+		assertTrue(route.consecutive(s1, s2));
+		assertTrue(route.consecutive(s2, s3));
+		assertTrue(route.consecutive(s3, s4));
+		assertTrue(route.consecutive(s4, s1));
+		
+		assertFalse(route.consecutive(s1, s1));
+		assertFalse(route.consecutive(s2, s1));
+		assertFalse(route.consecutive(s1, s3));
+		assertFalse(route.consecutive(s1, s4));
+		
+		try{
+			route.consecutive(null, null);
+			fail();
+		}
+		catch (IllegalArgumentException e){		}
+	}
 	
+	@Test
+	public void testPreviousStop()
+	{
+route = new Route();
+		
+		Stop s1 = new Stop();
+		s1.setLat((float) 0.0);
+		s1.setLon((float) 0.0);
+		s1.setStopId(0);
+		
+		Stop s2 = new Stop();
+		s2.setLat((float) 0.001);
+		s2.setLon((float) 0.000);
+		s2.setStopId(1);
+		
+		Stop s3 = new Stop();
+		s3.setLat((float) 0.001);
+		s3.setLon((float) 0.001);
+		s3.setStopId(2);
+		
+		Stop s4 = new Stop();
+		s4.setLat((float) 0.0);
+		s4.setLon((float) 0.001);
+		s4.setStopId(3);
+		
+		ArrayList<Stop> stops = new ArrayList<Stop>();
+		
+		stops.add(s1);
+		stops.add(s2);
+		stops.add(s3);
+		stops.add(s4);
+		route.setStops(stops);
+		
+		assertEquals(s4,route.getPreviousStop(s1));
+		assertEquals(s1,route.getPreviousStop(s2));
+		assertEquals(s2,route.getPreviousStop(s3));
+		assertEquals(s3,route.getPreviousStop(s4));
+		
+	}
 
 }
