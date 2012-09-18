@@ -1,5 +1,6 @@
 package frsf.tibus.prediction.model.averagespeed;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,6 +52,22 @@ public class AverageSpeedModel implements PredictionModel {
 	{
 		Route r = routes.get(busPosition.getRouteName());
 		r.processBusPosition(busPosition);
+		
+		Bus b = r.getBuses().get(busPosition.getIdColectivo());
+		saveSpeedData(b);
+	}
+
+	private void saveSpeedData(Bus b) {
+//		Float avgSpeed = b.calculateAverageSpeed();
+//		
+//		Stop currentStop = b.getCurrentStop();
+//		Stop previousStop = b.getPreviousStop();
+//		Route r = routes.get(busPosition.getRouteName());
+//		
+//		ArrayList<AverageSpeed> speeds = new ArrayList<AverageSpeed>(); 
+//		
+//		for(Stop s = previousStop; !s.equals(currentStop); s = r.getNextStop(s))
+//			speeds.add(new AverageSpeed(s, avgSpeed));
 	}
 
 	@Override

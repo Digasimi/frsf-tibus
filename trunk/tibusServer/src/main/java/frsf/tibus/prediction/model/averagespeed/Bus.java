@@ -1,13 +1,24 @@
 package frsf.tibus.prediction.model.averagespeed;
 
+import org.joda.time.Period;
+
+import com.bbn.openmap.proj.Length;
+
 import frsf.tibus.domain.BusPositionData;
 
 public class Bus {
 	
-	Route route;
-	Integer id;
-	Float lat, lon;
-	Stop currentStop;
+	private Route route;
+	private Integer id;
+	private Float lat, lon;
+	
+	// Parada asignada según posición recibida
+	private Stop currentStop;
+	private Stop previousStop;
+	
+	// Ubicación real
+	private BusPositionData previousLocation;
+	private BusPositionData currentLocation;
 	
 	public Bus(Integer id, Route route) {
 		super();
@@ -49,7 +60,27 @@ public class Bus {
 		else
 			nearestStop = route.findNearestStop(busPosition, currentStop);
 		
-		if(nearestStop != null)
-			currentStop = nearestStop;		
+//		if(nearestStop != null)
+		
+		previousStop = currentStop;
+		currentStop = nearestStop;
+		
+		previousLocation = currentLocation;
+		currentLocation = busPosition;
+	}
+
+	public Double calculateAverageSpeed() {
+		
+		if(previousLocation != null && currentLocation != null)
+		{
+			Double distance = Length.METER.fromRadians(previousLocation.getCoordinates().distance(currentLocation.getCoordinates()));
+			Integer timeDifference = new Period(previousLocation.getDate(), currentLocation.getDate())
+											.toStandardSeconds()
+											.getSeconds();
+			
+			return distance / timeDifference;
+		}
+		else
+			return null;
 	}
 }
