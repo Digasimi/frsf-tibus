@@ -89,4 +89,61 @@ public class BusPositionData implements Serializable{
 		return new LatLonPoint.Float(lat, lon);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((busId == null) ? 0 : busId.hashCode());
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+		result = prime * result + ((heading == null) ? 0 : heading.hashCode());
+		result = prime * result + ((lat == null) ? 0 : lat.hashCode());
+		result = prime * result + ((lon == null) ? 0 : lon.hashCode());
+		result = prime * result
+				+ ((routeName == null) ? 0 : routeName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		
+		BusPositionData other = (BusPositionData) obj;
+		if (busId == null) {
+			if (other.busId != null)
+				return false;
+		} else if (!busId.equals(other.busId))
+			return false;
+		if (date == null) {
+			if (other.date != null)
+				return false;
+		} else if (!date.equals(other.date))
+			return false;
+		if (heading == null) {
+			if (other.heading != null)
+				return false;
+		} else if (!heading.equals(other.heading))
+			return false;
+		if (lat == null) {
+			if (other.lat != null)
+				return false;
+		} else if (!lat.equals(other.lat))
+			return false;
+		if (lon == null) {
+			if (other.lon != null)
+				return false;
+		} else if (!lon.equals(other.lon))
+			return false;
+		if (routeName == null) {
+			if (other.routeName != null)
+				return false;
+		} else if (!routeName.equals(other.routeName))
+			return false;
+		return true;
+	}
+
 }

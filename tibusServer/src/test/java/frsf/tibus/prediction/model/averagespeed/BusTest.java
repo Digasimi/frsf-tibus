@@ -9,6 +9,8 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.bbn.openmap.proj.Length;
+
 import frsf.tibus.domain.BusPositionData;
 
 public class BusTest {
@@ -122,6 +124,36 @@ public class BusTest {
 		
 		b.processPosition(busPosition2);
 		assertEquals(route.getFirstStop(), b.getCurrentStop());
+	}
+	
+	@Test 
+	public void calculateAverageSpeed_NoPositionDataAvailable_NullSpeed()
+	{
+		Double avgSpeed = b.calculateAverageSpeed();
+		
+		assertNull(avgSpeed);
+	}
+	
+	@Test 
+	public void calculateAverageSpeed_PositionDataAvailable()
+	{
+		Integer timeDiffSecs = 60;
+		DateTime d1 = new DateTime();
+		DateTime d2 = d1.plusSeconds(timeDiffSecs);
+		
+		BusPositionData busPosition1 = 
+				new BusPositionData(111, (float) 0, (float) 0, (float) 0, d1, "R");
+
+		BusPositionData busPosition2 = 
+				new BusPositionData(111, (float) 0.002, (float) 0.002, (float) 90, d2, "R");
+		
+		Double distanceMts = Length.METER.fromRadians(busPosition1.getCoordinates().distance(busPosition2.getCoordinates()));
+		Double avgSpeed = distanceMts / timeDiffSecs;
+		
+		b.processPosition(busPosition1);				
+		b.processPosition(busPosition2);
+
+		assertEquals(avgSpeed, b.calculateAverageSpeed());
 	}
 
 }
