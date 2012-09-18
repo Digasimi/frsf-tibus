@@ -95,8 +95,8 @@ public class Route {
 							tempStop1 = getStopByOrder(i);
 							tempStop2 = getNextStop(tempStop1);
 							
-							time += getDistance(tempStop1, tempStop2)/new Double(1.0);
-	//								tempStop1.getAverageSpeed().getAverageSpeed());						
+							time += getDistance(tempStop1, tempStop2)/
+									tempStop1.getAverageSpeed();						
 						}
 						result.addPrediction(new Prediction(bus.getId().toString(),new Integer(time.intValue()), 
 								bus.getLat(), bus.getLon()));

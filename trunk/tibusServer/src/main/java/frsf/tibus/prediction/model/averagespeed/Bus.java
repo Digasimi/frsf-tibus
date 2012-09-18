@@ -83,4 +83,16 @@ public class Bus {
 		else
 			return null;
 	}
+
+	public String getRouteName() {
+		return this.route.getRouteName();
+	}
+
+	public Stop getPreviousStop() {
+		return this.previousStop;
+	}
+
+	public BusPositionData getCurrentLocation() {
+		return this.currentLocation;
+	}
 }

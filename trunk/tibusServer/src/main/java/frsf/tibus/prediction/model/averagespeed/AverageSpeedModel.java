@@ -1,6 +1,6 @@
 package frsf.tibus.prediction.model.averagespeed;
 
-import java.util.ArrayList;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,11 +39,12 @@ public class AverageSpeedModel implements PredictionModel {
 	{
 	    session.beginTransaction();
 		routes = new HashMap<String, Route>();	
-	    List<Route> result = session.createQuery( "from Route" ).list();
-		for ( Route route : (List<Route>) result ) {
-			System.out.println( "Recorrido (" + route.getRouteId() + ") : ");
+	    
+		List<Route> result = session.createQuery( "from Route" ).list();
+
+	    for ( Route route : (List<Route>) result ) 
 			routes.put(route.getRouteName(), route);
-		}
+
         session.getTransaction().commit();
 	}
 
@@ -58,16 +59,26 @@ public class AverageSpeedModel implements PredictionModel {
 	}
 
 	private void saveSpeedData(Bus b) {
-//		Float avgSpeed = b.calculateAverageSpeed();
-//		
-//		Stop currentStop = b.getCurrentStop();
-//		Stop previousStop = b.getPreviousStop();
-//		Route r = routes.get(busPosition.getRouteName());
-//		
-//		ArrayList<AverageSpeed> speeds = new ArrayList<AverageSpeed>(); 
-//		
-//		for(Stop s = previousStop; !s.equals(currentStop); s = r.getNextStop(s))
-//			speeds.add(new AverageSpeed(s, avgSpeed));
+		Float avgSpeed = b.calculateAverageSpeed().floatValue();
+		
+		Stop currentStop = b.getCurrentStop();
+		Stop previousStop = b.getPreviousStop();
+		
+		if(currentStop != null && previousStop != null)
+		{
+			Route r = routes.get(b.getRouteName());
+			
+			AverageSpeed speed; 
+			
+			session.beginTransaction();
+			
+			for(Stop s = previousStop; !s.equals(currentStop); s = r.getNextStop(s))
+			{
+				speed = new AverageSpeed(s, avgSpeed, new Timestamp(b.getCurrentLocation().getDate().getMillis()));
+				session.save(speed);
+			}
+			session.getTransaction().commit();
+		}
 	}
 
 	@Override
