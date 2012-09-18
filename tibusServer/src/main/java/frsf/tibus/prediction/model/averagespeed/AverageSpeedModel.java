@@ -21,7 +21,7 @@ public class AverageSpeedModel implements PredictionModel {
 	
 	public AverageSpeedModel()
 	{
-		//configuracion de hibernate
+		//Hibernate
 		SessionFactory sessionFactory;
 		Configuration configuration = new Configuration();
 	    configuration.configure();
@@ -49,7 +49,7 @@ public class AverageSpeedModel implements PredictionModel {
 	@Override
 	public void procesarNuevaPosicion(BusPositionData busPosition) 
 	{
-		Route r = routes.get(busPosition.getRouteId());
+		Route r = routes.get(busPosition.getRouteName());
 		r.processBusPosition(busPosition);
 	}
 

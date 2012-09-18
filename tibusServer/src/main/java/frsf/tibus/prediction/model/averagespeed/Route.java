@@ -9,7 +9,6 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormatterBuilder;
 
@@ -154,7 +153,7 @@ public class Route {
 	
 	
 	/**
-	 * Calcula la distancia entre dos paradas.
+	 * Calcula la distancia entre dos paradas pertenecientes al recorrido.
 	 * El cálculo se hace en el sentido del recorrido.
 	 * @param start: Parada origen
 	 * @param destination: Parada destino
@@ -187,14 +186,14 @@ public class Route {
 	 * @return
 	 */
 	public Stop getNextStop(Stop stop) {
-		if(stops.contains(stop))
+		if(this.contains(stop))
 			//Si stop no es la ultima parada
 			if(getStopOrder(stop) < stops.size()-1)
 				return this.getStopByOrder(getStopOrder(stop)+1);
 			else
 				return this.getFirstStop();
 		else
-			return null;
+			throw new IllegalArgumentException("The route doesn't contain the stop");
 	}
 	
 	/**
@@ -203,16 +202,28 @@ public class Route {
 	 * @return
 	 */
 	public Stop getPreviousStop(Stop stop) {
-		if(stops.contains(stop))
+		if(this.contains(stop))
 			//Si stop es la primera parada
-			if(getStopOrder(stop) == 0)
+			if(getFirstStop().equals(stop))
 				return this.getLastStop();
 			else
-				return this.getStopByOrder(getStopOrder(stop));
+				return this.getStopByOrder(getStopOrder(stop)-1);
 		else
-			return null;
+			throw new IllegalArgumentException("The route doesn't contain the stop");
 	}
 	
+	/**
+	 * 
+	 * @param stop
+	 * @return
+	 */
+	public boolean contains(Stop stop) {
+		if(this.stops.contains(stop))
+			return true;
+		else
+			return false;
+	}
+
 	/**
 	 * 
 	 * @return
@@ -243,17 +254,21 @@ public class Route {
 	 */
 
 	public boolean consecutive(Stop start, Stop destination) {
+		
+		if(!this.contains(start) && !this.contains(destination))
+			throw new IllegalArgumentException("The route doesn't contain the stop");
+			
 		Integer startOrder = getStopOrder(start);
 		Integer destinationOrder = getStopOrder(destination);
 		
-		if(startOrder <= destinationOrder)
+		if(startOrder < destinationOrder)
 			if(startOrder +1 == destinationOrder)
 				return true;
 			else
 				return false;
 		else
 			//Si el origen es la ultima parada y el destino es la primera
-			if(startOrder == stops.size() && destinationOrder == 1)
+			if(start.equals(this.getLastStop()) && destination.equals(this.getFirstStop()))
 				return true;
 			else
 				return false;
@@ -263,25 +278,22 @@ public class Route {
 	{
 		Bus bus = buses.get(busPosition.getIdColectivo());
 		
-		if(bus != null)
-		{
-			bus.processPosition(busPosition);
-		}
-		else
+		if(bus == null)
 		{
 			bus = new Bus(busPosition.getIdColectivo(), this);
-			buses.put(busPosition.getIdColectivo(), bus);
-			bus.processPosition(busPosition);
-		}		
+			buses.put(busPosition.getIdColectivo(), bus);			
+		}	
+		
+		bus.processPosition(busPosition);
 	}
 
 	/**
-	 * Encuentra la parada mas cercana a busPosition
+	 * Encuentra la parada mas cercana a busPosition empezando desde currentStop
 	 * @param busPosition
 	 * @param currentStop
 	 * @return
 	 */
-	public Stop findNearestStop(BusPositionData busPosition, Stop currentStop) {
+	protected Stop findNearestStop(BusPositionData busPosition, Stop currentStop) {
 		
 		Stop previousStop = this.getPreviousStop(currentStop);
 		
@@ -301,6 +313,16 @@ public class Route {
 		}
 		return null;
 	}
+	
+	/**
+	 * Encuentra la parada mas cercana empezando desde el principio del recorrido
+	 * @param busPosition
+	 * @return
+	 */
+	
+	public Stop findNearestStop(BusPositionData busPosition) {
+		return this.findNearestStop(busPosition, this.getFirstStop());
+	}
 
 	/**
 	 * Calcula la direccion de la parada en el sentido del recorrido
@@ -311,25 +333,15 @@ public class Route {
 	{
 		Stop nextStop = this.getNextStop(stop);
 		
-		if(nextStop != null)
-		{
-			LatLonPoint stopCoordinates = new LatLonPoint.Float(stop.getLat(), stop.getLon());
-			Double heading = Length.DECIMAL_DEGREE.fromRadians(stopCoordinates.azimuth(new LatLonPoint.Float(nextStop.getLat(), nextStop.getLon())));
-			
-			if(heading < 0)
-				heading = 360 + heading;
-			
-			return heading;
-		}
-		else
-			return null;
+		LatLonPoint stopCoordinates = new LatLonPoint.Float(stop.getLat(), stop.getLon());
+		Double heading = Length.DECIMAL_DEGREE.fromRadians(stopCoordinates.azimuth(new LatLonPoint.Float(nextStop.getLat(), nextStop.getLon())));
 		
+		if(heading < 0)
+			heading = 360 + heading;
 		
+		return heading;		
 	}
 
-	public Stop findNearestStop(BusPositionData busPosition) {
-		return this.findNearestStop(busPosition, this.getFirstStop());
-	}
 
 	public String getRouteName() {
 		return routeName;
