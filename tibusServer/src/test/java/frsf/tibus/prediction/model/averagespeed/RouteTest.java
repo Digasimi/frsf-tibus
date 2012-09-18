@@ -28,14 +28,14 @@ public class RouteTest extends TestCase {
 		stop1.setOrder(new Integer(0));
 		stop1.setLat(new Float(-31.635696));
 		stop1.setLon(new Float(-60.702808));
-		stop1.setAverageSpeed(new AverageSpeed(stop1,(float) 1.0));
+		//stop1.setAverageSpeed(new AverageSpeed(stop1,(float) 1.0, new Timestamp(new DateTime().getMillis())));
 		
 		Stop stop2 = new Stop();
 		stop2.setStopId(new Integer(2));
 		stop2.setOrder(new Integer(1));
 		stop2.setLat(new Float(-31.637820));
 		stop2.setLon(new Float(-60.692556));
-		stop2.setAverageSpeed(new AverageSpeed(stop2,(float) 1.0));
+		//stop2.setAverageSpeed(new AverageSpeed(stop2,(float) 1.0, new Timestamp(new DateTime().getMillis())));
 		
 		route = new Route();
 		ArrayList<Stop> stops = new ArrayList<Stop>();
@@ -51,12 +51,7 @@ public class RouteTest extends TestCase {
 		route.setBuses(buses);
 	}
 
-	@Test
-	public void testGetPredictions() {
-		PredictionResponse p = route.getPredictions("2"); 
-		assertEquals(1000,p.getPrediction().get(0).getTimeSec().intValue(),1);
-		assertTrue(p.getError()==null);
-	}
+	
 	
 	@Test
 	public void testNoPredictionsAvailable() {
@@ -312,7 +307,7 @@ public class RouteTest extends TestCase {
 	@Test
 	public void testPreviousStop()
 	{
-route = new Route();
+		route = new Route();
 		
 		Stop s1 = new Stop();
 		s1.setLat((float) 0.0);

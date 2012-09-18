@@ -22,6 +22,14 @@ public class TibusServer {
 	private PositionDataListener positionListener;
 	private PredictionModel modeloPrediccion;
 	
+	public static void main( String[] args ) throws InterruptedException
+    {
+        System.out.println("Servidor escuchando");
+
+        new TibusServer();
+        
+    }
+	
 	public TibusServer() {
 		setupServer();
 	}
