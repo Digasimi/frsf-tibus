@@ -6,7 +6,7 @@
 //
 
 
-package frsf.tibus.nextbusProvider;
+package frsf.tibus.nextbusProvider.xml;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
@@ -30,34 +30,34 @@ public class ObjectFactory {
 
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: frsf.tibus.nextbusProvider
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: frsf.tibus.nextbusProvider.xml
      * 
      */
     public ObjectFactory() {
     }
 
     /**
-     * Create an instance of {@link Body }
+     * Create an instance of {@link NextBusData }
      * 
      */
-    public Body createBody() {
-        return new Body();
+    public NextBusData createBody() {
+        return new NextBusData();
     }
 
     /**
-     * Create an instance of {@link NextBusPositionData }
+     * Create an instance of {@link VehiclePositionData }
      * 
      */
-    public NextBusPositionData createVehiclePositionData() {
-        return new NextBusPositionData();
+    public VehiclePositionData createVehiclePositionData() {
+        return new VehiclePositionData();
     }
 
     /**
-     * Create an instance of {@link Body.LastTime }
+     * Create an instance of {@link NextBusData.LastTime }
      * 
      */
-    public Body.LastTime createBodyLastTime() {
-        return new Body.LastTime();
+    public NextBusData.LastTime createBodyLastTime() {
+        return new NextBusData.LastTime();
     }
 
 }
