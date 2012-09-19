@@ -6,7 +6,7 @@
 //
 
 
-package frsf.tibus.nextbusProvider;
+package frsf.tibus.nextbusProvider.xml;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,27 +24,27 @@ import javax.xml.bind.annotation.XmlType;
     "lastTime"
 })
 @XmlRootElement(name = "body")
-public class Body {
+public class NextBusData {
 
-    protected List<NextBusPositionData> vehicle;
+    protected List<VehiclePositionData> vehicle;
     @XmlElement(required = true)
-    protected Body.LastTime lastTime;
+    protected NextBusData.LastTime lastTime;
     @XmlAttribute(name = "copyright")
     protected String copyright;
 
-    public List<NextBusPositionData> getVehicle() {
+    public List<VehiclePositionData> getVehicle() {
         if (vehicle == null) {
-            vehicle = new ArrayList<NextBusPositionData>();
+            vehicle = new ArrayList<VehiclePositionData>();
         }
         return this.vehicle;
     }
 
     
-    public Body.LastTime getLastTime() {
+    public NextBusData.LastTime getLastTime() {
         return lastTime;
     }
 
-    public void setLastTime(Body.LastTime value) {
+    public void setLastTime(NextBusData.LastTime value) {
         this.lastTime = value;
     }
 

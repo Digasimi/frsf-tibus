@@ -6,7 +6,7 @@
 //
 
 
-package frsf.tibus.nextbusProvider;
+package frsf.tibus.nextbusProvider.xml;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "vehiclePositionData")
-public class NextBusPositionData {
+public class VehiclePositionData {
 
     @XmlAttribute(name = "id", required = true)
     protected String id;
