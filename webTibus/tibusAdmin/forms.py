@@ -33,12 +33,14 @@ class CompanyForm(forms.Form):
     action = forms.CharField(widget=forms.HiddenInput)
     
 class UserForm(forms.Form):
+    userId = forms.IntegerField(widget=forms.HiddenInput, required=False)
     nombre = forms.CharField()
     email = forms.EmailField()
     categoria = forms.CharField(widget=forms.HiddenInput)
     empresa = forms.CharField(required=False, widget=forms.HiddenInput)
     password = forms.CharField(widget=forms.PasswordInput)
     confirmacion = forms.CharField(widget=forms.PasswordInput)
+    action = forms.CharField(widget=forms.HiddenInput)
 
 class PassworForm(forms.Form):
     nombre = forms.CharField(widget=forms.HiddenInput)
