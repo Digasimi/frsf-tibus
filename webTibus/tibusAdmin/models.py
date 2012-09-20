@@ -10,6 +10,15 @@ class Usuario(User):
     categoria = models.CharField(max_length = 50)
     empresa = models.ForeignKey(Empresa,  null=True)
     
+    def getName(self):
+        return self.nombre
+    
+    def getCategory(self):
+        return self.categoria
+    
+    def getCompany(self):
+        return self.empresa
+    
     def __unicode__(self):
         return self.username
     
