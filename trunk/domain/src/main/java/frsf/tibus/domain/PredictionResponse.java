@@ -56,7 +56,19 @@ public class PredictionResponse implements Serializable{
 
     public void addPrediction(Prediction p)
     {
-    	this.prediction.add(p);
+    	if(prediction.isEmpty())
+    		this.prediction.add(p);
+    	else
+    	{
+    		int i = 0;
+    		while(i < prediction.size())
+    			if(p.getTimeSec() > prediction.get(i).getTimeSec())
+    				i++;
+    			else
+    				break;
+    		
+    		prediction.add(i, p);
+    	}
     }
 
     
