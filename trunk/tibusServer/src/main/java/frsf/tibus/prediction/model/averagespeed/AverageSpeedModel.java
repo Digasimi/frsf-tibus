@@ -59,12 +59,12 @@ public class AverageSpeedModel implements PredictionModel {
 	}
 
 	private void saveSpeedData(Bus b) {
-		Float avgSpeed = b.calculateAverageSpeed().floatValue();
+		Double avgSpeed = b.calculateAverageSpeed();
 		
 		Stop currentStop = b.getCurrentStop();
 		Stop previousStop = b.getPreviousStop();
 		
-		if(currentStop != null && previousStop != null)
+		if(currentStop != null && previousStop != null && avgSpeed != null)
 		{
 			Route r = routes.get(b.getRouteName());
 			
@@ -74,7 +74,7 @@ public class AverageSpeedModel implements PredictionModel {
 			
 			for(Stop s = previousStop; !s.equals(currentStop); s = r.getNextStop(s))
 			{
-				speed = new AverageSpeed(s, avgSpeed, new Timestamp(b.getCurrentLocation().getDate().getMillis()));
+				speed = new AverageSpeed(s, avgSpeed.floatValue(), new Timestamp(b.getCurrentLocation().getDate().getMillis()));
 				session.save(speed);
 			}
 			session.getTransaction().commit();

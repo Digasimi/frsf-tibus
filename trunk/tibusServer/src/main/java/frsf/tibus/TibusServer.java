@@ -9,11 +9,14 @@ import javax.jms.MessageProducer;
 import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import frsf.tibus.listener.PositionDataListener;
 import frsf.tibus.listener.PredictionRequestListener;
 import frsf.tibus.prediction.model.PredictionModel;
 import frsf.tibus.prediction.model.averagespeed.AverageSpeedModel;
+import frsf.tibus.util.SplashScreen;
 
 public class TibusServer {
 	
@@ -24,14 +27,18 @@ public class TibusServer {
 	
 	public static void main( String[] args ) throws InterruptedException
     {
-        System.out.println("Servidor escuchando");
-
-        new TibusServer();
+		new TibusServer();
         
     }
 	
 	public TibusServer() {
+		Logger logger = LoggerFactory.getLogger(TibusServer.class);
+	    
+		logger.info(SplashScreen.getStartingSplashScreen());
+		
 		setupServer();
+		
+		logger.info(SplashScreen.getStartedSplashScreen());
 	}
 	
 	
