@@ -250,13 +250,13 @@ def user(request): #pagina de ABM de unidades - faltan excepciones
                     return HttpResponseRedirect('usuariodata0?add')
                 elif request.POST.get('action') == 'editUser':
                     temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
-                    return HttpResponseRedirect('usuariodata'+ str(temporaryUser.getId()) +'?edit')
+                    return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?edit')
                 elif request.POST.get('action') == 'rehabUser':
                     temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
-                    return HttpResponseRedirect('usuariodata'+ str(temporaryUser.getId()) +'?rehab')
+                    return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?rehab')
                 elif request.POST.get('action') == 'delUser':
                     temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
-                    return HttpResponseRedirect('usuariodata'+ str(temporaryUser.getId()) +'?delete')
+                    return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?delete')
             #empiezan las excepciones
             except Usuario.DoesNotExist:
                 errorDescription = "No existe el usuario"
