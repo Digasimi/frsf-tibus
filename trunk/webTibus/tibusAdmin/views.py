@@ -33,7 +33,7 @@ def route(request):#pagina de ABM de lineas
         routeList = Recorrido.objects.all().order_by('linea')
     elif (userData.categoria == 'Empresa'):
         companyList = Empresa.objects.filter(nombre = userData.empresa)   
-        routeList = Recorrido.objects.filter(company = userData.empresa).order_by('linea')
+        routeList = Recorrido.objects.filter(empresa = userData.empresa).order_by('linea')
     superadmin = (userData.categoria == 'Administrador')
     
     #logica
@@ -53,7 +53,7 @@ def route(request):#pagina de ABM de lineas
                         newFrecuency = request.POST.get('frecuencia')
                         companyName = request.POST.get('empresa').upper()
                         if int(newFrecuency) > 0: #compueba que la frecuencia sea un entero mayor a 0
-                            temporaryRoute = Recorrido(linea = routeName,  frecuencia = newFrecuency, company = Empresa.objects.get(nombre=companyName)) 
+                            temporaryRoute = Recorrido(linea = routeName,  frecuencia = newFrecuency, empresa = Empresa.objects.get(nombre=companyName)) 
                             if temporaryRoute.validate(): #comprobacion de datos de route
                                 try:
                                     temporaryRoute = Recorrido.objects.get(linea = routeName) #da verdadero si la route existe ya.
@@ -205,14 +205,10 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
     logger = logging.getLogger(__name__)
     form = CompanyForm()
     
+        #logica
     if (userData.categoria == 'Administrador'):
         companyList = Empresa.objects.all().order_by('nombre')        
         superadmin = True
-    else:
-        superadmin = False
-        
-    #logica
-    if (userData.categoria == 'Administrador'):
         if request.method == 'POST':
             try:
                 if request.POST.get('action') == 'addCompany':
@@ -228,6 +224,7 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la empresa"
     else:
+        superadmin = False
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Company Error:" + errorDescription)        
     return render_to_response('empresa.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription,  'companyList':companyList, 'superadmin':superadmin},  context_instance=RequestContext(request))
@@ -240,91 +237,35 @@ def user(request): #pagina de ABM de unidades - faltan excepciones
     errorDescription = ""
     userData = Usuario.objects.get(nombre = request.user)
     userList = []
-    companyList = []
-    categoryList = []
     logger = logging.getLogger(__name__)
+    form = UserForm()
     
     if (userData.categoria == 'Administrador'):
         userList=Usuario.objects.filter(is_active = True).order_by('nombre')
-        companyList = Empresa.objects.all().order_by('nombre')        
-        categoryList = ['Administrador', 'Empresa']
         superadmin = True
-    else:
-        superadmin = False
-        
-    #logica
-    if (userData.categoria == 'Administrador'):
         if request.method == 'POST':
             try:
-                form = UserForm(request.POST)
                 userName=request.POST.get('nombre').upper()
-                if userName == '': #comprueba que el nombre no sea vacia.
-                    errorDescription = "No ingreso el nombre del user"
-                elif request.POST.get('action') == 'addUser':
-                    if form.is_valid(): #comprobar direccion de mail, no comprueba formato.
-                        userName=request.POST.get('userName').lower()
-                        userCategory=request.POST.get('userCategory')
-                        if (request.POST.get('empresa') != ""):
-                            company = Empresa.objects.get(nombre = request.POST.get('empresa'))
-                        else:
-                            company = None
-                        password=request.POST.get('password')
-                        try:
-                            temporaryUser = Usuario.objects.get(nombre = userName) #da verdadero si la route ya existe.
-                            errorDescription = "Usuario ya existente"
-                        except:
-                            if (password == request.POST.get('confirmacion')):
-                                temporaryUser = Usuario(username = userName, nombre = userName,  mail = userName,  userCategory=userCategory,  company=company)
-                                temporaryUser.set_password(password)
-                                if (userCategory =='Administrador'):
-                                    temporaryUser.is_superuser = True
-                                temporaryUser.save()
-                            else:
-                                errorDescription = "Las passwords no coinciden"
-                    else:
-                        errorDescription = "No ingreso datos validos"
-                else:
-                    temporaryUser = Usuario.objects.get(nombre = userName)
-                    if request.POST.get('action') == 'viewUser': #No se usa
-                        form = UserForm(userName = request.POST.get('userName').lower())
-                    elif request.POST.get('action') == 'rehabUser':
-                        temporaryUser.is_active = True
-                        temporaryUser.save()
-                    elif request.POST.get('action') == 'editUser': 
-                        if(request.POST.get('userName').lower() != ''):
-                            temporaryUser.mail=request.POST.get('userName').lower()
-                        if (password == request.POST.get('confirmacion')):
-                            temporaryUser.set_password(password)
-                        else:
-                            errorDescription = "Las passwords no coinciden"
-                        temporaryUser.save();
-                    elif request.POST.get('action') == 'delUser': #Asume que la accion por omision es borrar
-                        #La confirmacion de la eliminacion es en el codigo html
-                        if ((temporaryUser.categoria == "Administrador") and (Usuario.objects.filter(userCategory = "Administrador").count() > 1)):
-                            errorDescription = "No se puede eliminar el ultimo usuario Administrador"
-                        elif ((temporaryUser.categoria == "Empresa")and(temporaryUser.nombre != userData.nombre)):
-                            errorDescription = "No se puede eliminar otro usuario de igual Jerarquia"
-                        elif((temporaryUser.categoria == "Empresa")and(temporaryUser.categoria == "Administrador")):
-                            errorDescription = "No se puede eliminar otro usuario de mayor Jerarquia"
-                        else:
-                            temporaryUser.is_active = False
-                            temporaryUser.save()
-                #else:
-                    #errorDescription = "Accion no valida: " + str(request.POST.get('action'))
-                userList=Usuario.objects.filter(is_active = True ).order_by('nombre')
+                if request.POST.get('action') == 'addUser':
+                    return HttpResponseRedirect('usuariodata0?add')
+                elif request.POST.get('action') == 'editUser':
+                    temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
+                    return HttpResponseRedirect('usuariodata'+ str(temporaryUser.getId()) +'?edit')
+                elif request.POST.get('action') == 'rehabUser':
+                    temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
+                    return HttpResponseRedirect('usuariodata'+ str(temporaryUser.getId()) +'?rehab')
+                elif request.POST.get('action') == 'delUser':
+                    temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
+                    return HttpResponseRedirect('usuariodata'+ str(temporaryUser.getId()) +'?delete')
             #empiezan las excepciones
             except Usuario.DoesNotExist:
                 errorDescription = "No existe el usuario"
-            except Empresa.DoesNotExist:
-                errorDescription = "No existe la compania"
             logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
-        else:
-            form = UserForm()
     else:
-        form = UserForm()
+        superadmin = False
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in User Error:" + errorDescription)        
-    return render_to_response('usuario.html',  {'user': request.user,'form':form,  'error': errorDescription,  'userList':userList,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin},  context_instance=RequestContext(request))
+    return render_to_response('usuario.html',  {'user': request.user,'form':form,  'error': errorDescription,  'userList':userList,  'admin': True,  'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required
 def stop(request, routeId): #Pagina de ABM de paradas
@@ -478,3 +419,95 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in CompanyData Error:" + errorDescription)        
     return render_to_response('empresadata.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True },  context_instance=RequestContext(request))
+
+@login_required    
+def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
+    #carga inicial
+    c = {}
+    c.update(csrf(request))
+    errorDescription = ""
+    userData = Usuario.objects.get(nombre = request.user)
+    companyList = []
+    categoryList = []
+    form = UserForm()
+    logger = logging.getLogger(__name__)
+    
+    if (userData.categoria == 'Administrador'):
+        companyList = Empresa.objects.all().order_by('nombre')        
+        categoryList = ['Administrador', 'Empresa']
+        superadmin = True
+        if request.method == 'POST':
+            try:
+                form = UserForm(request.POST)
+                if form.is_valid():
+                    userName = form.cleaned_data['nombre'].upper()
+                    userEmail = form.cleaned_data['email'].lower()
+                    userCategory = form.cleaned_data['categoria']
+                    userCompany= form.cleaned_data['empresa']
+                    userPassword = form.cleaned_data['password']
+                    userConfirmation = form.cleaned_data['confirmacion']
+                    action = form.cleaned_data['action'].lower()
+                    
+                    if userName == '': #comprueba que el nombre no sea vacia.
+                        errorDescription = "No ingreso el nombre del user"
+                    elif action == 'addUser':
+                        if (userCompany != "" and userCategory =='Empresa'):
+                            company = Empresa.objects.get(nombre = userCompany)
+                        else:
+                            company = None
+                        try:
+                            temporaryUser = Usuario.objects.get(nombre = userName) #da verdadero si la route ya existe.
+                            errorDescription = "Usuario ya existente"
+                        except:
+                            if (userPassword == userConfirmation):
+                                temporaryUser = Usuario(username = userName, nombre = userName,  mail = userName,  userCategory=userCategory,  company=company)
+                                temporaryUser.set_password(userPassword)
+                                if (userCategory =='Administrador'):
+                                    temporaryUser.is_superuser = True
+                                temporaryUser.save()
+                            else:
+                                errorDescription = "Las passwords no coinciden"
+                    elif action == 'rehabUser':
+                        if(request.POST.get('userName').lower() != ''):
+                            temporaryUser = Usuario.objects.get(nombre = userName)
+                            temporaryUser.is_active = True
+                            temporaryUser.save()
+                    elif action == 'editUser':
+                        if(request.POST.get('userName').lower() != ''): 
+                            temporaryUser = Usuario.objects.get(nombre = userName)
+                            temporaryUser.mail= userEmail
+                            if (userPassword != None and userPassword == userConfirmation):
+                                temporaryUser.set_password(userPassword)
+                            else:
+                                errorDescription = "Las passwords no coinciden"
+                            if (userCategory =='Administrador'):
+                                temporaryUser.is_superuser = True
+                            else:
+                                temporaryUser.is_superuser = False
+                            temporaryUser.save();
+                    elif action == 'delUser': #Asume que la accion por omision es borrar
+                        temporaryUser = Usuario.objects.get(nombre = userName)
+                        if ((temporaryUser.categoria == "Administrador") and (Usuario.objects.filter(userCategory = "Administrador").count() > 1)):
+                            errorDescription = "No se puede eliminar el ultimo usuario Administrador"
+                        elif ((temporaryUser.categoria == "Empresa")and(temporaryUser.nombre != userData.nombre)):
+                            errorDescription = "No se puede eliminar otro usuario de igual Jerarquia"
+                        elif((temporaryUser.categoria == "Empresa")and(temporaryUser.categoria == "Administrador")):
+                            errorDescription = "No se puede eliminar otro usuario de mayor Jerarquia"
+                        else:
+                            temporaryUser.is_active = False
+                            temporaryUser.save()
+                    else:
+                        errorDescription = "Accion no valida: " + action
+                else:
+                    errorDescription = "Los datos ingresados no son validos" 
+            #empiezan las excepciones
+            except Usuario.DoesNotExist:
+                errorDescription = "No existe el usuario"
+            except Empresa.DoesNotExist:
+                errorDescription = "No existe la compania"
+            logger.info("Usuario: " + userData.nombre +" Accion: " + action + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
+    else:
+        superadmin = False
+        errorDescription = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + userData.nombre +" in User Error:" + errorDescription)        
+    return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin},  context_instance=RequestContext(request))
