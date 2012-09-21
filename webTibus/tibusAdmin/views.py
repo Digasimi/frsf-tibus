@@ -414,8 +414,12 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
                     errorDescription = "Datos Incompletos o Invalidos"
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la empresa"
+        else:
+            action = request.GET.get('add')
+            if action == None:
+                temporaryCompany = Empresa.objects.get(idempresa = companyId)
+                form.initial = {'nombre': temporaryCompany.getName(), 'email' : temporaryCompany.getMail(), 'action': action}
     else:
-        form = CompanyForm()
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in CompanyData Error:" + errorDescription)        
     return render_to_response('empresadata.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True },  context_instance=RequestContext(request))
@@ -468,12 +472,12 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                             else:
                                 errorDescription = "Las passwords no coinciden"
                     elif action == 'rehabUser':
-                        if(request.POST.get('userName').lower() != ''):
+                        if(userName.lower() != ''):
                             temporaryUser = Usuario.objects.get(nombre = userName)
                             temporaryUser.is_active = True
                             temporaryUser.save()
                     elif action == 'editUser':
-                        if(request.POST.get('userName').lower() != ''): 
+                        if(userName.lower() != ''): 
                             temporaryUser = Usuario.objects.get(nombre = userName)
                             temporaryUser.mail= userEmail
                             if (userPassword != None and userPassword == userConfirmation):
@@ -498,6 +502,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                             temporaryUser.save()
                     else:
                         errorDescription = "Accion no valida: " + action
+                    logger.info("Usuario: " + userData.nombre +" Accion: " + action + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
                 else:
                     errorDescription = "Los datos ingresados no son validos" 
             #empiezan las excepciones
@@ -505,7 +510,11 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                 errorDescription = "No existe el usuario"
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la compania"
-            logger.info("Usuario: " + userData.nombre +" Accion: " + action + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
+        else:
+            action = request.GET.get('add')
+            if action == None:
+                temporaryUser = Usuario.objects.get(nombre = userId)
+                form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.mail, 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany(), 'action': action}
     else:
         superadmin = False
         errorDescription = "No posee permisos para ejecutar esta accion"

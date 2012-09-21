@@ -14,6 +14,12 @@ class Empresa(models.Model):
         
         def getId(self):
             return self.idempresa
+        
+        def getName(self):
+            return self.nombre
+        
+        def getMail(self):
+            return self.mail
             
         class Meta:
             db_table = 'empresa'
