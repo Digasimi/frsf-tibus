@@ -31,9 +31,11 @@
                             <OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
                         {% endfor %}
                         </SELECT></td>
-                </tr></table>
+                </tr>
+                <tr><td>{{ form.action }}</td></tr>
+                </table>
                 <input type="button" name="back" id="back" value="Volver" onClick="javaScript:history.back();">
-        	<BUTTON type="submit" name="save" value="save"> Guardar Cambios </BUTTON>
+        		<BUTTON type="submit" name="save" value="save"> Guardar Cambios </BUTTON>
 		</form></td></tr>
 </tbody></table>
 {% endblock %}

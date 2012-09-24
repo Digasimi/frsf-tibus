@@ -5,10 +5,10 @@ from tibus.models import Empresa
 
 # Create your models here.
 class Usuario(User):
-    nombre = models.CharField(max_length = 50,  primary_key=True)
+    nombre = models.CharField(max_length = 50, primary_key=True)
     mail = models.EmailField()
     categoria = models.CharField(max_length = 50)
-    empresa = models.ForeignKey(Empresa,  null=True)
+    empresa = models.ForeignKey(Empresa, null=True)
     
     def getName(self):
         return self.nombre
@@ -20,7 +20,7 @@ class Usuario(User):
         return self.empresa
     
     def __unicode__(self):
-        return self.username
+        return self.nombre
     
     class Meta:
         db_table = 'usuario'
