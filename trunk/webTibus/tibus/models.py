@@ -6,7 +6,7 @@ import re
 
 class Empresa(models.Model):
         idempresa = models.AutoField(primary_key=True)
-        nombre = models.CharField(verbose_name="nombre", max_length=50)
+        nombre = models.CharField(max_length=50)
         mail = models.EmailField()
         
         def __unicode__(self):
@@ -26,7 +26,7 @@ class Empresa(models.Model):
             
 class Recorrido(models.Model):
     idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
-    linea = models.CharField(verbose_name="nombre", max_length=50)
+    linea = models.CharField(max_length=50)
     frecuencia = models.IntegerField()
     empresa = models.ForeignKey(Empresa)
     
@@ -53,9 +53,9 @@ class Parada(models.Model):
     latitud = models.FloatField()
     longitud = models.FloatField()
     linea = models.ForeignKey(Recorrido)
-    calle1 = models.CharField(verbose_name="calle1", max_length=100,null=True) #debe sacarse, no puede ser null
+    calle1 = models.CharField(verbose_name="calle1", max_length=100,null=True)
     calle2 = models.CharField(verbose_name="calle2", max_length=100,null=True)
-    paradaactiva = models.BooleanField()
+    paradaactiva = models.BooleanField(help_text="Indica si es una parada donde se detiene el colectivo o no")
   
     class Meta:
         db_table = 'parada'
@@ -84,13 +84,25 @@ class Parada(models.Model):
         return self.idparada
       
 class Unidad(models.Model):
-    idunidad = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
+    idunidad = models.AutoField(primary_key=True)
     linea = models.ForeignKey(Recorrido)
-    aptoMovilidadReducida = models.BooleanField()
+    apto_movilidad_reducida = models.BooleanField()
     id_unidad_linea = models.IntegerField()
       
     class Meta:
         db_table = 'unidad'
+    
+    def getLinea(self):
+        return self.linea
+    
+    def getId(self):
+        return self.idunidad
+    
+    def getIdByLinea(self):
+        return self.id_unidad_linea
+        
+    def getApto(self):
+        return self.apto_movilidad_reducida
     
 class TiempoRecorrido(models.Model):
     promedio = models.FloatField()

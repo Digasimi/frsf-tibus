@@ -118,16 +118,19 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
     #carga inicial
     c = {}
     c.update(csrf(request))
-    busList=[]
     errorDescription = ""
     userData = Usuario.objects.get(nombre = request.user)
     routeList = []
+    busList=[]
     logger = logging.getLogger(__name__)
+    form = BusForm()
     
     if (userData.categoria == 'Administrador'):
         routeList = Recorrido.objects.all().order_by('linea')
+        busList = Unidad.objects.all().order_by('id_unidad_linea')
     elif (userData.categoria == 'Empresa'):
         routeList = Recorrido.objects.filter(company=userData.empresa).order_by('linea')
+        busList = Unidad.objects.filter(linea__company=userData.empresa).order_by('id_unidad_linea')
     superadmin = (userData.categoria == 'Administrador')
     #logica
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
@@ -135,49 +138,21 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
             try:
                 routeName=request.POST.get('linea').upper()
                 form = BusForm(request.POST)
-                if routeName == '': #comprueba que se ingresa route
-                    errorDescription = "No ingreso la linea"
-                else:
-                    route = Recorrido.objects.get(linea = routeName) #carga la route.
-                    busId=request.POST.get('id_unidad_linea').upper()
-                    if form.is_valid():
-                        if request.POST.get('action') == 'addBus':
-                            busApto = request.POST.get('aptoMovilidadReducida') 
-                            if not(busApto):
-                                busApto = 0;
-                            try:
-                                temporaryBus = Unidad.objects.get(linea = route, id_unidad_linea = busId) #da verdadero si la bus ya existe
-                                errorDescription = "Unidad ya existente"
-                            except Unidad.DoesNotExist:
-                                temporaryBus = Unidad(linea = route,  aptoMovilidadReducida = busApto,  idunidad = routeName + "_" + busId, id_unidad_linea = busId)
-                                temporaryBus.save()
-                        elif request.POST.get('action') == 'editBus': 
-                            temporaryBus = Unidad.objects.get(linea = route,  id_unidad_linea = busId)
-                            busApto = request.POST.get('aptoMovilidadReducida') 
-                            if busApto:
-                                temporaryBus.aptoMovilidadReducida = 1;
-                            else:
-                                temporaryBus.aptoMovilidadReducida = 0;
-                            temporaryBus.save()
-                        else: #if request.POST.get('action') == 'delBus': Asume que la accion por omision es borrar
-                            #La confirmacion de la eliminacion es en el codigo html
-                            temporaryBus = Unidad.objects.get(linea = route,  id_unidad_linea = busId)
-                            temporaryBus.delete()
-                        #else:
-                            #errorDescription = "Accion no valida: " + str(request.POST.get('action'))
-                    else:
-                        errorDescription = "Falta ingresar algun dato"
-                    busList = Unidad.objects.filter(linea = route).order_by('id_unidad_linea')
+                busId=request.POST.get('id_unidad_linea').upper()
+                if request.POST.get('action') == 'addBus':
+                    return HttpResponseRedirect('unidaddata0?add')
+                elif request.POST.get('action') == 'editBus':
+                    temporaryBus = Unidad.objects.get(linea = Recorrido.objects.get(linea = routeName),  id_unidad_linea = busId)
+                    return HttpResponseRedirect('unidaddata'+ str(temporaryBus.getId()) +'?edit')
+                elif request.POST.get('action') == 'delBus': 
+                    temporaryBus = Unidad.objects.get(linea = Recorrido.objects.get(linea = routeName),  id_unidad_linea = busId)
+                    return HttpResponseRedirect('unidaddata'+ str(temporaryBus.getId()) +'?delete')
             #empiezan las excepciones
             except Recorrido.DoesNotExist:
                 errorDescription = "No existe la linea"
             except Unidad.DoesNotExist:
                 errorDescription = "No existe/n unidad/es"
-            form = BusForm()
             logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + routeName + " Unidad: " + busId + " Error:" + errorDescription)
-        else:
-            form = BusForm()
-            busList = Unidad.objects.all().order_by('id_unidad_linea')
     else:
         form = BusForm()
         errorDescription = "No posee permisos para ejecutar esta accion"
@@ -454,7 +429,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                     
                     if userName == '': #comprueba que el nombre no sea vacia.
                         errorDescription = "No ingreso el nombre del user"
-                    elif action == 'addUser':
+                    elif action == 'add':
                         if (userCompany != "" and userCategory =='Empresa'):
                             company = Empresa.objects.get(nombre = userCompany)
                         else:
@@ -471,12 +446,12 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                                 temporaryUser.save()
                             else:
                                 errorDescription = "Las passwords no coinciden"
-                    elif action == 'rehabUser':
+                    elif action == 'rehab':
                         if(userName.lower() != ''):
                             temporaryUser = Usuario.objects.get(nombre = userName)
                             temporaryUser.is_active = True
                             temporaryUser.save()
-                    elif action == 'editUser':
+                    elif action == 'edit':
                         if(userName.lower() != ''): 
                             temporaryUser = Usuario.objects.get(nombre = userName)
                             temporaryUser.mail= userEmail
@@ -489,7 +464,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                             else:
                                 temporaryUser.is_superuser = False
                             temporaryUser.save();
-                    elif action == 'delUser': #Asume que la accion por omision es borrar
+                    elif action == 'delete': #Asume que la accion por omision es borrar
                         temporaryUser = Usuario.objects.get(nombre = userName)
                         if ((temporaryUser.categoria == "Administrador") and (Usuario.objects.filter(userCategory = "Administrador").count() > 1)):
                             errorDescription = "No se puede eliminar el ultimo usuario Administrador"
@@ -503,6 +478,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                     else:
                         errorDescription = "Accion no valida: " + action
                     logger.info("Usuario: " + userData.nombre +" Accion: " + action + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
+                    return HttpResponseRedirect('usuario')
                 else:
                     errorDescription = "Los datos ingresados no son validos" 
             #empiezan las excepciones
@@ -520,3 +496,70 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in User Error:" + errorDescription)        
     return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin},  context_instance=RequestContext(request))
+
+@login_required    
+def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
+    #carga inicial
+    c = {}
+    c.update(csrf(request))
+    routeList = []
+    errorDescription = ""
+    userData = Usuario.objects.get(nombre = request.user)
+    logger = logging.getLogger(__name__)
+    form = BusForm()
+    
+    if (userData.categoria == 'Administrador'):
+        routeList = Recorrido.objects.all().order_by('linea')
+    elif (userData.categoria == 'Empresa'):
+        routeList = Recorrido.objects.filter(company=userData.empresa).order_by('linea')
+    superadmin = (userData.categoria == 'Administrador')
+    #logica
+    if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
+        if request.method == 'POST':
+            try:
+                form = BusForm(request.POST)
+                if form.is_valid():
+                    busRoute = form.cleaned_data['linea'].upper()
+                    busIdLinea = form.cleaned_data['id_unidad_linea']
+                    busAble= form.cleaned_data['apto_movilidad_reducida']
+                    action = form.cleaned_data['action'].lower()
+                    if busRoute == '':
+                        errorDescription = "No ingreso la linea"
+                    else:
+                        routeName = Recorrido.objects.get(linea = busRoute) 
+                        if form.is_valid():
+                            if action == 'add':
+                                try:
+                                    temporaryBus = Unidad.objects.get(idunidad = busId) #da verdadero si la bus ya existe
+                                    errorDescription = "Unidad ya existente"
+                                except Unidad.DoesNotExist:
+                                    temporaryBus = Unidad(linea = routeName,  apto_movilidad_reducida = busAble, id_unidad_linea = busIdLinea)
+                                    temporaryBus.save()
+                            elif action == 'edit': 
+                                temporaryBus = Unidad.objects.get(idunidad = busId)
+                                temporaryBus.id_unidad_linea = busIdLinea
+                                temporaryBus.apto_movilidad_reducida = busAble
+                                temporaryBus.save()
+                            elif action == 'delete': 
+                                temporaryBus = Unidad.objects.get(idunidad = busId)
+                                temporaryBus.delete()
+                            else: 
+                                errorDescription = "Accion no permitida"
+                        else:
+                            errorDescription = "Falta ingresar algun dato"
+                    logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + busRoute + " Unidad: " + busId + " Error:" + errorDescription)
+                    return HttpResponseRedirect('unidad')
+                #empiezan las excepciones
+            except Recorrido.DoesNotExist:
+                errorDescription = "No existe la linea"
+            except Unidad.DoesNotExist:
+                errorDescription = "No existe/n unidad/es"            
+        else:
+            action = request.GET.get('add')
+            if action == None:
+                temporaryBus = Unidad.objects.get(idunidad = busId)
+                form.initial = {'linea': temporaryBus.getLinea(), 'aptoMovilidadReducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea(), 'action': action}
+    else:
+        errorDescription = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + userData.nombre +" in Bus Error:" + errorDescription)
+    return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True,  'routeList': routeList,'superadmin':superadmin},  context_instance=RequestContext(request))

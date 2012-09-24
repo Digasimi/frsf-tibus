@@ -23,8 +23,9 @@ class RouteForm(forms.Form):
 #Formulario con los datos para cargar una unidad de colectivo
 class BusForm(forms.Form):
     linea = forms.CharField(widget=forms.HiddenInput)
-    aptoMovilidadReducida = forms.BooleanField(required=False)
+    apto_movilidad_reducida = forms.BooleanField(required=False)
     id_unidad_linea = forms.IntegerField()
+    action = forms.CharField(widget=forms.HiddenInput)
 
 class CompanyForm(forms.Form):
     idcompany = forms.IntegerField(widget=forms.HiddenInput, required=False)
