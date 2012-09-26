@@ -6,9 +6,10 @@ class StopForm(forms.Form):
     orden = forms.IntegerField(required=False)
     latitud = forms.FloatField()
     longitud = forms.FloatField()
-    calle1 = forms.CharField()
-    calle2 = forms.CharField()
+    calle1 = forms.CharField(required=False)
+    calle2 = forms.CharField(required=False)
     paradaactiva = forms.BooleanField(required=False)
+    action = forms.CharField(widget=forms.HiddenInput)
     
     def upOneOrder(self):
         self.orden = self.orden +1
@@ -17,8 +18,10 @@ class StopForm(forms.Form):
 class RouteForm(forms.Form):
     linea = forms.CharField()
     frecuencia = forms.IntegerField()
+    orden = forms.IntegerField(required=False)
     empresa = forms.CharField(widget=forms.HiddenInput)
     masivo = forms.FileField(required=False)
+    action = forms.CharField(widget=forms.HiddenInput)
     
 #Formulario con los datos para cargar una unidad de colectivo
 class BusForm(forms.Form):

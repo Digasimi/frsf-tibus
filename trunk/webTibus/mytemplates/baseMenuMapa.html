@@ -37,7 +37,6 @@
         
         google.maps.event.addListener(map, 'click', function(event) {
         	map.setCenter(event.latLng);
-      	    //closeInfoWindow();     //codigo para cerrar ventana de info*/
       	  	{% block defFuncDblClick %}{% endblock %}
      	});
       }

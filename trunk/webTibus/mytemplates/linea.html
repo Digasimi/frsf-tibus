@@ -3,7 +3,7 @@
 {% block content %}
 <table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
 <tr>
-<td style="height: 100%; width: 50%;" align=center >
+<td style="height: 100%; width: 80%;" align=center >
 	<div id="tableContainer" class="tableContainer">
 	{% if routeList %}
 		<table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
@@ -32,18 +32,17 @@
 <td><table>
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
-  <form name = "formLinea" action="" method="post" onSubmit = "return confirmation(this)" enctype="multipart/form-data">{% csrf_token %}
-      Linea Actual: 
+  <form name = "formLinea" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
     <table>
     	<tr>
 	        <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
         		<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
-        			<OPTION VALUE="">Seleccione un valor</OPTION> 
+        			<OPTION VALUE="all">Todas las empresas</OPTION> 
         			{% for company in companyList %}
             		<OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
         			{% endfor %}
-      		</SELECT></td>
-      		<td><BUTTON type="submit" name="action" value="viewCompany"> Buscar Empresa </BUTTON> </td>
+      		</SELECT></td></tr>
+      		<tr><td><BUTTON type="submit" name="action" value="viewCompany"> Filtrar por Empresa </BUTTON> </td>
     	</tr>
       <tr>
 		<td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
@@ -52,15 +51,10 @@
       		{% for route in routeList %}
       		<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
       	{% endfor %}
-    	</SELECT></td>
-    	<td> <BUTTON type="submit" name="action" value="viewRoute"> Buscar Linea </BUTTON> </td>
-      </tr>
-      <tr>
-        <td><label for="id_orden"> Frecuencia: </label> {{ form.frecuencia }} </td>
+    	</SELECT></td></tr>
       </tr>
       </tr>
-    <tr><td><label for="id_masivo">Carga masiva de paradas:</label>{{ form.masivo}}</td></tr> 
-    <tr><td><font face="univers" size="1"><p>Las paradas deben estan en orden y una por linea con el formato:</p><p>Latitud; Longitud;Calle;Interseccion</p></font></td></tr> 
+     
     </table>
     <BUTTON type="submit" name="action" value="addRoute"> Agregar Linea </BUTTON>
     <BUTTON type="submit" name="action" value="editRoute"> Modificar Linea </BUTTON>
@@ -71,21 +65,3 @@
 </table>
 {% endblock %}
 
-{% block funcDblClick %}
-    function confirmation(form){
-        if (form.accion[0].value != "viewRoute"){
-            var answer = confirm("Confirma el cambio que desea realizar")
-            if (answer)
-            {
-                return (true);
-            }
-            else
-            {
-                return (false);
-            }
-        }
-    }{% endblock %}
-   
-{% block defFuncDblClick %}{% endblock %}
-
-{% block marcas %}{% endblock %}

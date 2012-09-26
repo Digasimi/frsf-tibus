@@ -1,0 +1,125 @@
+{% extends "baseMenuMapa.html" %}
+
+{% block extras %}
+ <table style="text-align: left; height: 100%; width: 90%;">
+  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
+  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
+	  <form name = "formParada" action="" method="post">{% csrf_token %}
+		    <table>
+			    <tr><label for="id_orden"> Orden: </label> {{ form.orden }}
+		    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
+		   				<OPTION VALUE="">Seleccione un valor</OPTION>
+		      			{% for stop in stopList %}
+		       			<OPTION VALUE="{{ stop.orden }}">{{ stop.orden }}</OPTION>
+		      			{% endfor %}
+		   		</SELECT></td></tr>
+		   		<tr><td><div id="coor"></div></td></tr>
+			    <tr><td><label for="id_paradaactiva">Parada Activa: </label>{{ form.paradaactiva }}</td></tr>
+			    <tr><td><label for="id_calle1">Calle: </label> {{ form.calle1 }}</td></tr>
+			    <tr><td><label for="id_calle2">Interseccion: </label> {{ form.calle2 }}</td></tr>
+			    <tr><td>{{ form.action }}</td></tr>
+			    <tr><td>{{ form.linea }}</td></tr>
+		    </table>
+		<input type="button" name="back" id="back" value="Volver" onClick="javaScript:history.back();">
+		<BUTTON type="submit" name="save" value="save"> Guardar Cambios </BUTTON>
+	  </form></td></tr>
+</table>
+{% endblock %}
+
+{% block funcDblClick %}
+function mostrarCoordenadas(location, map) { //funcion javascript
+    var longitud = location.lng();
+    var latitud = location.lat();
+
+    //Codigo DOM
+    
+    //borra los datos anterior, para mostrar solo las coordenadas actuales
+    var parrafoAEliminar = document.getElementById("coor").getElementsByTagName("INPUT")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+    parrafoAEliminar = document.getElementById("coor").getElementsByTagName("INPUT")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+    parrafoAEliminar = document.getElementById("coor").getElementsByTagName("text")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+    parrafoAEliminar = document.getElementById("coor").getElementsByTagName("text")[0];
+    if (parrafoAEliminar)	document.getElementById("coor").removeChild(parrafoAEliminar);    //solo elimina si existe anterior
+
+    //agrega nuevos datos
+    var elem_inputlat = document.createElement("INPUT");
+    var elem_inputlon = document.createElement("INPUT");
+    var elem_text1 = document.createElement("text");
+    var elem_text2 = document.createElement("text");
+    elem_inputlat.setAttribute("type","text");
+    elem_inputlat.setAttribute("name","latitud");
+    elem_inputlat.setAttribute("id","id_latitud");
+    elem_inputlat.setAttribute("value",latitud);
+    elem_inputlat.setAttribute("size","20");
+    elem_inputlon.setAttribute("type","text");
+    elem_inputlon.setAttribute("name","longitud");
+    elem_inputlon.setAttribute("id","id_longitud");
+    elem_inputlon.setAttribute("value",longitud);
+    elem_inputlon.setAttribute("size","20");
+    elem_text1.appendChild(document.createTextNode("Latitud: "));
+    elem_text2.appendChild(document.createTextNode("Longitud: "));
+
+    
+    document.getElementById("coor").appendChild(elem_text1);
+    document.getElementById("coor").appendChild(elem_inputlat);
+    document.getElementById("coor").appendChild(elem_text2);    
+    document.getElementById("coor").appendChild(elem_inputlon);  
+    }
+{% endblock %}
+   
+{% block defFuncDblClick %}  
+			if (marker == null)  
+	            marker = new google.maps.Marker({
+	                map:map,
+	                draggable:true,
+	                position: event.latLng,
+	                icon: markerImage
+	            });
+            else
+            	marker.setPosition(event.latLng);
+            mostrarCoordenadas(event.latLng,map)
+{% endblock %}
+
+{% block marcas %}
+	document.getElementById("id_action").value = document.location.search.substr(1);
+    {% if stopList %}
+    {% for stop in stopList %}
+    markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
+        marker = new google.maps.Marker({
+        map:map,
+        draggable:false,
+        position: markerPosition,
+        icon: markerImage
+    });
+        
+    google.maps.event.addListener(marker, 'click', function(event) {
+    	var message = "La posicion es Latitud "+ event.latLng.lat() + "y longitud " + event.latLng.lng();
+ 		var infowindow = new google.maps.InfoWindow(
+      		{ content: message,
+       			size: new google.maps.Size(50,50)
+      		});
+   		infowindow.open(map,marker);
+  	}); //Click sobre el marker
+	
+	google.maps.event.addListener(marker, 'dragend', function(event) {
+        mostrarCoordenadas(event.latLng, map);
+    });
+    {% endfor %}
+    
+    var flightPlanCoordinates = [
+      {% for stop in stopList %}
+	    new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}}),
+      {% endfor %}
+	];
+	var flightPath = new google.maps.Polyline({
+	    path: flightPlanCoordinates,
+	    strokeColor: "#FF0000",
+	    strokeOpacity: 1.0,
+	    strokeWeight: 2
+	});
+
+ 	flightPath.setMap(map);
+    {% endif %}   
+{% endblock %}

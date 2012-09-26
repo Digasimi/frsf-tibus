@@ -46,6 +46,12 @@ class Recorrido(models.Model):
     
     def getLinea(self):
         return self.linea
+    
+    def getFrecuency(self):
+        return self.frecuencia
+    
+    def getCompany(self):
+        return self.empresa
 
 class Parada(models.Model):
     idparada = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
@@ -82,6 +88,18 @@ class Parada(models.Model):
     
     def getId(self):
         return self.idparada
+    
+    def getLinea(self):
+        return self.linea
+    
+    def getStreetName1(self):
+        return self.calle1
+    
+    def getStreetName2(self):
+        return self.calle2
+    
+    def getActive(self):
+        return self.paradaactiva
       
 class Unidad(models.Model):
     idunidad = models.AutoField(primary_key=True)
