@@ -35,7 +35,7 @@
 			    	<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formParada.id_empresa.value = document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value;document.formParada.empresaCombo.value=document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value">
 	        			<OPTION VALUE="">Seleccione una empresa</OPTION> 
 	        			{% for company in companyList %}
-	            		<OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
+	            		<OPTION {% if temporaryRoute and temporaryRoute.empresa == company %} SELECTED {% endif %}VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
 	        			{% endfor %}
     			</SELECT></td></tr>
 	   			<tr><td><label for="id_masivo">Carga masiva de Paradas:</label></td></tr>

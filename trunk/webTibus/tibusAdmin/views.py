@@ -208,6 +208,11 @@ def stop(request, routeId): #Pagina de ABM de paradas
     superadmin = (userData.categoria == 'Administrador')
     form = RouteForm()
     stopList = []
+    temporaryRoute = None
+    if userData.categoria == 'Administrador':
+        companyList = Empresa.objects.all()
+    elif userData.categoria == 'Empresa':
+        companyList = [userData.empresa] 
         
     #logica
     try:
@@ -295,7 +300,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
     except ValueError:
         errorDescription = "El orden debe ser un numero entero"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
-    return render_to_response('recorrido.html', {'user': request.user,'form': form,  'route': routeId, 'stopList': stopList ,  'error': errorDescription,  'admin': True, 'superadmin':superadmin, 'mensaje': mensaje}, context_instance=RequestContext(request))
+    return render_to_response('recorrido.html', {'user': request.user,'form': form,  'route': routeId, 'stopList': stopList ,  'error': errorDescription,  'admin': True, 'superadmin':superadmin, 'mensaje': mensaje, 'temporaryRoute':temporaryRoute, 'companyList':companyList}, context_instance=RequestContext(request))
 
 @login_required
 def changepassword(request):
@@ -383,6 +388,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
     categoryList = []
     form = UserForm()
     logger = logging.getLogger(__name__)
+    temporaryUser = None
     
     if (userData.categoria == 'Administrador'):
         companyList = Empresa.objects.all().order_by('nombre')        
@@ -473,7 +479,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
         superadmin = False
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in User Error:" + errorDescription)        
-    return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin, 'mensaje':mensaje},  context_instance=RequestContext(request))
+    return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryUser':temporaryUser},  context_instance=RequestContext(request))
 
 @login_required    
 def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
@@ -485,6 +491,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
     userData = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)
     form = BusForm()
+    temporaryBus = None
     
     if (userData.categoria == 'Administrador'):
         routeList = Recorrido.objects.all().order_by('linea')
@@ -545,7 +552,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Bus Error:" + errorDescription)
-    return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True,  'routeList': routeList,'superadmin':superadmin, 'mensaje':mensaje},  context_instance=RequestContext(request))
+    return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True,  'routeList': routeList,'superadmin':superadmin, 'mensaje':mensaje, 'temporaryBus':temporaryBus},  context_instance=RequestContext(request))
 
 @login_required    
 def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
@@ -558,6 +565,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
     superadmin = (userData.categoria == 'Administrador')
     form = StopForm()
     stopList = []
+    temporaryStop = None
     
     #logica
     try:
@@ -643,4 +651,4 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
         form = StopForm()
         errorDescription = "No existen paradas"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
-    return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList, 'mensaje':mensaje},  context_instance=RequestContext(request))
+    return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList, 'mensaje':mensaje, 'temporaryStop':temporaryStop},  context_instance=RequestContext(request))
