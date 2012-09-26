@@ -9,7 +9,6 @@ from django.db.models import Max
 from tibusAdmin.forms import StopForm,  RouteForm,  BusForm, CompanyForm,  UserForm,\
     PassworForm
 from tibus.models import Parada, Recorrido, Unidad, Empresa
-from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib.auth.decorators import login_required
 from tibusAdmin.models import Usuario 
 
@@ -27,6 +26,7 @@ def route(request):#pagina de ABM de lineas
     routeList = []
     companyList = []
     logger = logging.getLogger(__name__)
+    form = RouteForm()
     
     if (userData.categoria == 'Administrador'):
         companyList = Empresa.objects.all()        
@@ -40,74 +40,29 @@ def route(request):#pagina de ABM de lineas
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
-                form = RouteForm(request.POST, request.FILES)
+                form = RouteForm(request.POST)
                 routeName=request.POST.get('linea').upper()
                 if request.POST.get('action') == 'viewCompany':
-                    routeList = Recorrido.objects.filter(empresa__nombre =request.POST.get('empresa').upper()).order_by('linea')
-                elif routeName == '': #comprueba que se ingresa route
-                    errorDescription = "No ingreso la linea"
-                elif request.POST.get('action') == 'viewRoute':          #no necesitaria el is_valid, solo que exista route
-                    return HttpResponseRedirect('recorrido' + routeName)
-                elif form.is_valid():
-                    if request.POST.get('action') == 'addRoute':
-                        newFrecuency = request.POST.get('frecuencia')
-                        companyName = request.POST.get('empresa').upper()
-                        if int(newFrecuency) > 0: #compueba que la frecuencia sea un entero mayor a 0
-                            temporaryRoute = Recorrido(linea = routeName,  frecuencia = newFrecuency, empresa = Empresa.objects.get(nombre=companyName)) 
-                            if temporaryRoute.validate(): #comprobacion de datos de route
-                                try:
-                                    temporaryRoute = Recorrido.objects.get(linea = routeName) #da verdadero si la route existe ya.
-                                    errorDescription = "Linea ya existente"
-                                except Recorrido.DoesNotExist:
-                                    temporaryRoute.save()
-                                    try:
-                                        if (request.FILES['masivo'] != ''):
-                                            fileName = request.FILES['masivo']
-                                            tempOrder = 0
-                                            errors = 0
-                                            for route in fileName:
-                                                values = route.split(';') #aca se debe hacer la carga de archivos masivos
-                                                stopName1=''
-                                                stopName2=''
-                                                try:
-                                                    tempLat = float(values[0])
-                                                    tempLon = float(values[1])
-                                                    stopName1 = values[2]
-                                                    stopName2 = values[3]
-                                                    tempOrder = tempOrder + 1
-                                                    newParada = Parada(orden = tempOrder,  latitud = tempLat, longitud = tempLon, linea = temporaryRoute, calle1 = stopName1, calle2 = stopName2)  
-                                                    newParada.save()
-                                                except:
-                                                    errors = errors + 1
-                                                    errorDescription = "se encontraron " + str(errors) + " errors de datos"
-                                            print tempOrder
-                                    except MultiValueDictKeyError:
-                                        errorDescription = "Faltan cargar paradas"
-                            else:
-                                errorDescription = "Identificador no valido"
-                        else:
-                            errorDescription = "La frecuencia debe ser un numero entero mayor a 0"
-                    elif request.POST.get('action') == 'editRoute':  #edicion de route.
-                        fileName = request.FILES['file']
-                        temporaryRoute = Recorrido.objects.get(linea = routeName)
-                        temporaryRoute.frecuencia = int(request.POST.get('frecuencia'))
-                        temporaryRoute.save()
-                    else: #if request.POST.get('action') == 'delRoute': Asume que la accion por omision es borrar
-                        #La confirmacion de la eliminacion es en el codigo html
-                        temporaryRoute = Recorrido.objects.get(linea = routeName)
-                        temporaryRoute.delete() #el delete de django borra en cascada por defecto
-                    #else:
-                        #errorDescription = "Accion no valida"
+                    if request.POST.get('empresa') == 'all':
+                        routeList = Recorrido.objects.all().order_by('linea')
+                    else:
+                        routeList = Recorrido.objects.filter(empresa__nombre =request.POST.get('empresa').upper()).order_by('linea')
+                elif request.POST.get('action') == 'addRoute':
+                    return HttpResponseRedirect('recorrido0?add')
+                elif request.POST.get('action') == 'editRoute':  #edicion de route.
+                    temporaryRoute = Recorrido.objects.get(linea = routeName)
+                    return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?edit')
+                elif request.POST.get('action') == 'delRoute':  #edicion de route.
+                    temporaryRoute = Recorrido.objects.get(linea = routeName)
+                    return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?delete')
                 else:
-                    errorDescription = "Falta algun dato o tipo de dato invalido"
+                    errorDescription = "Accion no Valida"
             #empiezan las excepciones
             except Recorrido.DoesNotExist:
                 errorDescription = "La linea ingresada no existe"
             except Empresa.DoesNotExist:
                 errorDescription = "La empresa ingresada no existe"
             logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + routeName + " Error:" + errorDescription)
-        else:
-            form = RouteForm()
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Route Error:" + errorDescription)
@@ -251,81 +206,87 @@ def stop(request, routeId): #Pagina de ABM de paradas
     userData = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)  
     superadmin = (userData.categoria == 'Administrador')
-    form = StopForm()
-    
+    form = RouteForm()
+    stopList = []
+        
     #logica
     try:
         if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
-            stopList = Parada.objects.filter(linea__linea = routeId).order_by('orden')
-            form = StopForm()
-            routeId = routeId.upper()
-            temporaryRoute= Recorrido.objects.get(linea = routeId)
-            stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
             if request.method == 'POST':
+                form = RouteForm(request.POST)
+                temporaryRoute = Recorrido.objects.get(linea = routeId)
                 temporaryOrder = request.POST.get('orden')
                 if temporaryOrder == None or temporaryOrder == '':
                     temporaryOrder = 0
-                try:
-                    if int(temporaryOrder) >= 0:  #comprueba que el orden sea un entero mayor que 0
-                        if request.POST.get('action') == 'addStop':
-                            temporaryLat = float(request.POST.get('newlatitud'))
-                            temporaryLon = float(request.POST.get('newlongitud'))
-                            nameStop1 = request.POST.get('calle1')
-                            nameStop2 = request.POST.get('calle2')
-                            predectibleStop = request.POST.get('paradaactiva')
-                            if not(predectibleStop):
-                                predectibleStop = 0
-                            if len(stopList) == 0: #comprueba que no sea la primer parada
-                                temporaryOrder = 1
-                            elif temporaryOrder != 0: #agrega la parada en una posicion especifica
-                                for temporaryStop in stopList: 
-                                    if temporaryStop.getOrder() > int(temporaryOrder): 
-                                        temporaryStop.upOneOrder()
-                                        temporaryStop.save()
-                                stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
-                            else: #agrega la parada al final del recorrido
-                                temporaryOrder = stopList.aggregate(orden=Max('orden')).get('orden') + 1
-                            temporaryStop = Parada(orden = temporaryOrder,  latitud = temporaryLat, longitud = temporaryLon, linea = temporaryRoute, calle1 = nameStop1,calle2 = nameStop2,paradaactiva = predectibleStop)  
-                            temporaryStop.save()
-                        elif request.POST.get('action') == 'editStop': #sin revisar - Falta ver que pasa si se cambia el orden.
-                            temporaryStop = Parada.objects.get(orden = int(temporaryOrder),  linea = temporaryRoute)  
-                            temporaryStop.latitud = float(request.POST.get('newlatitud'))
-                            temporaryStop.longitud = float(request.POST.get('newlongitud'))
-                            temporaryStop.calle1 = request.POST.get('calle1')
-                            temporaryStop.calle2 = request.POST.get('calle2')
-                            if request.POST.get('paradaactiva'):
-                                temporaryStop.paradaactiva = True
-                            else:
-                                temporaryStop.paradaactiva = False  
-                            temporaryStop.save()
-                        else: #if request.POST.get('action') == 'delParada':  Asume que la accion por omision es borrar
-                            #La confirmacion de la eliminacion es en el codigo html
-                            temporaryStop = Parada.objects.get(orden = temporaryOrder,  linea = temporaryRoute)  
-                            temporaryStop.delete()
-                            #!reacomodar paradas                
-                            for temporaryStop in stopList: 
-                                if temporaryStop.getOrder() > int(temporaryOrder): 
-                                    temporaryStop.downOneOrder()
-                                    temporaryStop.save()
-                            stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
-                        #else:
-                            #errorDescription = "Accion no valida"
+                if request.POST.get('action') == 'addStop': 
+                    try:
+                        temporaryRoute = Recorrido.objects.get(linea = routeId)
+                    except Recorrido.DoesNotExist:
+                        temporaryRoute = Recorrido(linea = routeId, frecuencia = request.POST.get('frecuencia'), empresa = Empresa.objects.get(nombre = request.POST.get('empresa')))
+                        temporaryRoute.save();
+                    return HttpResponseRedirect('stopdata'+temporaryRoute.getLinea()+'?add')
+                elif request.POST.get('action') == 'editStop': 
+                    temporaryStop = Parada.objects.get(linea = temporaryRoute.getId(), orden = temporaryOrder)
+                    return HttpResponseRedirect('stopdata'+str(temporaryStop.getId())+'?edit')
+                elif request.POST.get('action') == 'delStop': 
+                    temporaryStop = Parada.objects.get(linea = temporaryRoute.getId(), orden = temporaryOrder)
+                    return HttpResponseRedirect('stopdata'+str(temporaryStop.getId())+'?delete')
+                elif request.POST.get('action') == 'addMasiveStop': #Falta implementar carga masiva
+                    if (request.FILES['masivo'] != ''):
+                        fileName = request.FILES['masivo']
+                        temporaryOrder = int(Parada.objects.filter(linea = temporaryRoute.getId()).count())
+                        errors = 0
+                        for route in fileName:
+                            values = route.split(';') 
+                            try:
+                                tempLat = float(values[0])
+                                tempLon = float(values[1])
+                                stopName1 = values[2]
+                                stopName2 = values[3]
+                                temporaryOrder = temporaryOrder + 1
+                                newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = temporaryRoute.getId(), calle1 = stopName1, calle2 = stopName2)  
+                                newParada.save()
+                            except:
+                                errors = errors + 1
+                                errorDescription = "se encontraron " + str(errors) + " errors de datos"
                     else:
-                        errorDescription = "El orden debe ser un numero entero mayor a 0"
-                except ValueError:
-                    errorDescription = "El orden debe ser un numero entero"
-                except TypeError:
-                    errorDescription = "Las coordenadas no pueden ser vacias"
-                logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + routeId + " Parada: " + temporaryOrder + " Error:" + errorDescription)
-            stopList = Parada.objects.filter(linea__linea = routeId).order_by('orden') # para actualizar cambios en la lista de paradas
+                        errorDescription = "No selecciono ningun archivo"
+                elif request.POST.get('action') == 'save': 
+                    if form.is_valid():
+                        routeName = form.cleaned_data['linea']
+                        routeFrecuency = form.cleaned_data['frecuencia']
+                        routeCompany = form.cleaned_data['empresa']
+                        action = form.cleaned_data['action'].lower()
+                        if action == 'add':
+                            temporaryRoute = Recorrido(linea = routeName, frecuencia = routeFrecuency, empresa = Empresa.objects.get(nombre = routeCompany))
+                            temporaryRoute.save();
+                        elif action == 'edit':
+                            temporaryRoute = Recorrido.objects.get(linea = routeName)
+                            temporaryRoute.frecuencia = routeFrecuency
+                            temporaryRoute.empresa = Empresa.objects.get(nombre = routeCompany)
+                            temporaryRoute.save();
+                        elif action == 'delete':
+                            temporaryRoute = Recorrido.objects.get(linea = routeName)
+                            temporaryRoute.delete()
+                    else:
+                        errorDescription = "Los datos son incorrectos"
+                else: 
+                    errorDescription = "Accion no valida"
+                logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(routeId) + " Parada: " + str(temporaryOrder) + " Error:" + str(errorDescription))
+            else:
+                if request.GET.get('add') == None:
+                    temporaryRoute = Recorrido.objects.get(linea = routeId)
+                    form.initial = {'linea': temporaryRoute.getLinea(), 'frecuencia' : temporaryRoute.getFrecuency(), 'empresa': temporaryRoute.getCompany()}
+                    stopList = Parada.objects.filter(linea = temporaryRoute.getId()).order_by('orden')
         else:
             errorDescription = "No posee permisos para ejecutar esta accion"
     #empiezan las excepciones
     except Recorrido.DoesNotExist:
         return HttpResponseRedirect('linea')
     except Parada.DoesNotExist:
-        form = StopForm()
         errorDescription = "No existen paradas"
+    except ValueError:
+        errorDescription = "El orden debe ser un numero entero"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
     return render_to_response('recorrido.html', {'user': request.user,'form': form,  'route': routeId, 'stopList': stopList ,  'error': errorDescription,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
 
@@ -390,8 +351,7 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la empresa"
         else:
-            action = request.GET.get('add')
-            if action == None:
+            if request.GET.get('add') == None:
                 temporaryCompany = Empresa.objects.get(idempresa = companyId)
                 form.initial = {'nombre': temporaryCompany.getName(), 'email' : temporaryCompany.getMail(), 'action': action}
     else:
@@ -487,8 +447,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la compania"
         else:
-            action = request.GET.get('add')
-            if action == None:
+            if request.GET.get('add') == None:
                 temporaryUser = Usuario.objects.get(nombre = userId)
                 form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.mail, 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany(), 'action': action}
     else:
@@ -555,11 +514,103 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
             except Unidad.DoesNotExist:
                 errorDescription = "No existe/n unidad/es"            
         else:
-            action = request.GET.get('add')
-            if action == None:
+            if request.GET.get('add') == None:
                 temporaryBus = Unidad.objects.get(idunidad = busId)
                 form.initial = {'linea': temporaryBus.getLinea(), 'aptoMovilidadReducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea(), 'action': action}
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Bus Error:" + errorDescription)
     return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True,  'routeList': routeList,'superadmin':superadmin},  context_instance=RequestContext(request))
+
+@login_required    
+def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
+    #carga inicial
+    c = {}
+    c.update(csrf(request))
+    errorDescription = ""
+    userData = Usuario.objects.get(nombre = request.user)
+    logger = logging.getLogger(__name__)  
+    superadmin = (userData.categoria == 'Administrador')
+    form = StopForm()
+    stopList = []
+    
+    #logica
+    try:
+        if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
+            if request.method == 'POST':
+                try:
+                    form = StopForm(request.POST)
+                    if form.is_valid():
+                        temporaryRoute= Recorrido.objects.get(idrecorrido = form.cleaned_data['linea'])
+                        stopOrder = form.cleaned_data['orden']
+                        stopLat = form.cleaned_data['latitud']
+                        stopLon = form.cleaned_data['longitud']
+                        stopStreet1 = form.cleaned_data['calle1']
+                        stopStreet2 = form.cleaned_data['calle2']
+                        stopActive = form.cleaned_data['paradaactiva']
+                        action = form.cleaned_data['action']
+                        stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
+                        if stopOrder == None or stopOrder == '':
+                            stopOrder = 0
+                        if int(stopOrder) >= 0:  #comprueba que el orden sea un entero mayor que 0
+                            if action == 'add':
+                                if len(stopList) == 0: #comprueba que no sea la primer parada
+                                    stopOrder = 1
+                                elif stopOrder != 0: #agrega la parada en una posicion especifica
+                                    for temporaryStop in stopList: 
+                                        if temporaryStop.getOrder() > int(stopOrder): 
+                                            temporaryStop.upOneOrder()
+                                            temporaryStop.save()
+                                    stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
+                                else: #agrega la parada al final del recorrido
+                                    stopOrder = stopList.aggregate(orden=Max('orden')).get('orden') + 1
+                                temporaryStop = Parada(orden = stopOrder,  latitud = stopLat, longitud = stopLon, linea = temporaryRoute, calle1 = stopStreet1,calle2 = stopStreet2,paradaactiva = stopActive)  
+                                temporaryStop.save()
+                            elif action == 'edit': #sin revisar - Falta ver que pasa si se cambia el orden.
+                                temporaryStop = Parada.objects.get(idparada = stopId)  
+                                temporaryStop.latitud = stopLat
+                                temporaryStop.longitud = stopLon
+                                temporaryStop.calle1 = stopStreet1
+                                temporaryStop.calle2 = stopStreet2
+                                temporaryStop.paradaactiva = stopActive
+                                temporaryStop.save()
+                            elif action == 'delete':
+                                temporaryStop = Parada.objects.get(idparada = stopId)  
+                                temporaryStop.delete()
+                                #!reacomodar paradas                
+                                for temporaryStop in stopList: 
+                                    if temporaryStop.getOrder() > int(stopOrder): 
+                                        temporaryStop.downOneOrder()
+                                        temporaryStop.save()
+                                stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
+                            else:
+                                errorDescription = "La accion no es valida"
+                        else:
+                            errorDescription = "El orden debe ser un numero entero mayor a 0"
+                        logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + temporaryStop.getLinea() + " Parada: " + stopOrder + " Error:" + errorDescription)
+                        return HttpResponseRedirect('recorrido' + temporaryStop.getLinea())
+                    else:
+                        errorDescription = "Los datos no son validos"
+                except ValueError:
+                    errorDescription = "El orden debe ser un numero entero"
+                #except TypeError:
+                    errorDescription = "Las coordenadas no pueden ser vacias"
+            else:
+                if request.GET.get('add') == '':
+                    temporaryRoute = Recorrido.objects.get(linea = stopId)
+                    form.initial = {'linea': temporaryRoute.getId(), 'action': request.GET.get('action')}
+                else:
+                    temporaryStop = Parada.objects.get(idparada = stopId)
+                    temporaryRoute= Recorrido.objects.get(linea = temporaryStop.getLinea())
+                    form.initial = {'linea': temporaryRoute.getId(),'orden': temporaryStop.getOrder(), 'latitud': temporaryStop.getLat(), 'longitud': temporaryStop.getLon(), 'calle1': temporaryStop.getStreetName1(), 'calle2': temporaryStop.getStreetName2(), 'paradaactiva': temporaryStop.getActive(), 'action':request.GET.get('action')}
+                stopList = Parada.objects.filter(linea = temporaryRoute.getId()) 
+        else:
+            errorDescription = "No posee permisos para ejecutar esta accion"
+    #empiezan las excepciones
+    except Recorrido.DoesNotExist:
+        return HttpResponseRedirect('linea')
+    except Parada.DoesNotExist:
+        form = StopForm()
+        errorDescription = "No existen paradas"
+    logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
+    return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList},  context_instance=RequestContext(request))
