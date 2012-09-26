@@ -3,7 +3,7 @@
 {% block extras %}
  <table style="text-align: left; height: 100%; width: 90%;">
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  <tr><td style="color: black;"> Recorrido: </td></tr>
+  {% if mensaje %}<tr><td>{{ mensaje }}</td></tr>{% endif %}
   <tr><td align=center >
     {% if route %}
     	{% if stopList %}

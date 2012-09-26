@@ -268,6 +268,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
                         elif action == 'delete':
                             temporaryRoute = Recorrido.objects.get(linea = routeName)
                             temporaryRoute.delete()
+                        return HttpResponseRedirect('linea')
                     else:
                         errorDescription = "Los datos son incorrectos"
                 else: 
@@ -278,6 +279,12 @@ def stop(request, routeId): #Pagina de ABM de paradas
                     temporaryRoute = Recorrido.objects.get(linea = routeId)
                     form.initial = {'linea': temporaryRoute.getLinea(), 'frecuencia' : temporaryRoute.getFrecuency(), 'empresa': temporaryRoute.getCompany()}
                     stopList = Parada.objects.filter(linea = temporaryRoute.getId()).order_by('orden')
+                    if request.GET.get('edit') == '':
+                        mensaje = 'Modificacion de Linea Existente'
+                    elif request.GET.get('delete') == '':
+                        mensaje = 'Confirmacion de Eliminacion de Linea'
+                else:
+                    mensaje = 'Alta de Nueva Linea'
         else:
             errorDescription = "No posee permisos para ejecutar esta accion"
     #empiezan las excepciones
@@ -288,7 +295,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
     except ValueError:
         errorDescription = "El orden debe ser un numero entero"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
-    return render_to_response('recorrido.html', {'user': request.user,'form': form,  'route': routeId, 'stopList': stopList ,  'error': errorDescription,  'admin': True, 'superadmin':superadmin}, context_instance=RequestContext(request))
+    return render_to_response('recorrido.html', {'user': request.user,'form': form,  'route': routeId, 'stopList': stopList ,  'error': errorDescription,  'admin': True, 'superadmin':superadmin, 'mensaje': mensaje}, context_instance=RequestContext(request))
 
 @login_required
 def changepassword(request):
@@ -353,11 +360,17 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
         else:
             if request.GET.get('add') == None:
                 temporaryCompany = Empresa.objects.get(idempresa = companyId)
-                form.initial = {'nombre': temporaryCompany.getName(), 'email' : temporaryCompany.getMail(), 'action': action}
+                form.initial = {'nombre': temporaryCompany.getName(), 'email' : temporaryCompany.getMail()}
+                if request.GET.get('edit') == '':
+                    mensaje = 'Modificacion de Empresa Existente'
+                elif request.GET.get('delete') == '':
+                    mensaje = 'Confirmacion de Eliminacion de Empresa'
+            else:
+                mensaje = 'Alta de Nueva Empresa'
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in CompanyData Error:" + errorDescription)        
-    return render_to_response('empresadata.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True },  context_instance=RequestContext(request))
+    return render_to_response('empresadata.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True, 'mensaje': mensaje },  context_instance=RequestContext(request))
 
 @login_required    
 def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
@@ -449,12 +462,18 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
         else:
             if request.GET.get('add') == None:
                 temporaryUser = Usuario.objects.get(nombre = userId)
-                form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.mail, 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany(), 'action': action}
+                form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.mail, 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
+                if request.GET.get('edit') == '':
+                    mensaje = 'Modificacion de Usuario Existente'
+                elif request.GET.get('delete') == '':
+                    mensaje = 'Confirmacion de Eliminacion de Usuario'
+            else:
+                mensaje = 'Alta de Nuevo Usuario'
     else:
         superadmin = False
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in User Error:" + errorDescription)        
-    return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin},  context_instance=RequestContext(request))
+    return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin, 'mensaje':mensaje},  context_instance=RequestContext(request))
 
 @login_required    
 def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
@@ -516,11 +535,17 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
         else:
             if request.GET.get('add') == None:
                 temporaryBus = Unidad.objects.get(idunidad = busId)
-                form.initial = {'linea': temporaryBus.getLinea(), 'aptoMovilidadReducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea(), 'action': action}
+                form.initial = {'linea': temporaryBus.getLinea(), 'aptoMovilidadReducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea()}
+                if request.GET.get('edit') == '':
+                    mensaje = 'Modificacion de Unidad Existente'
+                elif request.GET.get('delete') == '':
+                    mensaje = 'Confirmacion de Eliminacion de Unidad'
+            else:
+                mensaje = 'Alta de Nueva Unidad'
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Bus Error:" + errorDescription)
-    return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True,  'routeList': routeList,'superadmin':superadmin},  context_instance=RequestContext(request))
+    return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True,  'routeList': routeList,'superadmin':superadmin, 'mensaje':mensaje},  context_instance=RequestContext(request))
 
 @login_required    
 def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
@@ -598,11 +623,16 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
             else:
                 if request.GET.get('add') == '':
                     temporaryRoute = Recorrido.objects.get(linea = stopId)
-                    form.initial = {'linea': temporaryRoute.getId(), 'action': request.GET.get('action')}
+                    form.initial = {'linea': temporaryRoute.getId()}
+                    mensaje = 'Alta de Nueva Parada'
                 else:
                     temporaryStop = Parada.objects.get(idparada = stopId)
                     temporaryRoute= Recorrido.objects.get(linea = temporaryStop.getLinea())
-                    form.initial = {'linea': temporaryRoute.getId(),'orden': temporaryStop.getOrder(), 'latitud': temporaryStop.getLat(), 'longitud': temporaryStop.getLon(), 'calle1': temporaryStop.getStreetName1(), 'calle2': temporaryStop.getStreetName2(), 'paradaactiva': temporaryStop.getActive(), 'action':request.GET.get('action')}
+                    form.initial = {'linea': temporaryRoute.getId(),'orden': temporaryStop.getOrder(), 'latitud': temporaryStop.getLat(), 'longitud': temporaryStop.getLon(), 'calle1': temporaryStop.getStreetName1(), 'calle2': temporaryStop.getStreetName2(), 'paradaactiva': temporaryStop.getActive()}
+                    if request.GET.get('edit') == '':
+                        mensaje = 'Modificacion de Parada Existente'
+                    elif request.GET.get('delete') == '':
+                        mensaje = 'Confirmacion de Eliminacion de Parada'
                 stopList = Parada.objects.filter(linea = temporaryRoute.getId()) 
         else:
             errorDescription = "No posee permisos para ejecutar esta accion"
@@ -613,4 +643,4 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
         form = StopForm()
         errorDescription = "No existen paradas"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
-    return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList},  context_instance=RequestContext(request))
+    return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList, 'mensaje':mensaje},  context_instance=RequestContext(request))

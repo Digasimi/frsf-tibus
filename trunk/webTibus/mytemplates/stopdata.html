@@ -2,6 +2,7 @@
 
 {% block extras %}
  <table style="text-align: left; height: 100%; width: 90%;">
+  {% if mensaje %}<tr><td>{{ mensaje }}</td></tr>{% endif %}
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
 	  <form name = "formParada" action="" method="post">{% csrf_token %}
