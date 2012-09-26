@@ -13,7 +13,7 @@
 		        <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formUnidad.id_linea.value = document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value;document.formUnidad.lineaCombo.value=document.formUnidad.lineaCombo.options[document.formUnidad.lineaCombo.selectedIndex].value">
 		        <OPTION VALUE="">Seleccione un valor</OPTION> 
 		        {% for route in routeList %}
-		            <OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
+		            <OPTION {% if temporaryBus and temporaryBus.linea == route %} SELECTED {% endif %}VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
 		        {% endfor %}
 		        </SELECT></td>
 		    </tr>
