@@ -13,6 +13,10 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import frsf.tibus.TibusServer;
 import frsf.tibus.domain.BusPositionData;
 import frsf.tibus.prediction.model.PredictionModel;
 
@@ -24,9 +28,13 @@ public class PositionDataListener implements MessageListener {
 	private String requestQueueName = "busesPosition";
 	private MessageProducer responseProducer;
 	private PredictionModel modelo;
+	private Logger logger;
+	
 	
 	public PositionDataListener(Connection c, PredictionModel modeloPrediccion) {
 		modelo = modeloPrediccion;
+		logger = LoggerFactory.getLogger(TibusServer.class);
+		
 		try {						
 			this.predictionSession = c.createSession(this.transacted, ackMode);
             Destination requestQueue = this.predictionSession.createQueue(requestQueueName);
@@ -51,6 +59,8 @@ public class PositionDataListener implements MessageListener {
 				Object position =  ((ObjectMessage)positionData).getObject();
 				if(position instanceof BusPositionData)
 				{
+					logger.debug(((BusPositionData)position).toString());
+					
 					modelo.procesarNuevaPosicion((BusPositionData)position);
 				}
 			} catch (JMSException e) {
