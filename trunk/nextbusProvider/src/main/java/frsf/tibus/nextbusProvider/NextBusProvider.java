@@ -64,8 +64,8 @@ public class NextBusProvider
 		
     	jmsConnectionFactory = new ActiveMQConnectionFactory(messageBrokerUrl);
 	    
-	    url = "http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=N&t="
-	    		+properties.getString("route");
+	    url = "http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r="
+	    		+properties.getString("route")+"&t=";
 	    
 		connection = jmsConnectionFactory.createConnection();
 		connection.start();

@@ -145,5 +145,11 @@ public class BusPositionData implements Serializable{
 			return false;
 		return true;
 	}
-
+	
+	@Override
+	public String toString() {
+		return "BusPositionData [busId=" + busId + ", lat=" + lat + ", lon="
+				+ lon + ", heading=" + heading + ", date=" + date
+				+ ", routeName=" + routeName + "]";
+	}
 }
