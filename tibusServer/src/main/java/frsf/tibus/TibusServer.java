@@ -1,13 +1,7 @@
 package frsf.tibus;
 
 import javax.jms.Connection;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,17 +50,10 @@ public class TibusServer {
 			
 			setPredictionListener(new PredictionRequestListener(connection, modeloPrediccion));
 			setPositionListener(new PositionDataListener(connection, modeloPrediccion));
-			
-			
-            
+		   
 		} catch (JMSException e) {			
 			e.printStackTrace();
 		}
-	    
-	    
-        
-
-		
 	}
 
 

@@ -70,14 +70,21 @@ public class AverageSpeedModel implements PredictionModel {
 			
 			AverageSpeed speed; 
 			
-			session.beginTransaction();
-			
-			for(Stop s = previousStop; !s.equals(currentStop); s = r.getNextStop(s))
-			{
-				speed = new AverageSpeed(s, avgSpeed.floatValue(), new Timestamp(b.getCurrentLocation().getDate().getMillis()));
-				session.save(speed);
+			try {
+				session.beginTransaction();
+				
+				for(Stop s = previousStop; !s.equals(currentStop); s = r.getNextStop(s))
+				{
+					speed = new AverageSpeed(s, avgSpeed.floatValue(), new Timestamp(b.getCurrentLocation().getDate().getMillis()));
+					session.save(speed);
+				}
+				session.getTransaction().commit();
 			}
-			session.getTransaction().commit();
+			catch (RuntimeException e)
+			{
+				session.getTransaction().rollback();
+				throw e;
+			}
 		}
 	}
 
