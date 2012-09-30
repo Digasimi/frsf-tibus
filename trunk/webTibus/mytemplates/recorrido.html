@@ -2,63 +2,60 @@
 
 {% block extras %}
  <table style="text-align: left; height: 100%; width: 90%;">
-  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  {% if mensaje %}<tr><td>{{ mensaje }}</td></tr>{% endif %}
-  <tr><td align=center >
-    {% if route %}
-    	{% if stopList %}
-    <div id="tableContainer" class="tableContainer"><table class="scrollTable">
-	    <thead class="fixedHeader">
-			<tr>
-				<th><a href="#">Orden</a></th>
-				<th><a href="#">Latitud</a></th>
-				<th><a href="#">Longitud</a></th>
-			</tr>
-		</thead>
-		<tbody class="scrollContent">
-	      {% for stop in stopList %}
-	        <tr><td>{{ stop.orden }}</td><td>{{ stop.latitud }}</td><td>{{ stop.longitud }}</td></tr>
-	      {% endfor %}
-    </tbody></table></div>
-    {% else %}
-      <a>No paradas disponibles</a>
-    	{% endif %}
-    {% endif %}
-  </td></tr>
-  <tr><td style="color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
-	  <form name = "formParada" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-		    <table>
-			    <tr><td>{{ form.action }}</td></tr>
-			    <tr><td><label for="id_linea">Nombre:</label>{{ form.linea }}</td></tr>
-			    <tr><td><label for="id_frecuencia">Frecuencia:</label>{{ form.frecuencia }}</td></tr>
-			    <tr><td><label for="id_empresa">Empresa:</label>{{ form.empresa }}
-			    	<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formParada.id_empresa.value = document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value;document.formParada.empresaCombo.value=document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value">
-	        			<OPTION VALUE="">Seleccione una empresa</OPTION> 
-	        			{% for company in companyList %}
-	            		<OPTION {% if temporaryRoute and temporaryRoute.empresa == company %} SELECTED {% endif %}VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
-	        			{% endfor %}
-    			</SELECT></td></tr>
-	   			<tr><td><label for="id_masivo">Carga masiva de Paradas:</label></td></tr>
-	   			<tr><td>{{ form.masivo}}
-		   			<BUTTON type="submit" name="action" value="addMasiveStop"> Cargar paradas </BUTTON>
-		   		</td></tr>
-		   		<tr><td><font size="1"><p>Las paradas deben estan en orden y una por linea con el formato:</p><p>Latitud; Longitud;Calle;Interseccion</p></font></td></tr>
-		   		<tr><td colspan="2"><label for="id_orden"> Orden: </label> {{ form.orden }}
-		    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
-		   				<OPTION VALUE="">Seleccione un valor</OPTION>
-		      			{% for stop in stopList %}
-		       			<OPTION VALUE="{{ stop.orden }}">{{ stop.orden }}</OPTION>
-		      			{% endfor %}
-		   			</SELECT></td></tr>
-	   		</table>
-		    <BUTTON type="submit" name="action" value="addStop"> Agregar Parada </BUTTON>
-		    <BUTTON type="submit" name="action" value="editStop"> Modificar Parada </BUTTON>
-		    <BUTTON type="submit" name="action" value="delStop" > Eliminar Parada </BUTTON>
-		    <br />
-		    <input type="button" name="back" id="back" value="Volver" onClick="javaScript:history.back();">
-		    <BUTTON type="submit" name="action" value="save" > Guardar Cambios </BUTTON>
-	  </form></td></tr>
-
+	<form name = "formParada" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+		{% if mensaje %}<tr><td>{{ mensaje }}</td></tr>{% endif %}
+	    <tr><td>{{ form.action }}</td></tr>
+	    <tr><td><label for="id_linea">Nombre:</label>{{ form.linea }}</td></tr>
+	    <tr><td><label for="id_frecuencia">Frecuencia:</label>{{ form.frecuencia }}</td></tr>
+	    <tr><td><label for="id_empresa">Empresa:</label>{{ form.empresa }}
+	    	<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formParada.id_empresa.value = document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value;document.formParada.empresaCombo.value=document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value">
+       			<OPTION VALUE="">Seleccione una empresa</OPTION> 
+       			{% for company in companyList %}
+           		<OPTION {% if temporaryRoute and temporaryRoute.empresa == company %} SELECTED {% endif %}VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
+       			{% endfor %}
+  			</SELECT></td></tr>
+  			  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
+		  <tr><td align=center >
+		    {% if route %}
+		    	{% if stopList %}
+		    <div id="tableContainer" class="tableContainer"><table class="scrollTable">
+			    <thead class="fixedHeader">
+					<tr>
+						<th><a href="#">Orden</a></th>
+						<th><a href="#">Latitud</a></th>
+						<th><a href="#">Longitud</a></th>
+					</tr>
+				</thead>
+				<tbody class="scrollContent">
+			      {% for stop in stopList %}
+			        <tr><td>{{ stop.orden }}</td><td>{{ stop.latitud }}</td><td>{{ stop.longitud }}</td></tr>
+			      {% endfor %}
+		    </tbody></table></div>
+		    {% else %}
+		      <a>No paradas disponibles</a>
+		    	{% endif %}
+		    {% endif %}
+		  </td></tr>
+  			<tr><td><label title="{{form.masivo.help_text}}" for="id_masivo">Carga masiva de Paradas:</label></td></tr>
+  			<tr><td>{{ form.masivo}}
+   			<BUTTON type="submit" name="action" value="addMasiveStop"> Cargar paradas </BUTTON>
+   		</td></tr>
+   		<!-- <tr><td><font size="1"><p>Las paradas deben estan en orden y una por linea con el formato:</p><p>Latitud; Longitud;Calle;Interseccion</p></font></td></tr> -->
+   		<tr><td colspan="2"><label for="id_orden"> Orden: </label> {{ form.orden }}<br />
+    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
+   				<OPTION VALUE="">Seleccione un valor</OPTION>
+      			{% for stop in stopList %}
+       			<OPTION VALUE="{{ stop.orden }}">{{ stop.orden }}</OPTION>
+      			{% endfor %}
+   			</SELECT>
+    <br />
+    <BUTTON type="submit" name="action" value="addStop"> Agregar Parada </BUTTON>
+    <BUTTON type="submit" name="action" value="editStop"> Modificar Parada </BUTTON>
+    <BUTTON type="submit" name="action" value="delStop" > Eliminar Parada </BUTTON>
+    <br />
+    <input type="button" name="back" id="back" value="Descartar" onClick="javaScript:history.back();">
+    <BUTTON type="submit" name="action" value="save" > Guardar </BUTTON>
+</form>
 </table>
 {% endblock %}
 

@@ -6,7 +6,7 @@ import re
 
 class Empresa(models.Model):
         idempresa = models.AutoField(primary_key=True)
-        nombre = models.CharField(max_length=50)
+        nombre = models.CharField(max_length=50, help_text="Nombre de la empresa")
         mail = models.EmailField()
         
         def __unicode__(self):
