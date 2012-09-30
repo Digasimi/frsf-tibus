@@ -15,12 +15,16 @@ class StopForm(forms.Form):
         self.orden = self.orden +1
 
 #Formulario con los datos para cargar una route
+class RoutesForm(forms.Form):
+    linea = forms.CharField(widget=forms.HiddenInput)
+    empresa = forms.CharField(widget=forms.HiddenInput)
+    
 class RouteForm(forms.Form):
     linea = forms.CharField()
     frecuencia = forms.IntegerField()
-    orden = forms.IntegerField(required=False)
+    orden = forms.IntegerField(required=False, widget=forms.HiddenInput)
     empresa = forms.CharField(widget=forms.HiddenInput)
-    masivo = forms.FileField(required=False)
+    masivo = forms.FileField(required=False, help_text = "Las paradas deben estan en orden y una por linea con el formato: Latitud; Longitud;Calle;Interseccion")
     action = forms.CharField(widget=forms.HiddenInput)
     
 #Formulario con los datos para cargar una unidad de colectivo

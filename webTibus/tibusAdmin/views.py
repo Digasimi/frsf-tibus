@@ -6,8 +6,7 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Max
-from tibusAdmin.forms import StopForm,  RouteForm,  BusForm, CompanyForm,  UserForm,\
-    PassworForm
+from tibusAdmin.forms import StopForm,  RouteForm,  BusForm, CompanyForm,  UserForm, PassworForm, RoutesForm
 from tibus.models import Parada, Recorrido, Unidad, Empresa
 from django.contrib.auth.decorators import login_required
 from tibusAdmin.models import Usuario 
@@ -26,7 +25,7 @@ def route(request):#pagina de ABM de lineas
     routeList = []
     companyList = []
     logger = logging.getLogger(__name__)
-    form = RouteForm()
+    form = RoutesForm()
     
     if (userData.categoria == 'Administrador'):
         companyList = Empresa.objects.all()        
@@ -40,7 +39,7 @@ def route(request):#pagina de ABM de lineas
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
-                form = RouteForm(request.POST)
+                form = RoutesForm(request.POST)
                 routeName=request.POST.get('linea').upper()
                 if request.POST.get('action') == 'viewCompany':
                     if request.POST.get('empresa') == 'all':
@@ -84,8 +83,8 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
         routeList = Recorrido.objects.all().order_by('linea')
         busList = Unidad.objects.all().order_by('id_unidad_linea')
     elif (userData.categoria == 'Empresa'):
-        routeList = Recorrido.objects.filter(company=userData.empresa).order_by('linea')
-        busList = Unidad.objects.filter(linea__company=userData.empresa).order_by('id_unidad_linea')
+        routeList = Recorrido.objects.filter(empresa=userData.empresa).order_by('linea')
+        busList = Unidad.objects.filter(linea__empresa=userData.empresa).order_by('id_unidad_linea')
     superadmin = (userData.categoria == 'Administrador')
     #logica
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):

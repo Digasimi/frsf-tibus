@@ -33,35 +33,27 @@
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
   <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
   <form name = "formLinea" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-    <table>
-    	<tr>
-	        <td><label for="id_empresa"> Empresa: </label> {{ form.empresa }}
-        		<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
-        			<OPTION VALUE="all">Todas las empresas</OPTION> 
-        			{% for company in companyList %}
-            		<OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
-        			{% endfor %}
-      		</SELECT></td></tr>
-      		<tr><td><BUTTON type="submit" name="action" value="viewCompany"> Filtrar por Empresa </BUTTON> </td>
-    	</tr>
-      <tr>
-		<td> <label for="id_linea"> Linea: </label> {{ form.linea }} 
-	    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
-    		<OPTION VALUE="">Seleccione un valor</OPTION>  
-      		{% for route in routeList %}
-      		<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
-      	{% endfor %}
-    	</SELECT></td></tr>
-      </tr>
-      </tr>
-     
+  	<label for="id_empresa"> Empresa: </label> {{ form.empresa }} <br />
+	<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
+		<OPTION VALUE="all">Todas las empresas</OPTION> 
+		{% for company in companyList %}
+	  		<OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
+		{% endfor %}
+	</SELECT><br />
+	<BUTTON type="submit" name="action" value="viewCompany"> Filtrar por Empresa </BUTTON><br />
+	<label for="id_linea"> Linea: </label> {{ form.linea }} <br />
+    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
+   		<OPTION VALUE="">Seleccione un valor</OPTION>  
+   		{% for route in routeList %}
+   		<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
+    	{% endfor %}
+   	</SELECT><br />
     </table>
-    <BUTTON type="submit" name="action" value="addRoute"> Agregar Linea </BUTTON>
-    <BUTTON type="submit" name="action" value="editRoute"> Modificar Linea </BUTTON>
-    <BUTTON type="submit" name="action" value="delRoute" > Eliminar Linea </BUTTON>
+    <BUTTON type="submit" name="action" value="addRoute"> Agregar Linea </BUTTON><br />
+    <BUTTON type="submit" name="action" value="editRoute"> Modificar Linea </BUTTON><br />
+    <BUTTON type="submit" name="action" value="delRoute" > Eliminar Linea </BUTTON><br />
     </form>
   </td></tr>
-  </table></td></tr>
 </table>
 {% endblock %}
 
