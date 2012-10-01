@@ -1,0 +1,71 @@
+{% extends "baseMenu.html" %}
+
+{% block extrahead %}
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+  <script type="text/javascript">
+  {% block funcDblClick %}{% endblock %}
+  </script>
+  
+  <script>
+      var point = new google.maps.LatLng(37.78333309725631,-122.44983673095703);
+      var markerPosition = new google.maps.LatLng(37.78333309725631,-122.44983673095703);
+      var markerImage = "http://google-maps-icons.googlecode.com/files/bus.png";
+      var marker;
+      var map;
+      var infoWindow = new google.maps.InfoWindow({ content: message[number],
+    	          			size: new google.maps.Size(50,50)
+    	        	    })
+
+      function initialize() {
+        var mapOptions = {
+          zoom: 13,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          center: point,
+          zoomControl: true,
+          panControl: true,
+          mapTypeControl: false,
+          scaleControl: true,
+          streetViewControl: false,
+          overviewMapControl: true
+        };
+
+        map = new google.maps.Map(document.getElementById('mapas'),
+                mapOptions);
+        
+        {% block marcas %}{% endblock %}
+        
+        google.maps.event.addListener(map, 'click', function(event) {
+        	map.setCenter(event.latLng);
+      	  	{% block defFuncDblClick %}{% endblock %}
+     	});
+      }
+      
+      function toggleBounce() {
+
+        if (marker.getAnimation() != null) {
+          marker.setAnimation(null);
+        } else {
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+
+      }
+
+      function closeInfoWindow() {
+          infoWindow.open();
+      }
+
+    </script>
+  {% block extraScripts %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+	<table style="text-align: left; height: 100%; width: 90%; border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);"> 
+	  <tbody> <tr style="vertical-align: top; height: 448px;">
+	    <td style="vertical-align: center; width: 50%;border: 2px solid rgb(190,190,190)"> <div id="mapas" style="width:100%; height:100%">Aca va el mapa</div></td>
+	    <td style="vertical-align: top; width: 50%;">
+	    {% block extras %} {% endblock %}
+	    </td>
+	  </tr> </tbody>
+	</table>
+{% endblock %}

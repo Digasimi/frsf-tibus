@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block extrastyle %}
+        <style type="text/css">
+            .shadowblockmenu{
+            	font-family: "Arial";
+                font-weight: bold;
+                font-size: 90%;
+                width: 100%;
+            }
+
+            .shadowblockmenu tr{
+                border: 1px solid #BBB;
+                border-width: 1px 0; /* Show only top and bottom border for main menu container */
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+            }
+
+            .shadowblockmenu tr td{
+                display: inline;
+                margin:0;
+                padding:0;
+            }
+
+            .shadowblockmenu tr td a{
+                display:block;
+                float:left;
+                text-transform: uppercase;
+                background-color:rgb(67,75,86);
+                color: rgb(255,255,255); /* color de las letras */
+                padding: 8px 15px 8px 9px;
+                margin: 0;
+                text-decoration: none;
+                border-right: 1px solid #BBB; /*right border between menu items*/
+                -moz-box-shadow: inset -7px 0 10px rgba(114,114,114, 0.4); /* Add inset shadow to each menu item. First 3 values in (114,114,114, 0.4) specifies rgb values, last specifies opacity */
+                -webkit-box-shadow: inset -7px 0 10px rgba(114,114,114, 0.4);
+                box-shadow: inset -7px 0 10px rgba(114,114,114, 0.4); /* Sombra del boton*/
+                text-shadow: 0 -1px 1px #cfcfcf; /* CSS text shadow to give text some depth */
+                -moz-transition: all 0.2s ease-in-out; /* Enable CSS transition between property changes */
+                -webkit-transition: all 0.2s ease-in-out;
+                -o-transition: all 0.2s ease-in-out;
+                -ms-transition: all 0.2s ease-in-out;
+                transition: all 0.2s ease-in-out;
+            }
+
+            .shadowblockmenu tr:nth-of-type(1) a{ /* Extra style for first menu link */
+                border-left: 1px solid #BBB; /* add border to left side of first menu link */
+            }
+
+            .shadowblockmenu tr td a:hover{
+                color: rgb(0,147,221);
+                background-color:rgb(225,224,224);
+                -moz-box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6); /* Add 2 inset shadows to each menu item  */
+                -webkit-box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6);
+                box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6);
+        }
+        
+            .shadowblockmenu2{
+            	font-family: "Arial";
+                font-weight: bold;
+                font-size: 80%;
+                width: 100%;
+            }
+
+            .shadowblockmenu2 tr{
+                border: 1px solid #BBB;
+                border-width: 1px 0; /* Show only top and bottom border for main menu container */
+                padding: 0;
+                margin: 0;
+                overflow: hidden;
+            }
+
+            .shadowblockmenu2 tr td{
+                display: inline;
+                margin:0;
+                padding:0;
+            }
+
+            .shadowblockmenu2 tr td a{
+                display:block;
+                float:left;
+                text-transform: uppercase;
+                color: rgb(0,147,221); /*Color de las letras*/
+                background-color:rgb(225,224,224);
+                padding: 8px 15px 8px 9px;
+                margin: 0;
+                text-decoration: none;
+                border-right: 1px solid #BBB; /*right border between menu items*/
+                -moz-box-shadow: inset -7px 0 10px rgba(114,114,114, 0.4); /* Add inset shadow to each menu item. First 3 values in (114,114,114, 0.4) specifies rgb values, last specifies opacity */
+                -webkit-box-shadow: inset -7px 0 10px rgba(114,114,114, 0.4);
+                box-shadow: inset -7px 0 10px rgba(114,114,114, 0.4); /* Sombra del boton*/
+                text-shadow: 0 -1px 1px #cfcfcf; /* CSS text shadow to give text some depth */
+                -moz-transition: all 0.2s ease-in-out; /* Enable CSS transition between property changes */
+                -webkit-transition: all 0.2s ease-in-out;
+                -o-transition: all 0.2s ease-in-out;
+                -ms-transition: all 0.2s ease-in-out;
+                transition: all 0.2s ease-in-out;
+            }
+
+            .shadowblockmenu2 tr:nth-of-type(1) a{ /* Extra style for first menu link */
+                border-left: 1px solid #BBB; /* add border to left side of first menu link */
+            }
+
+            .shadowblockmenu2 tr td a:hover{
+                background-color:rgb(67,75,86);
+                color: rgb(255,255,255); /* color de las letras */
+                -moz-box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6); /* Add 2 inset shadows to each menu item  */
+                -webkit-box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6);
+                box-shadow: inset -7px 0 10px rgba(60,162,221, 0.4), inset 0 0 12px rgba(60,162,221, 0.6);
+        }
+        
+        .sombraTabla table{
+                border: 3px solid rgb(0,0,0);
+                padding: 20px;
+                box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;
+                background-color:rgb(255,255,255);
+                align: center;
+                font-family: "Sans-serif";
+                font-size:12px
+        }
+        
+        div.tableContainer {
+			clear: both;
+			height: 270px;
+			overflow: auto;
+			width: 100%
+		}
+		
+		/* Reset overflow value to hidden for all non-IE browsers. */
+		html>body div.tableContainer {
+			overflow: hidden;
+			width: 100%
+		}
+		
+		/* define width of table. IE browsers only                 */
+		div.tableContainer table {
+            background-color:rgb(255,255,255);
+            border-collapse:collapse;
+            align: center;
+			float: center;
+			width: 100%
+		}
+		
+		/* define width of table. Add 16px to width for scrollbar.           */
+		/* All other non-IE browsers.                                        */
+		html>body div.tableContainer table {
+			width: 100%
+		}
+		
+		/* set table header to a fixed position. WinIE 6.x only                                       */
+		/* In WinIE 6.x, any element with a position property set to relative and is a child of       */
+		/* an element that has an overflow property set, the relative value translates into fixed.    */
+		/* Ex: parent element DIV with a class of tableContainer has an overflow property set to auto */
+		thead.fixedHeader tr {
+			position: relative;
+            border: 1px solid rgb(190,190,190);
+            background-color:rgb(255,255,255);
+            align:center
+		}
+		
+		/* set THEAD element to have block level attributes. All other non-IE browsers            */
+		/* this enables overflow to work on TBODY element. All other non-IE, non-Mozilla browsers */
+		html>body thead.fixedHeader tr {
+			display: block
+		}
+		
+		/* make the TH elements pretty */
+		thead.fixedHeader th {
+			background: #C96;
+			border-left: 1px solid #EB8;
+			border-right: 1px solid #B74;
+			border-top: 1px solid #EB8;
+			font-weight: normal;
+			padding: 4px 3px;
+			text-align: center
+		}
+		
+		/* make the A elements pretty. makes for nice clickable headers                */
+		thead.fixedHeader a, thead.fixedHeader a:link, thead.fixedHeader a:visited {
+			color: #FFF;
+			display: block;
+			text-decoration: none;
+			width: 100%
+		}
+		
+		/* define the table content to be scrollable                                              */
+		/* set TBODY element to have block level attributes. All other non-IE browsers            */
+		/* this enables overflow to work on TBODY element. All other non-IE, non-Mozilla browsers */
+		/* induced side effect is that child TDs no longer accept width: auto                     */
+		html>body tbody.scrollContent {
+			display: block;
+			height: 190px;
+			overflow: auto;
+			width: 100%
+		}
+		
+		/* make TD elements pretty. Provide alternating classes for striping the table */
+		tbody td.scrollContent, tbody.scrollContent tr td {
+            border: 1px solid rgb(190,190,190);
+            background-color:rgb(255,255,255);
+            align:center;
+			padding: 2px 3px 3px 4px
+		}
+		
+		/* define width of TH elements: 1st, 2nd, and 3rd respectively.          */
+		/* Add 16px to last TH for scrollbar padding. All other non-IE browsers. */
+		html>body thead.fixedHeader th {
+			width: 200px
+		}
+		
+		html>body thead.fixedHeader th + th {
+			width: 240px
+		}
+		
+		html>body thead.fixedHeader th + th + th {
+			width: 316px
+		}
+		
+		/* define width of TD elements: 1st, 2nd, and 3rd respectively.          */
+		/* All other non-IE browsers.                                            */
+		html>body tbody.scrollContent td {
+			width: 200px
+		}
+		
+		html>body tbody.scrollContent td + td {
+			width: 240px
+		}
+		
+		html>body tbody.scrollContent td + td + td {
+			width: 300px
+		}
+</style>
+   {% endblock %}
+
+{% block extrabody %} onload="initialize()" style="color: rgb(0, 0, 0); background-color: rgb(247, 235, 219);" alink="#000099" link="#000099" vlink="#990099"{% endblock %}
+
+{% block menu %}
+<table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border=0 cellpadding=0 cellspacing=0>
+    <tbody align="center">
+        <tr>
+            <td style="vertical-align: top;">
+                <table style="text-align: left; height: 118px; margin-right: auto; margin-left: auto; width: 1024px;" border=0 cellpadding=0 cellspacing=0>
+                    <tbody align="center">
+                        <tr>
+                            <td style="vertical-align: top; width: 300px; height: 132px;">
+                                <img style="width: 302px; height: 132px;" alt="Logo" src="../Archivos/Logo.png">
+                            </td>
+                            <td style="vertical-align: top; width: 720px; height: 132px;">
+                                <img style="width: 722px; height: 132px;" alt="Titulo" src="../Archivos/Nombre.png">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="shadowblockmenu">
+                    <table><tbody><tr>
+                        <td><A HREF="index">Presentación</a></td>
+                        {% if user.is_active%}<td><A HREF="admin">Administración</a></td>{% endif %}
+                        <td><A HREF="prediccion">Predicción</a></td>
+                        <td><A HREF="modelo">Modelo</a></td>
+                        <td><A HREF="ayuda">Ayuda</a></td>
+                    </tr></tbody></table>
+                </div>
+                {% if admin or superadmin %}
+                <div class="shadowblockmenu2">
+                    <table><tbody><tr>
+                    	<td><A HREF="linea">Linea</a></td>
+                        <td><A HREF="unidad">Unidad</a></td>
+                        {% if superadmin%}
+                        <td><A HREF="empresa">Empresa</a></td>
+                        <td><A HREF="usuario">Usuario</a></td>
+                        {% endif %}
+                    </tr></tbody></table>
+                </div>
+                {% endif %}
+            </td>
+        </tr> 
+    </tbody>
+</table>
+{% endblock %}
