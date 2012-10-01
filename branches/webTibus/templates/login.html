@@ -1,0 +1,51 @@
+{% extends "baseMenu.html" %}
+{% load i18n %}
+
+{% block extrastyle %}{% load adminmedia %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/login.css" />{% endblock %}
+
+{% block content %}
+{% if form.errors and not form.non_field_errors and not form.this_is_the_login_form.errors %}
+<p class="errornote">
+{% blocktrans count form.errors.items|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors or form.this_is_the_login_form.errors %}
+{% for error in form.non_field_errors|add:form.this_is_the_login_form.errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+        <div class="sombraTabla" align="center"><table>
+            <tbody>
+                <tr style="color: black;" align="center">
+                	<td style="height: 100%; width: 100%;">
+                	<p>Usted esta intentando acceder a una zona</p><p>donde necesita identificarse</p>
+                	<p>Es sensible a Mayusculas y minusculas</p>
+	                     <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+						  <div class="form-row">
+						    {% if not form.this_is_the_login_form.errors %}{{ form.username.errors }}{% endif %}
+						    <label for="id_username" class="required">{% trans 'Username:' %}</label> {{ form.username }}
+						  </div>
+						  <div class="form-row">
+						    {% if not form.this_is_the_login_form.errors %}{{ form.password.errors }}{% endif %}
+						    <label for="id_password" class="required">{% trans 'Password:' %}</label> {{ form.password }}
+						    <input type="hidden" name="this_is_the_login_form" value="1" />
+						    <input type="hidden" name="next" value="admin" />
+						  </div>
+						  <div class="submit-row">
+						  	<input type="button" name="back" id="cak" value="Volver" onClick="javaScript:history.back();">
+						    <label>&nbsp;</label><input type="submit" value="Iniciar Sesion" />
+						  </div>
+						</form>
+				</td></tr>
+				{% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
+			</tbody></table>
+			<script type="text/javascript">
+				document.getElementById('id_username').focus()
+			</script>
+		</div>
+
+
+{% endblock %}
