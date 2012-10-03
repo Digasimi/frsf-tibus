@@ -1,59 +1,51 @@
 {% extends "baseMenu.html" %}
 
 {% block content %}
-<table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
-<tr>
-<td style="height: 100%; width: 80%;" align=center >
-	<div id="tableContainer" class="tableContainer">
-	{% if routeList %}
-		<table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
-			<thead class="fixedHeader">
-		        <tr>
-		        	<th style="width: 30%;"><a href="#">Linea</a></th>
-		        	<th style="width: 30%;"><a href="#">Frecuencia</a></th>
-		        	<th><a href="#">Empresa</a></th>
-	        	</tr>
-	       	</thead>
-	       	<tbody class="scrollContent">
-		      {% for route in routeList %}
-		        <tr>
-		        	<td style="width: 30%;">{{ route.linea }}</td>
-		        	<td style="width: 30%;">{{ route.frecuencia }}</td>
-		        	<td>{{ route.empresa }}</td>
-	        	</tr>
-		      {% endfor %}
-	        </tbody>
-        </table>
-	{% else %}
-	      <a>No lineas disponibles</a>
-	{% endif %}
-	</div>
-</td>
-<td><table>
-  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  <tr><td style="font-style: italic; font-weight: bold; color: black;font-family: Lohit Punjabi;height: 10%; width: 30%;">
-  <form name = "formLinea" action="" method="post" enctype="multipart/form-data">{% csrf_token %}
-  	<label for="id_empresa"> Empresa: </label> {{ form.empresa }} <br />
-	<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
-		<OPTION VALUE="all">Todas las empresas</OPTION> 
-		{% for company in companyList %}
-	  		<OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
-		{% endfor %}
-	</SELECT><br />
-	<BUTTON type="submit" name="action" value="viewCompany"> Filtrar por Empresa </BUTTON><br />
-	<label for="id_linea"> Linea: </label> {{ form.linea }} <br />
-    <SELECT NAME="lineaCombo" SIZE=1 onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
-   		<OPTION VALUE="">Seleccione un valor</OPTION>  
-   		{% for route in routeList %}
-   		<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION>
-    	{% endfor %}
-   	</SELECT><br />
-    </table>
-    <BUTTON type="submit" name="action" value="addRoute"> Agregar Linea </BUTTON><br />
-    <BUTTON type="submit" name="action" value="editRoute"> Modificar Linea </BUTTON><br />
-    <BUTTON type="submit" name="action" value="delRoute" > Eliminar Linea </BUTTON><br />
-    </form>
-  </td></tr>
-</table>
-{% endblock %}
 
+  
+  
+  <div class="container">
+  	{% if error %} <div class="formee-msg-error"> Error: {{ error }}</div>{% endif %}
+  
+  
+  	<form name="formLinea" class="formee" action="" method="post" enctype="multipart/form-data">
+  	<fieldset>
+  		<legend>Lineas</legend>
+		{% csrf_token %}
+		<div class="grid-12-12"> 
+		<label  for="id_empresa"> Empresa: </label> 
+		{{form.empresa }} 
+		<SELECT class="formee-small" NAME="empresaCombo" SIZE=1
+			onchange="document.formLinea.id_empresa.value = document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value;document.formLinea.empresaCombo.value=document.formLinea.empresaCombo.options[document.formLinea.empresaCombo.selectedIndex].value">
+			<OPTION VALUE="all">Todas las empresas</OPTION> 
+			{% for company in companyList %}
+			<OPTION VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
+			{% endfor %}
+		</SELECT>
+		
+		<BUTTON class="formee-button" type="submit" name="action" value="viewCompany">
+			Filtrar por Empresa</BUTTON>
+			
+		<br /> <label for="id_linea"> Linea: </label> {{ form.linea }} <br />
+		<SELECT class="formee-small" NAME="lineaCombo" SIZE=1
+			onchange="document.formLinea.id_linea.value = document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value;document.formLinea.lineaCombo.value=document.formLinea.lineaCombo.options[document.formLinea.lineaCombo.selectedIndex].value">
+			<OPTION VALUE="">Seleccione un valor</OPTION> 
+			{% for route in routeList %}
+			<OPTION VALUE="{{ route.linea }}">{{ route.linea }}</OPTION> 
+			{%endfor %}
+		</SELECT>
+		</div>
+		
+		<div class="grid-12-12">
+			<BUTTON class="formee-button" type="submit" name="action" value="addRoute">
+				Agregar Linea</BUTTON>
+			
+			<BUTTON class="formee-button" type="submit" name="action" value="editRoute">
+				Modificar Linea</BUTTON>
+			
+			<BUTTON class="formee-button" type="submit" name="action" value="delRoute">
+				Eliminar Linea</BUTTON>
+		</div>
+		</fieldset>
+	</form> {% endblock %}
+</div>
