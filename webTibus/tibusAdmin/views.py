@@ -619,8 +619,8 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                                 errorDescription = "La accion no es valida"
                         else:
                             errorDescription = "El orden debe ser un numero entero mayor a 0"
-                        logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + temporaryStop.getLinea() + " Parada: " + stopOrder + " Error:" + errorDescription)
-                        return HttpResponseRedirect('recorrido' + temporaryStop.getLinea())
+                        logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(temporaryRoute) + " Parada: " + str(stopOrder) + " Error:" + errorDescription)
+                        return HttpResponseRedirect('recorrido' + str(temporaryRoute))
                     else:
                         errorDescription = "Los datos no son validos"
                 except ValueError:

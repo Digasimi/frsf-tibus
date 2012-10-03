@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block extrastyle %}
-        <style type="text/css">
+<!--        <style type="text/css">
             .shadowblockmenu{
             	font-family: "Arial";
                 font-weight: bold;
@@ -231,12 +231,17 @@
 			width: 300px
 		}
 </style>
-   {% endblock %}
+ -->
 
-{% block extrabody %} onload="initialize()" style="color: rgb(0, 0, 0); background-color: rgb(247, 235, 219);" alink="#000099" link="#000099" vlink="#990099"{% endblock %}
+
+
+ {% endblock %}
+
+	
+{% block extrabody %} onload="initialize()" style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); " alink="#000099" link="#000099" vlink="#990099"{% endblock %}
 
 {% block menu %}
-<table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border=0 cellpadding=0 cellspacing=0>
+<!-- <table style="text-align: left; width: 100%; margin-left: auto; margin-right: auto;" border=0 cellpadding=0 cellspacing=0>
     <tbody align="center">
         <tr>
             <td style="vertical-align: top;">
@@ -254,6 +259,8 @@
                 </table>
             </td>
         </tr>
+        <div><img style="width: 302px; height: 132px;" alt="Logo" src="../Archivos/Logo.png"></div>
+        <div><img style="width: 722px; height: 132px;" alt="Titulo" src="../Archivos/Nombre.png"></div>
         <tr>
             <td>
                 <div class="shadowblockmenu">
@@ -278,7 +285,26 @@
                 </div>
                 {% endif %}
             </td>
-        </tr> 
+        </tr>  
     </tbody>
-</table>
+</table>-->
+<div style="width: 100% ; margin-left: auto ; margin-right: auto ;text-align: center">
+	<img style="width: 302px; height: 132px;" alt="Logo" src="../Archivos/Logo.png">
+	<img style="width: 722px; height: 132px;" alt="Titulo" src="../Archivos/Nombre.png">
+</div>
+<div id='cssmenu'>
+<ul>
+   <li class='active '><a href='index.html'><span>Home</span></a></li>
+   <li class='has-sub '><a href='#'><span>Administración</span></a>
+      <ul>
+         <li><a href='linea'><span>Línea</span></a></li>
+         <li><a href='unidad'><span>Unidad</span></a></li>
+         <li><a href='empresa'><span>Empresas</span></a></li>
+         <li><a href='usuario'><span>Usuarios</span></a></li>
+      </ul>
+   </li>
+   <li><a href='prediccion'><span>Predicción</span></a></li>
+   <li><a href='#'><span>Contacto</span></a></li>
+</ul>
+</div>
 {% endblock %}
