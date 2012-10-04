@@ -86,6 +86,7 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
         routeList = Recorrido.objects.filter(empresa=userData.empresa).order_by('linea')
         busList = Unidad.objects.filter(linea__empresa=userData.empresa).order_by('id_unidad_linea')
     superadmin = (userData.categoria == 'Administrador')
+    
     #logica
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         if request.method == 'POST':
@@ -148,7 +149,6 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
                 elif request.POST.get('action') == 'delCompany':
                     temporaryCompany = Empresa.objects.get(nombre = request.POST.get('nombre'))                    
                     return HttpResponseRedirect('empresadata'+ str(temporaryCompany.getId()) +'?delete')                #else:
-                companyList=Empresa.objects.all().order_by('nombre')
             #empiezan las excepciones
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la empresa"
@@ -207,6 +207,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
     superadmin = (userData.categoria == 'Administrador')
     form = RouteForm()
     stopList = []
+    mensaje = ''
     temporaryRoute = None
     if userData.categoria == 'Administrador':
         companyList = Empresa.objects.all()
@@ -218,27 +219,60 @@ def stop(request, routeId): #Pagina de ABM de paradas
         if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
             if request.method == 'POST':
                 form = RouteForm(request.POST)
-                temporaryRoute = Recorrido.objects.get(linea = routeId)
                 temporaryOrder = request.POST.get('orden')
                 if temporaryOrder == None or temporaryOrder == '':
                     temporaryOrder = 0
                 if request.POST.get('action') == 'addStop': 
                     try:
                         temporaryRoute = Recorrido.objects.get(linea = routeId)
+                        return HttpResponseRedirect('stopdata'+temporaryRoute.getLinea()+'?add')                    
                     except Recorrido.DoesNotExist:
-                        temporaryRoute = Recorrido(linea = routeId, frecuencia = request.POST.get('frecuencia'), empresa = Empresa.objects.get(nombre = request.POST.get('empresa')))
-                        temporaryRoute.save();
-                    return HttpResponseRedirect('stopdata'+temporaryRoute.getLinea()+'?add')
+                        if form.is_valid():
+                            routeName = form.cleaned_data['linea']
+                            routeFrecuency = form.cleaned_data['frecuencia']
+                            routeCompany = form.cleaned_data['empresa']
+                            if routeFrecuency > 0:
+                                temporaryRoute = Recorrido(linea = routeName, frecuencia = request.POST.get('frecuencia'), empresa = Empresa.objects.get(nombre = request.POST.get('empresa')))
+                                temporaryRoute.save();
+                                return HttpResponseRedirect('stopdata'+temporaryRoute.getLinea()+'?add')
+                            else:
+                                errorDescription = "La frecuencia debe ser mayor que 0"
+                        else:
+                            if routeName == '':
+                                errorDescription = "El nombre no puede ser vacio"
+                            routeFrecuency = validateFrecuency(request.POST.get('frecuencia')) 
+                            if routeFrecuency != '':
+                                errorDescription = routeFrecuency 
                 elif request.POST.get('action') == 'editStop': 
-                    temporaryStop = Parada.objects.get(linea = temporaryRoute.getId(), orden = temporaryOrder)
+                    temporaryStop = Parada.objects.get(linea = (Recorrido.objects.get(linea = routeId)).getId(), orden = temporaryOrder)
                     return HttpResponseRedirect('stopdata'+str(temporaryStop.getId())+'?edit')
                 elif request.POST.get('action') == 'delStop': 
-                    temporaryStop = Parada.objects.get(linea = temporaryRoute.getId(), orden = temporaryOrder)
+                    temporaryStop = Parada.objects.get(linea = (Recorrido.objects.get(linea = routeId)).getId(), orden = temporaryOrder)
                     return HttpResponseRedirect('stopdata'+str(temporaryStop.getId())+'?delete')
                 elif request.POST.get('action') == 'addMasiveStop': #Falta implementar carga masiva
+                    try:
+                        temporaryRoute = Recorrido.objects.get(linea = routeId)
+                    except Recorrido.DoesNotExist:
+                        if form.is_valid():
+                            routeName = form.cleaned_data['linea']
+                            routeFrecuency = form.cleaned_data['frecuencia']
+                            routeCompany = form.cleaned_data['empresa']
+                            if routeFrecuency > 0:
+                                temporaryRoute = Recorrido(linea = routeName, frecuencia = request.POST.get('frecuencia'), empresa = Empresa.objects.get(nombre = request.POST.get('empresa')))
+                                temporaryRoute.save();
+                            else:
+                                errorDescription = "La frecuencia debe ser mayor que 0"
+                                return HttpResponseRedirect('recorrido0?add')
+                        else:
+                            if routeName == '':
+                                errorDescription = "El nombre no puede ser vacio"
+                            routeFrecuency = validateFrecuency(request.POST.get('frecuencia')) 
+                            if routeFrecuency != '':
+                                errorDescription = routeFrecuency 
+                            return HttpResponseRedirect('recorrido0?add')
                     if (request.FILES['masivo'] != ''):
                         fileName = request.FILES['masivo']
-                        temporaryOrder = int(Parada.objects.filter(linea = temporaryRoute.getId()).count())
+                        temporaryOrder = int(Parada.objects.filter(linea = (Recorrido.objects.get(linea = routeId)).getId()).count())
                         errors = 0
                         for route in fileName:
                             values = route.split(';') 
@@ -261,20 +295,37 @@ def stop(request, routeId): #Pagina de ABM de paradas
                         routeFrecuency = form.cleaned_data['frecuencia']
                         routeCompany = form.cleaned_data['empresa']
                         action = form.cleaned_data['action'].lower()
-                        if action == 'add':
-                            temporaryRoute = Recorrido(linea = routeName, frecuencia = routeFrecuency, empresa = Empresa.objects.get(nombre = routeCompany))
-                            temporaryRoute.save();
-                        elif action == 'edit':
-                            temporaryRoute = Recorrido.objects.get(linea = routeName)
-                            temporaryRoute.frecuencia = routeFrecuency
-                            temporaryRoute.empresa = Empresa.objects.get(nombre = routeCompany)
-                            temporaryRoute.save();
-                        elif action == 'delete':
-                            temporaryRoute = Recorrido.objects.get(linea = routeName)
-                            temporaryRoute.delete()
-                        return HttpResponseRedirect('linea')
+                        if routeName == '':
+                            errorDescription = "El nombre no puede ser vacio"
+                        else:
+                            routeFrecuency = validateFrecuency(request.POST.get('frecuencia')) 
+                            if routeFrecuency != '':
+                                errorDescription = routeFrecuency
+                            else:
+                                if action == 'add':  
+                                    temporaryRoute = Recorrido(linea = routeName, frecuencia = routeFrecuency, empresa = Empresa.objects.get(nombre = routeCompany))
+                                    temporaryRoute.save();
+                                elif action == 'edit':
+                                    temporaryRoute = Recorrido.objects.get(linea = routeName)
+                                    temporaryRoute.frecuencia = routeFrecuency
+                                    temporaryRoute.empresa = Empresa.objects.get(nombre = routeCompany)
+                                    if validateFrecuency(routeFrecuency) == '':
+                                        temporaryRoute.save();
+                                    else:
+                                        errorDescription = validateFrecuency(routeFrecuency)
+                                elif action == 'delete':
+                                    temporaryRoute = Recorrido.objects.get(linea = routeName)
+                                    temporaryRoute.delete()
+                                return HttpResponseRedirect('linea')
                     else:
-                        errorDescription = "Los datos son incorrectos"
+                        if request.POST.get('linea') == '':
+                            errorDescription = "El nombre no puede ser vacio"
+                        elif request.POST.get('frecuencia') == '':
+                            errorDescription = "La frecuencia no puede ser vacia"
+                        elif request.POST.get('empresa') == '':
+                            errorDescription = "La empresa ingresada no es valida"
+                        else:    
+                            errorDescription = "Los datos son incorrectos"
                 else: 
                     errorDescription = "Accion no valida"
                 logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(routeId) + " Parada: " + str(temporaryOrder) + " Error:" + str(errorDescription))
@@ -293,11 +344,14 @@ def stop(request, routeId): #Pagina de ABM de paradas
             errorDescription = "No posee permisos para ejecutar esta accion"
     #empiezan las excepciones
     except Recorrido.DoesNotExist:
+        errorDescription = "La linea no existe"
         return HttpResponseRedirect('linea')
     except Parada.DoesNotExist:
         errorDescription = "No existen paradas"
     except ValueError:
         errorDescription = "El orden debe ser un numero entero"
+    except Empresa.DoesNotExist:
+        errorDescription = "La empresa ingresada no existe"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
     return render_to_response('recorrido.html', {'user': request.user,'form': form,  'route': routeId, 'stopList': stopList ,  'error': errorDescription,  'admin': True, 'superadmin':superadmin, 'mensaje': mensaje, 'temporaryRoute':temporaryRoute, 'companyList':companyList}, context_instance=RequestContext(request))
 
@@ -389,94 +443,95 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
     logger = logging.getLogger(__name__)
     temporaryUser = None
     
-    if (userData.categoria == 'Administrador'):
-        companyList = Empresa.objects.all().order_by('nombre')        
-        categoryList = ['Administrador', 'Empresa']
-        superadmin = True
-        if request.method == 'POST':
-            try:
+    try:
+        if (userData.categoria == 'Administrador'):
+            companyList = Empresa.objects.all().order_by('nombre')        
+            categoryList = ['Administrador', 'Empresa']
+            superadmin = True
+            if request.method == 'POST':
                 form = UserForm(request.POST)
                 if form.is_valid():
                     userName = form.cleaned_data['nombre'].upper()
-                    userEmail = form.cleaned_data['email'].lower()
-                    userCategory = form.cleaned_data['categoria']
-                    userCompany= form.cleaned_data['empresa']
-                    userPassword = form.cleaned_data['password']
-                    userConfirmation = form.cleaned_data['confirmacion']
                     action = form.cleaned_data['action'].lower()
-                    
-                    if userName == '': #comprueba que el nombre no sea vacia.
-                        errorDescription = "No ingreso el nombre del user"
-                    elif action == 'add':
-                        if (userCompany != "" and userCategory =='Empresa'):
-                            company = Empresa.objects.get(nombre = userCompany)
+                    if action == 'delete': #Asume que la accion por omision es borrar
+                        if userName == '':
+                            errorDescription = "No ingreso el nombre de Usuario"
+                        elif (Usuario.objects.filter(userCategory = "Administrador").count() == 1):
+                            errorDescription = "No se puede eliminar el ultimo usuario Administrador"
                         else:
-                            company = None
-                        try:
-                            temporaryUser = Usuario.objects.get(nombre = userName) #da verdadero si la route ya existe.
-                            errorDescription = "Usuario ya existente"
-                        except:
-                            if (userPassword == userConfirmation):
-                                temporaryUser = Usuario(username = userName, nombre = userName,  mail = userName,  userCategory=userCategory,  company=company)
-                                temporaryUser.set_password(userPassword)
-                                if (userCategory =='Administrador'):
-                                    temporaryUser.is_superuser = True
-                                temporaryUser.save()
-                            else:
-                                errorDescription = "Las passwords no coinciden"
+                            temporaryUser = Usuario.objects.get(nombre = userName)
+                            temporaryUser.is_active = False
+                            temporaryUser.save()
                     elif action == 'rehab':
-                        if(userName.lower() != ''):
+                        if userName == '':
+                            errorDescription = "No ingreso el nombre de Usuario"
+                        else:
                             temporaryUser = Usuario.objects.get(nombre = userName)
                             temporaryUser.is_active = True
                             temporaryUser.save()
-                    elif action == 'edit':
-                        if(userName.lower() != ''): 
-                            temporaryUser = Usuario.objects.get(nombre = userName)
-                            temporaryUser.mail= userEmail
-                            if (userPassword != None and userPassword == userConfirmation):
-                                temporaryUser.set_password(userPassword)
+                    else:                                
+                        userEmail = form.cleaned_data['email'].lower()
+                        userCategory = form.cleaned_data['categoria']
+                        userCompany= form.cleaned_data['empresa']
+                        userPassword = form.cleaned_data['password']
+                        userConfirmation = form.cleaned_data['confirmacion']
+                        if action == 'add':
+                            if (userCompany != "" and userCategory =='Empresa'):
+                                company = Empresa.objects.get(nombre = userCompany)
                             else:
-                                errorDescription = "Las passwords no coinciden"
-                            if (userCategory =='Administrador'):
-                                temporaryUser.is_superuser = True
-                            else:
-                                temporaryUser.is_superuser = False
-                            temporaryUser.save();
-                    elif action == 'delete': #Asume que la accion por omision es borrar
-                        temporaryUser = Usuario.objects.get(nombre = userName)
-                        if ((temporaryUser.categoria == "Administrador") and (Usuario.objects.filter(userCategory = "Administrador").count() > 1)):
-                            errorDescription = "No se puede eliminar el ultimo usuario Administrador"
-                        elif ((temporaryUser.categoria == "Empresa")and(temporaryUser.nombre != userData.nombre)):
-                            errorDescription = "No se puede eliminar otro usuario de igual Jerarquia"
-                        elif((temporaryUser.categoria == "Empresa")and(temporaryUser.categoria == "Administrador")):
-                            errorDescription = "No se puede eliminar otro usuario de mayor Jerarquia"
+                                company = None
+                            try:
+                                temporaryUser = Usuario.objects.get(nombre = userName) #da verdadero si la route ya existe.
+                                errorDescription = "Usuario ya existente"
+                            except:
+                                if (userPassword == userConfirmation):
+                                    temporaryUser = Usuario(username = userName, nombre = userName,  mail = userName,  userCategory=userCategory,  company=company)
+                                    temporaryUser.set_password(userPassword)
+                                    if (userCategory =='Administrador'):
+                                        temporaryUser.is_superuser = True
+                                    temporaryUser.save()
+                                else:
+                                    errorDescription = "Las passwords no coinciden"
+
+                        elif action == 'edit':
+                            if(userName.lower() != ''): 
+                                temporaryUser = Usuario.objects.get(nombre = userName)
+                                temporaryUser.mail= userEmail
+                                if (userPassword != None and userPassword == userConfirmation):
+                                    temporaryUser.set_password(userPassword)
+                                else:
+                                    errorDescription = "Las passwords no coinciden"
+                                if (userCategory =='Administrador'):
+                                    temporaryUser.is_superuser = True
+                                else:
+                                    temporaryUser.is_superuser = False
+                                temporaryUser.save();
                         else:
-                            temporaryUser.is_active = False
-                            temporaryUser.save()
-                    else:
-                        errorDescription = "Accion no valida: " + action
+                            errorDescription = "Accion no valida: " + action
                     logger.info("Usuario: " + userData.nombre +" Accion: " + action + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
                     return HttpResponseRedirect('usuario')
                 else:
                     errorDescription = "Los datos ingresados no son validos" 
-            #empiezan las excepciones
-            except Usuario.DoesNotExist:
-                errorDescription = "No existe el usuario"
-            except Empresa.DoesNotExist:
-                errorDescription = "No existe la compania"
-        else:
-            if request.GET.get('add') == None:
-                temporaryUser = Usuario.objects.get(nombre = userId)
-                form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.mail, 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
-                if request.GET.get('edit') == '':
-                    mensaje = 'Modificacion de Usuario Existente'
-                elif request.GET.get('delete') == '':
-                    mensaje = 'Confirmacion de Eliminacion de Usuario'
             else:
-                mensaje = 'Alta de Nuevo Usuario'
-    else:
-        superadmin = False
-        errorDescription = "No posee permisos para ejecutar esta accion"
+                if request.GET.get('add') == None:
+                    temporaryUser = Usuario.objects.get(nombre = userId)
+                    form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.mail, 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
+                    if request.GET.get('edit') == '':
+                        mensaje = 'Modificacion de Usuario Existente'
+                    elif request.GET.get('delete') == '':
+                        mensaje = 'Confirmacion de Eliminacion de Usuario'
+                    elif request.GET.get('rehab') == '':
+                        mensaje = 'Confirmacion de Rehabilitacion de Usuario'
+                else:
+                    mensaje = 'Alta de Nuevo Usuario'
+        else:
+            superadmin = False
+            errorDescription = "No posee permisos para ejecutar esta accion"
+    #empiezan las excepciones
+    except Usuario.DoesNotExist:
+        errorDescription = "No existe el usuario"
+    except Empresa.DoesNotExist:
+        errorDescription = "No existe la compania"
     logger.info("Usuario: " + userData.nombre +" in User Error:" + errorDescription)        
     return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True,  'companyList' : companyList,  'categoryList':categoryList, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryUser':temporaryUser},  context_instance=RequestContext(request))
 
@@ -492,64 +547,73 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
     form = BusForm()
     temporaryBus = None
     
-    if (userData.categoria == 'Administrador'):
-        routeList = Recorrido.objects.all().order_by('linea')
-    elif (userData.categoria == 'Empresa'):
-        routeList = Recorrido.objects.filter(company=userData.empresa).order_by('linea')
-    superadmin = (userData.categoria == 'Administrador')
-    #logica
-    if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
-        if request.method == 'POST':
-            try:
+    try:
+        if (userData.categoria == 'Administrador'):
+            routeList = Recorrido.objects.all().order_by('linea')
+        elif (userData.categoria == 'Empresa'):
+            routeList = Recorrido.objects.filter(company=userData.empresa).order_by('linea')
+        superadmin = (userData.categoria == 'Administrador')
+        #logica
+        if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
+            if request.method == 'POST':
                 form = BusForm(request.POST)
                 if form.is_valid():
-                    busRoute = form.cleaned_data['linea'].upper()
-                    busIdLinea = form.cleaned_data['id_unidad_linea']
-                    busAble= form.cleaned_data['apto_movilidad_reducida']
                     action = form.cleaned_data['action'].lower()
-                    if busRoute == '':
-                        errorDescription = "No ingreso la linea"
+                    if action == 'delete': 
+                        temporaryBus = Unidad.objects.get(idunidad = busId)
+                        temporaryBus.delete()
                     else:
-                        routeName = Recorrido.objects.get(linea = busRoute) 
-                        if form.is_valid():
-                            if action == 'add':
-                                try:
-                                    temporaryBus = Unidad.objects.get(idunidad = busId) #da verdadero si la bus ya existe
-                                    errorDescription = "Unidad ya existente"
-                                except Unidad.DoesNotExist:
-                                    temporaryBus = Unidad(linea = routeName,  apto_movilidad_reducida = busAble, id_unidad_linea = busIdLinea)
-                                    temporaryBus.save()
-                            elif action == 'edit': 
-                                temporaryBus = Unidad.objects.get(idunidad = busId)
-                                temporaryBus.id_unidad_linea = busIdLinea
-                                temporaryBus.apto_movilidad_reducida = busAble
-                                temporaryBus.save()
-                            elif action == 'delete': 
-                                temporaryBus = Unidad.objects.get(idunidad = busId)
-                                temporaryBus.delete()
-                            else: 
-                                errorDescription = "Accion no permitida"
+                        busRoute = form.cleaned_data['linea'].upper()
+                        if busRoute == '':
+                            errorDescription = "No ingreso la linea"
                         else:
-                            errorDescription = "Falta ingresar algun dato"
+                            routeName = Recorrido.objects.get(linea = busRoute)
+                            busIdLinea = int(form.cleaned_data['id_unidad_linea'])
+                            if busIdLinea =='':
+                                errorDescription = "No ingreso el identificador de la unidad"
+                            else:
+                                busAble= form.cleaned_data['apto_movilidad_reducida']
+                                if action == 'add':
+                                    try:
+                                        temporaryBus = Unidad.objects.get(idunidad = busId) #da verdadero si la bus ya existe
+                                        errorDescription = "Unidad ya existente"
+                                    except Unidad.DoesNotExist:
+                                        temporaryBus = Unidad(linea = routeName,  apto_movilidad_reducida = busAble, id_unidad_linea = busIdLinea)
+                                        temporaryBus.save()
+                                elif action == 'edit': 
+                                    temporaryBus = Unidad.objects.get(idunidad = busId)
+                                    temporaryBus.id_unidad_linea = busIdLinea
+                                    temporaryBus.apto_movilidad_reducida = busAble
+                                    temporaryBus.save()
+                                else: 
+                                    errorDescription = "Accion no permitida"
                     logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + busRoute + " Unidad: " + busId + " Error:" + errorDescription)
                     return HttpResponseRedirect('unidad')
-                #empiezan las excepciones
-            except Recorrido.DoesNotExist:
-                errorDescription = "No existe la linea"
-            except Unidad.DoesNotExist:
-                errorDescription = "No existe/n unidad/es"            
-        else:
-            if request.GET.get('add') == None:
-                temporaryBus = Unidad.objects.get(idunidad = busId)
-                form.initial = {'linea': temporaryBus.getLinea(), 'aptoMovilidadReducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea()}
-                if request.GET.get('edit') == '':
-                    mensaje = 'Modificacion de Unidad Existente'
-                elif request.GET.get('delete') == '':
-                    mensaje = 'Confirmacion de Eliminacion de Unidad'
+                else:
+                    if request.POST.get('linea') =='':
+                        errorDescription = "No ingreso la linea"
+                    else:
+                        try:
+                            int(request.POST.get('id_unidad_linea') =='')
+                            routeName = Recorrido.objects.get(linea = request.POST.get('linea') =='')
+                        except ValueError:
+                            errorDescription = "El identificador de la linea debe ser un numero entero"
             else:
-                mensaje = 'Alta de Nueva Unidad'
-    else:
-        errorDescription = "No posee permisos para ejecutar esta accion"
+                if request.GET.get('add') == None:
+                    temporaryBus = Unidad.objects.get(idunidad = busId)
+                    form.initial = {'linea': temporaryBus.getLinea(), 'aptoMovilidadReducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea()}
+                    if request.GET.get('edit') == '':
+                        mensaje = 'Modificacion de Unidad Existente'
+                    elif request.GET.get('delete') == '':
+                        mensaje = 'Confirmacion de Eliminacion de Unidad'
+                else:
+                    mensaje = 'Alta de Nueva Unidad'
+        else:
+            errorDescription = "No posee permisos para ejecutar esta accion"
+    except Recorrido.DoesNotExist:
+        errorDescription = "No existe la linea"
+    except Unidad.DoesNotExist:
+        errorDescription = "No existe/n unidad/es"  
     logger.info("Usuario: " + userData.nombre +" in Bus Error:" + errorDescription)
     return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True,  'routeList': routeList,'superadmin':superadmin, 'mensaje':mensaje, 'temporaryBus':temporaryBus},  context_instance=RequestContext(request))
 
@@ -565,6 +629,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
     form = StopForm()
     stopList = []
     temporaryStop = None
+    mensaje = ''
     
     #logica
     try:
@@ -573,59 +638,65 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                 try:
                     form = StopForm(request.POST)
                     if form.is_valid():
-                        temporaryRoute= Recorrido.objects.get(idrecorrido = form.cleaned_data['linea'])
-                        stopOrder = form.cleaned_data['orden']
-                        stopLat = form.cleaned_data['latitud']
-                        stopLon = form.cleaned_data['longitud']
-                        stopStreet1 = form.cleaned_data['calle1']
-                        stopStreet2 = form.cleaned_data['calle2']
-                        stopActive = form.cleaned_data['paradaactiva']
                         action = form.cleaned_data['action']
-                        stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
-                        if stopOrder == None or stopOrder == '':
-                            stopOrder = 0
-                        if int(stopOrder) >= 0:  #comprueba que el orden sea un entero mayor que 0
-                            if action == 'add':
-                                if len(stopList) == 0: #comprueba que no sea la primer parada
-                                    stopOrder = 1
-                                elif stopOrder != 0: #agrega la parada en una posicion especifica
-                                    for temporaryStop in stopList: 
-                                        if temporaryStop.getOrder() > int(stopOrder): 
-                                            temporaryStop.upOneOrder()
-                                            temporaryStop.save()
-                                    stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
-                                else: #agrega la parada al final del recorrido
-                                    stopOrder = stopList.aggregate(orden=Max('orden')).get('orden') + 1
-                                temporaryStop = Parada(orden = stopOrder,  latitud = stopLat, longitud = stopLon, linea = temporaryRoute, calle1 = stopStreet1,calle2 = stopStreet2,paradaactiva = stopActive)  
-                                temporaryStop.save()
-                            elif action == 'edit': #sin revisar - Falta ver que pasa si se cambia el orden.
-                                temporaryStop = Parada.objects.get(idparada = stopId)  
-                                temporaryStop.latitud = stopLat
-                                temporaryStop.longitud = stopLon
-                                temporaryStop.calle1 = stopStreet1
-                                temporaryStop.calle2 = stopStreet2
-                                temporaryStop.paradaactiva = stopActive
-                                temporaryStop.save()
-                            elif action == 'delete':
-                                temporaryStop = Parada.objects.get(idparada = stopId)  
-                                temporaryStop.delete()
-                                #!reacomodar paradas                
-                                for temporaryStop in stopList: 
-                                    if temporaryStop.getOrder() > int(stopOrder): 
-                                        temporaryStop.downOneOrder()
-                                        temporaryStop.save()
-                                stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
-                            else:
-                                errorDescription = "La accion no es valida"
+                        stopOrder = form.cleaned_data['orden']
+                        temporaryRoute= Recorrido.objects.get(idrecorrido = form.cleaned_data['linea'])
+                        if action == 'delete':
+                            temporaryStop = Parada.objects.get(idparada = stopId)  
+                            temporaryStop.delete()
+                            #!reacomodar paradas                
+                            for temporaryStop in stopList: 
+                                if temporaryStop.getOrder() > int(stopOrder): 
+                                    temporaryStop.downOneOrder()
+                                    temporaryStop.save()
+                            stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
                         else:
-                            errorDescription = "El orden debe ser un numero entero mayor a 0"
-                        logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(temporaryRoute) + " Parada: " + str(stopOrder) + " Error:" + errorDescription)
-                        return HttpResponseRedirect('recorrido' + str(temporaryRoute))
+                            stopLat = form.cleaned_data['latitud']
+                            stopLon = form.cleaned_data['longitud']
+                            stopStreet1 = form.cleaned_data['calle1']
+                            if stopLat == '' or stopLon == '':
+                                errorDescription = "Las coordenadas no pueden ser vacias"
+                            elif stopStreet1 == '':
+                                errorDescription = "La descripcion de la calle 1 de la parada no pueden ser vacias"
+                            else:
+                                stopStreet2 = form.cleaned_data['calle2']
+                                stopActive = form.cleaned_data['paradaactiva']
+                                stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
+                                if stopOrder == None or stopOrder == '':
+                                    stopOrder = 0
+                                if int(stopOrder) >= 0:  #comprueba que el orden sea un entero mayor que 0
+                                    if action == 'edit': #sin revisar - Falta ver que pasa si se cambia el orden.
+                                        temporaryStop = Parada.objects.get(idparada = stopId)  
+                                        temporaryStop.latitud = stopLat
+                                        temporaryStop.longitud = stopLon
+                                        temporaryStop.calle1 = stopStreet1
+                                        temporaryStop.calle2 = stopStreet2
+                                        temporaryStop.paradaactiva = stopActive
+                                        temporaryStop.save()
+                                    elif action == 'add':
+                                        if len(stopList) == 0: #comprueba que no sea la primer parada
+                                            stopOrder = 1
+                                        elif stopOrder != 0: #agrega la parada en una posicion especifica
+                                            for temporaryStop in stopList: 
+                                                if temporaryStop.getOrder() >= int(stopOrder): 
+                                                    temporaryStop.upOneOrder()
+                                                    temporaryStop.save()
+                                            stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
+                                        else: #agrega la parada al final del recorrido
+                                            stopOrder = stopList.aggregate(orden=Max('orden')).get('orden') + 1
+                                        temporaryStop = Parada(orden = stopOrder,  latitud = stopLat, longitud = stopLon, linea = temporaryRoute, calle1 = stopStreet1,calle2 = stopStreet2,paradaactiva = stopActive)  
+                                        temporaryStop.save()
+                                    else:
+                                        errorDescription = "La accion no es valida"
+                                else:
+                                    errorDescription = "El orden debe ser un numero entero mayor a 0"
+                                logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(temporaryRoute) + " Parada: " + str(stopOrder) + " Error:" + errorDescription)
+                                return HttpResponseRedirect('recorrido' + str(temporaryRoute))
                     else:
                         errorDescription = "Los datos no son validos"
                 except ValueError:
                     errorDescription = "El orden debe ser un numero entero"
-                #except TypeError:
+                except TypeError:
                     errorDescription = "Las coordenadas no pueden ser vacias"
             else:
                 if request.GET.get('add') == '':
@@ -651,3 +722,14 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
         errorDescription = "No existen paradas"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
     return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList, 'mensaje':mensaje, 'temporaryStop':temporaryStop},  context_instance=RequestContext(request))
+
+def validateFrecuency(frecuency):
+    error = ''
+    try:
+        if frecuency == '':
+            error = 'La frecuencia no puede ser nula/vacia'
+        elif int(frecuency) <= 0:
+            error = 'La frecuencia debe ser mayor que 0'
+    except ValueError:
+        error = "La frecuencia debe ser un numero entero"
+    return error
