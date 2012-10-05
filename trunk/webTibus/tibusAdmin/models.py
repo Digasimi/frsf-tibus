@@ -19,6 +19,9 @@ class Usuario(User):
     def getCompany(self):
         return self.empresa
     
+    def getMail(self):
+        return self.mail
+    
     def __unicode__(self):
         return self.nombre
     

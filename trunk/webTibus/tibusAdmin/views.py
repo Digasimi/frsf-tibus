@@ -456,7 +456,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                     if action == 'delete': #Asume que la accion por omision es borrar
                         if userName == '':
                             errorDescription = "No ingreso el nombre de Usuario"
-                        elif (Usuario.objects.filter(userCategory = "Administrador").count() == 1):
+                        elif (Usuario.objects.filter(categoria = "Administrador").count() == 1):
                             errorDescription = "No se puede eliminar el ultimo usuario Administrador"
                         else:
                             temporaryUser = Usuario.objects.get(nombre = userName)
@@ -485,7 +485,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                                 errorDescription = "Usuario ya existente"
                             except:
                                 if (userPassword == userConfirmation):
-                                    temporaryUser = Usuario(username = userName, nombre = userName,  mail = userName,  userCategory=userCategory,  company=company)
+                                    temporaryUser = Usuario(username = userName, nombre = userName,  mail = userName,  categoria=userCategory,  empresa=company)
                                     temporaryUser.set_password(userPassword)
                                     if (userCategory =='Administrador'):
                                         temporaryUser.is_superuser = True
@@ -515,7 +515,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
             else:
                 if request.GET.get('add') == None:
                     temporaryUser = Usuario.objects.get(nombre = userId)
-                    form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.mail, 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
+                    form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.getMail(), 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
                     if request.GET.get('edit') == '':
                         mensaje = 'Modificacion de Usuario Existente'
                     elif request.GET.get('delete') == '':
