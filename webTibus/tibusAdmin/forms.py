@@ -22,8 +22,7 @@ class RoutesForm(forms.Form):
     
 class RouteForm(forms.Form):
     linea = forms.CharField()
-    frecuencia = forms.IntegerField()
-    orden = forms.IntegerField(required=False, widget=forms.HiddenInput)
+    frecuencia = forms.IntegerField(required=False)
     empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label=None)
     masivo = forms.FileField(required=False, help_text = "Las paradas deben estan en orden y una por linea con el formato: Latitud; Longitud;Calle;Interseccion")
     action = forms.CharField(widget=forms.HiddenInput)
@@ -55,3 +54,7 @@ class PassworForm(forms.Form):
     oldPassword = forms.CharField(widget=forms.PasswordInput)
     newPassword = forms.CharField(widget=forms.PasswordInput)
     confirmacion = forms.CharField(widget=forms.PasswordInput)
+
+class StopsForm(forms.Form):
+    orden = forms.IntegerField(required=False)
+    action = forms.CharField(widget=forms.HiddenInput)

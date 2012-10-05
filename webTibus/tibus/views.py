@@ -56,8 +56,6 @@ def prediction(request): #pagina que mostrara las predicciones
                     stopList = Parada.objects.filter(linea__linea = routeName.upper()).order_by('orden')
                     form.initial = {'linea': routeName}
             #empiezan las excepciones
-        except SAXParseException:
-            errorDescription = "Datos en formato incorrecto - Error de conexion con servidor"
         except ValueError:
             errorDescription = "Datos en formato incorrecto - Valor de datos"
         except DatabaseError:
