@@ -20,6 +20,11 @@ class Empresa(models.Model):
         
         def getMail(self):
             return self.mail
+        
+        def validate(self):
+            if self.nombre == "" or self.mail == '' or re.search("[^a-zA-Z0-9]", self.nombre) :
+                return False
+            return True
             
         class Meta:
             db_table = 'empresa'
@@ -66,8 +71,8 @@ class Parada(models.Model):
     class Meta:
         db_table = 'parada'
         
-    def _unicode_(self):
-        return self.orden
+    def __unicode__(self):
+        return str(self.orden)
           
     def getOrder(self):
         return self.orden

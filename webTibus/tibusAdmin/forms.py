@@ -35,10 +35,9 @@ class BusForm(forms.Form):
     action = forms.CharField(widget=forms.HiddenInput)
 
 class CompanyForm(forms.Form):
-    idcompany = forms.IntegerField(widget=forms.HiddenInput, required=False)
     nombre = forms.CharField()
-    email = forms.EmailField()
-    action = forms.CharField(widget=forms.HiddenInput)
+    email = forms.EmailField(required=False)
+    action = forms.CharField(widget=forms.HiddenInput, required=False)
     
 class UserForm(forms.Form):
     nombre = forms.CharField()

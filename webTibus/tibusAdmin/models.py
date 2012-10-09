@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from tibus.models import Empresa
+import re
 
 
 # Create your models here.
@@ -12,6 +13,11 @@ class Usuario(User):
     
     def getName(self):
         return self.nombre
+    
+    def validate(self):
+        if self.nombre == "" or self.mail == "" or re.search("[^a-zA-Z0-9]", self.nombre) or (self.empresa == None and self.categoria == 'Empresa'):
+            return False
+        return True
     
     def getCategory(self):
         return self.categoria
