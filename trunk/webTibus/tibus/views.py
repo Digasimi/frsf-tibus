@@ -24,17 +24,13 @@ def prediction(request): #pagina que mostrara las predicciones
     #carga inicial
     c = {}
     c.update(csrf(request))
-    predictionList = []
     errorDescription = ""
     timeStampPrediction = ""
     routeName = ""
-    routeList = Recorrido.objects.all().order_by('linea')
-    stopList = Parada.objects.all()
     
     #logica
     if request.method == 'POST':
         form = PredictionForm(request.POST)
-        routeName = request.POST.get('linea').upper()
         try:
             if request.POST.get('action')=="prediction":
                 if form.is_valid():
@@ -43,18 +39,18 @@ def prediction(request): #pagina que mostrara las predicciones
                     aptoPrediction = form.cleaned_data['apto']
                     if aptoPrediction == None:
                         aptoPrediction = False
-                    return HttpResponseRedirect('resultado?linea=' + routePrediction + '&parada='+ str(stopPrediction)+'&apto='+str(aptoPrediction))
+                    return HttpResponseRedirect('resultado?linea=' + str(routePrediction.getLinea()) + '&parada='+ str(stopPrediction)+'&apto='+str(aptoPrediction))
                 else:
-                    if request.POST.get('linea') == '':
+                    if request.POST.get('linea') == None:
                         errorDescription = "No ingreso la linea"
-                    elif request.POST.get('orden') == '':
+                    elif request.POST.get('orden') == None:
                         errorDescription = "No ingreso la parada"
                     else:                    
                         errorDescription = "Datos en formato incorrecto"
             else:
                 if routeName != '':
-                    stopList = Parada.objects.filter(linea__linea = routeName.upper()).order_by('orden')
                     form.initial = {'linea': routeName}
+                    form.orden.queryset = Parada.objects.filter(linea=routeName)
             #empiezan las excepciones
         except ValueError:
             errorDescription = "Datos en formato incorrecto - Valor de datos"
@@ -69,7 +65,7 @@ def prediction(request): #pagina que mostrara las predicciones
     else:
         form = PredictionForm()
         routeName = None
-    return render_to_response('prediccion.html',  {'linea': routeName ,'form':form, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'routeList':routeList, 'timeStamp': timeStampPrediction},  context_instance=RequestContext(request))
+    return render_to_response('prediccion.html',  {'linea': routeName ,'form':form, 'error': errorDescription,  'admin': False, 'timeStamp': timeStampPrediction},  context_instance=RequestContext(request))
     
 def tibushelp(request):#pagina de ayuda
     c={}

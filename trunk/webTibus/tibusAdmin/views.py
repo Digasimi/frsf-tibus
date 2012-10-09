@@ -115,10 +115,12 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
     userData = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)
     form = CompanyForm()
+    companyList = []
     
         #logica
     if (userData.categoria == 'Administrador'):
         superadmin = True
+        companyList = Empresa.objects.all()
         if request.method == 'POST':
             try:
                 if request.POST.get('action') == 'addCompany':
@@ -136,7 +138,7 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
         superadmin = False
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Company Error:" + errorDescription)        
-    return render_to_response('empresa.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin':superadmin},  context_instance=RequestContext(request))
+    return render_to_response('empresa.html',  {'user': request.user, 'companyList':companyList, 'admin': True,'form':form,  'error': errorDescription, 'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required    
 def user(request): #pagina de ABM de unidades - faltan excepciones
@@ -210,10 +212,19 @@ def stop(request, routeId): #Pagina de ABM de paradas
                         else:
                             if action == 'add':
                                 temporaryRoute = Recorrido(linea = routeName, frecuencia = routeFrecuency, empresa = routeCompany)
-                                temporaryRoute.save();
+                                if temporaryRoute.validate():
+                                    temporaryRoute.save();
+                                else:
+                                    errorDescription = "Nombre no valido"
                             elif action == 'edit':
                                 temporaryRoute = Recorrido.objects.get(linea = routeId)
+                                temporaryRoute.linea = routeName
+                                temporaryRoute.frecuencia = routeFrecuency
                                 temporaryRoute.empresa = routeCompany
+                                if temporaryRoute.validate():
+                                    temporaryRoute.save
+                                else:
+                                    errorDescription = "Nombre no valido"
                     elif request.POST.get('action') == 'stops':
                         try:
                             temporaryRoute = Recorrido.objects.get(linea = routeId)
@@ -296,46 +307,52 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
     form = CompanyForm()
 
     #logica
-    if (userData.categoria == 'Administrador'):
-        if request.method == 'POST' or companyId == 0:
-            try:
+    try:
+        if (userData.categoria == 'Administrador'):
+            if request.method == 'POST':
                 form = CompanyForm(request.POST)
                 if form.is_valid():
-                    companyName = form.cleaned_data['nombre'].upper()
-                    companyEmail = form.cleaned_data['email'].lower()
                     action = form.cleaned_data['action'].lower()
-                    if action == 'add':
-                        temporaryCompany = Empresa(nombre = companyName,  mail = companyEmail)
-                        temporaryCompany.save();
-                    elif action == 'edit':
-                        temporaryCompany = Empresa.objects.get(idempresa = companyId)
-                        temporaryCompany.nombre = companyName
-                        temporaryCompany.mail = companyEmail
-                        temporaryCompany.save();
-                    elif action == 'delete':
+                    if action == 'delete':
                         temporaryCompany = Empresa.objects.get(idempresa = companyId)
                         temporaryCompany.delete()
+                        return HttpResponseRedirect('empresa')
                     else:
-                        errorDescription = "Accion no valida"
-                    logger.info("Usuario: " + userData.nombre +" Accion: " + action + "company Empresa: " + companyName + " Error:" + errorDescription)
-                    return HttpResponseRedirect('empresa')
+                        companyEmail = form.cleaned_data['email'].lower()
+                        companyName = form.cleaned_data['nombre'].upper()
+                        if companyName == '':
+                            errorDescription = "El nombre no puede ser vacio"
+                        elif companyEmail == '':
+                            errorDescription = "El email no puede ser vacio"
+                        else:
+                            if action == 'add':
+                                temporaryCompany = Empresa(nombre = companyName,  mail = companyEmail)
+                            elif action == 'edit':
+                                temporaryCompany = Empresa.objects.get(idempresa = companyId)
+                                temporaryCompany.nombre = companyName
+                                temporaryCompany.mail = companyEmail
+                                temporaryCompany.save();
+                            else:
+                                errorDescription = "Accion no valida"
+                            logger.info("Usuario: " + userData.nombre +" Accion: " + action + "company Empresa: " + companyName + " Error:" + errorDescription)
+                        return HttpResponseRedirect('empresa')
                 #empiezan las excepciones
                 else:
                     errorDescription = "Datos Incompletos o Invalidos"
-            except Empresa.DoesNotExist:
-                errorDescription = "No existe la empresa"
-        else:
-            if request.GET.get('add') == None:
-                temporaryCompany = Empresa.objects.get(idempresa = companyId)
-                form.initial = {'nombre': temporaryCompany.getName(), 'email' : temporaryCompany.getMail()}
-                if request.GET.get('edit') == '':
-                    mensaje = 'Modificacion de Empresa Existente'
-                elif request.GET.get('delete') == '':
-                    mensaje = 'Confirmacion de Eliminacion de Empresa'
             else:
-                mensaje = 'Alta de Nueva Empresa'
-    else:
-        errorDescription = "No posee permisos para ejecutar esta accion"
+                if request.GET.get('add') == None:
+                    temporaryCompany = Empresa.objects.get(idempresa = companyId)
+                    form.initial = {'nombre': temporaryCompany.getName(), 'email' : temporaryCompany.getMail()}
+                    if request.GET.get('edit') == '':
+                        mensaje = 'Modificacion de Empresa Existente'
+                    elif request.GET.get('delete') == '':
+                        mensaje = 'Confirmacion de Eliminacion de Empresa'
+                else:
+                    mensaje = 'Alta de Nueva Empresa'
+        else:
+            errorDescription = "No posee permisos para ejecutar esta accion"
+    except Empresa.DoesNotExist:
+        errorDescription = "No existe la empresa"
     logger.info("Usuario: " + userData.nombre +" in CompanyData Error:" + errorDescription)        
     return render_to_response('empresadata.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True, 'mensaje': mensaje },  context_instance=RequestContext(request))
 
