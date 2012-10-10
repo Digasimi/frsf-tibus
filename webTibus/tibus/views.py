@@ -25,14 +25,12 @@ def prediction(request): #pagina que mostrara las predicciones
     c = {}
     c.update(csrf(request))
     errorDescription = ""
-    timeStampPrediction = ""
-    routeName = ""
-    
+        
     #logica
     if request.method == 'POST':
         form = PredictionForm(request.POST)
         try:
-            if request.POST.get('action')=="prediction":
+            if request.POST.get('action')=='prediction':
                 if form.is_valid():
                     routePrediction = form.cleaned_data['linea']
                     stopPrediction = form.cleaned_data['orden']
@@ -48,9 +46,7 @@ def prediction(request): #pagina que mostrara las predicciones
                     else:                    
                         errorDescription = "Datos en formato incorrecto"
             else:
-                if routeName != '':
-                    form.initial = {'linea': routeName}
-                    form.orden.queryset = Parada.objects.filter(linea=routeName)
+                form.orden.queryset = Parada.objects.filter(linea=form.linea)
             #empiezan las excepciones
         except ValueError:
             errorDescription = "Datos en formato incorrecto - Valor de datos"
@@ -64,8 +60,7 @@ def prediction(request): #pagina que mostrara las predicciones
             errorDescription = "No existe la parada"
     else:
         form = PredictionForm()
-        routeName = None
-    return render_to_response('prediccion.html',  {'linea': routeName ,'form':form, 'error': errorDescription,  'admin': False, 'timeStamp': timeStampPrediction},  context_instance=RequestContext(request))
+    return render_to_response('prediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
     
 def tibushelp(request):#pagina de ayuda
     c={}

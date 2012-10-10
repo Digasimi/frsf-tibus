@@ -25,13 +25,7 @@
                             <OPTION {% if temporaryUser and temporaryUser.categoria == category %} SELECTED {% endif %}VALUE="{{ category }}">{{ category }}</OPTION>
                         {% endfor %}
                     </SELECT></td>
-                    <td> <label for="empresa"> Empresa: </label> {{ form.empresa }} 
-                    <SELECT NAME="empresaCombo" SIZE=1 onchange="document.formUsuario.id_empresa.value = document.formUsuario.empresaCombo.options[document.formUsuario.empresaCombo.selectedIndex].value;document.formUsuario.empresaCombo.value=document.formUsuario.empresaCombo.options[document.formUsuario.empresaCombo.selectedIndex].value">
-                    		<OPTION VALUE="">Seleccione un valor</OPTION> 
-                        	{% for company in companyList %}
-                            <OPTION {% if temporaryUser and temporaryUser.empresa == company %} SELECTED {% endif %}VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
-                        	{% endfor %}
-                        </SELECT></td>
+                    <td> <label for="empresa"> Empresa: </label> {{ form.empresa }}
                 </tr>
                 <tr><td>{{ form.action }}</td></tr>
                 </table>
