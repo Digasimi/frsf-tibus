@@ -1,79 +1,14 @@
 {% extends "baseMenuMapa.html" %}
+{% load crispy_forms_tags %}
 
 {% block extras %}
-
 <div class="container">
-	<form name = "formParada" class="formee" action="" method="post" enctype="multipart/form-data">
-	{% csrf_token %}
-	
-	<fieldset>
-		<legend>{% if mensaje %}{{ mensaje }}{% endif %}</legend>
-		
-		<div class="grid-7-12"> 
-	    {{ form.action }}
-	    <label for="id_linea">Nombre:</label>{{ form.linea }}
-	    <label for="id_frecuencia">Frecuencia:</label>{{ form.frecuencia }}
-	    <label for="id_empresa">Empresa:</label>{{ form.empresa }}
-	    	<SELECT NAME="empresaCombo" SIZE=1 onchange="document.formParada.id_empresa.value = document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value;document.formParada.empresaCombo.value=document.formParada.empresaCombo.options[document.formParada.empresaCombo.selectedIndex].value">
-       			<OPTION VALUE="">Seleccione una empresa</OPTION> 
-       			{% for company in companyList %}
-           		<OPTION {% if temporaryRoute and temporaryRoute.empresa == company %} SELECTED {% endif %}VALUE="{{ company.nombre }}">{{ company.nombre }}</OPTION>
-       			{% endfor %}
-  			</SELECT>
-  			  {% if error %} <font color="red" size=2>Error: {{ error }}</font>{% endif %}
-  			  </div>
-  			  <div class="grid-12-12">
-		<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div>
-		</div>  
-		  <!-- 
-		    {% if route %}
-		    	{% if stopList %}
-		    <div id="tableContainer" class="tableContainer"><table class="scrollTable">
-			    <thead class="fixedHeader">
-					
-						<th><a href="#">Orden</a></th>
-						<th><a href="#">Latitud</a></th>
-						<th><a href="#">Longitud</a></th>
-					
-				</thead>
-				<tbody class="scrollContent">
-			      {% for stop in stopList %}
-			        {{ stop.orden }}{{ stop.latitud }}{{ stop.longitud }}
-			      {% endfor %}
-		    </tbody> </div>
-		    {% else %}
-		      <a>No paradas disponibles</a>
-		    	{% endif %}
-		    {% endif %}
-		  -->
-		  <div class="grid-7-12">
-		  	<label title="{{form.masivo.help_text}}" for="id_masivo">Carga masiva de Paradas:</label>
-		  	<div class="grid-8-12">	
-  				{{ form.masivo}}
-  			</div>
-  			<div class="grid-4-12">
-   				<BUTTON class="formee-button" type="submit" name="action" value="addMasiveStop"> Cargar paradas </BUTTON>
-   			</div>
-   		</div>
-   		<div class="grid-7-12">
-   		<!-- <font size="1"><p>Las paradas deben estan en orden y una por linea con el formato:</p><p>Latitud; Longitud;Calle;Interseccion</p></font> -->
-   		<label for="id_orden"> Orden: </label> {{ form.orden }}<br />
-    		<SELECT NAME="paradaCombo" SIZE=1 onchange="document.formParada.id_orden.value = document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value;document.formParada.paradaCombo.value=document.formParada.paradaCombo.options[document.formParada.paradaCombo.selectedIndex].value">
-   				<OPTION VALUE="">Seleccione un valor</OPTION>
-      			{% for stop in stopList %}
-       			<OPTION VALUE="{{ stop.orden }}">{{ stop.orden }}</OPTION>
-      			{% endfor %}
-   			</SELECT>
-    <br />
-    <BUTTON class="formee-button" type="submit" name="action" value="addStop"> Agregar Parada </BUTTON>
-    <BUTTON class="formee-button" type="submit" name="action" value="editStop"> Modificar Parada </BUTTON>
-    <BUTTON class="formee-button" type="submit" name="action" value="delStop" > Eliminar Parada </BUTTON>
-    <br />
-    <input class="formee-button" type="button" name="back" id="back" value="Descartar" onClick="javaScript:history.back();">
-    <BUTTON class="formee-button" type="submit" name="action" value="save" > Guardar </BUTTON>
-    </div>
-    </fieldset>
-</form>
+	<table style="text-align: left; height: 100%; border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
+	{% if mensaje %}<tr><td>{{ mensaje }}</td></tr>{% endif %}
+  	{% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
+  	<tr><td><form class="uniForm" method="post">{% crispy form %}</form></td></tr>
+</table>
+<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div>
 </div>
 
 

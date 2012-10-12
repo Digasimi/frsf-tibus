@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Max
-from tibusAdmin.forms import StopForm,  RouteForm,  BusForm, CompanyForm,  UserForm, PassworForm, RoutesForm,\
+from tibusAdmin.forms import StopForm,  RouteForm,  BusForm, CompanyForm,  UserForm, PasswordForm, RoutesForm,\
     StopsForm
 from tibus.models import Parada, Recorrido, Unidad, Empresa
 from django.contrib.auth.decorators import login_required
@@ -205,6 +205,18 @@ def stop(request, routeId): #Pagina de ABM de paradas
                         temporaryRoute = Recorrido.objects.get(linea = routeId)
                         temporaryRoute.delete()
                         return HttpResponseRedirect('linea')
+                    elif request.POST.get('stops') == 'Paradas':
+                        try:
+                            temporaryRoute = Recorrido.objects.get(linea = routeName)
+                            return HttpResponseRedirect('stops' + temporaryRoute.getLinea())
+                        except Recorrido.DoesNotExist:
+                            errorDescription = "Primero debe guardar datos del recorrido"
+                    elif request.POST.get('frecuency') == 'Frecuencias':
+                        try:
+                            temporaryRoute = Recorrido.objects.get(linea = routeId)
+                            return HttpResponseRedirect('frecuency' + temporaryRoute.getLinea())
+                        except Recorrido.DoesNotExist:
+                            errorDescription = "Primero debe guardar datos del recorrido"
                     elif action == 'edit' or action == 'add':
                         routeFrecuency = form.cleaned_data['frecuencia']
                         if validateFrecuency(routeFrecuency) != '':
@@ -225,18 +237,6 @@ def stop(request, routeId): #Pagina de ABM de paradas
                                     temporaryRoute.save
                                 else:
                                     errorDescription = "Nombre no valido"
-                    elif request.POST.get('action') == 'stops':
-                        try:
-                            temporaryRoute = Recorrido.objects.get(linea = routeId)
-                            return HttpResponseRedirect('stops' + temporaryRoute.getLinea())
-                        except Recorrido.DoesNotExist:
-                            errorDescription = "Primero debe guardar datos del recorrido"
-                    elif request.POST.get('action') == 'frecuency':
-                        try:
-                            temporaryRoute = Recorrido.objects.get(linea = routeId)
-                            return HttpResponseRedirect('frecuency' + temporaryRoute.getLinea())
-                        except Recorrido.DoesNotExist:
-                            errorDescription = "Primero debe guardar datos del recorrido"
                     else:
                         errorDescription = "Accion no valida"
                     logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(routeId) + " Error:" + str(errorDescription))
@@ -280,7 +280,7 @@ def changepassword(request):
     errorDescription = ""
     logger = logging.getLogger(__name__)
     if request.method == 'POST':
-        form = PassworForm(request.POST)
+        form = PasswordForm(request.POST)
         temporaryUser = Usuario.objects.get(nombre = request.user)
         if(request.POST.get('newPassword')==request.POST.get('confirmacion')):
             if(temporaryUser.check_password(request.POST.get('oldPassword'))):
@@ -292,8 +292,8 @@ def changepassword(request):
         else:
             errorDescription = 'Los passwords no coinciden'
     else:
-        form = PassworForm()
-    logger.info("Usuario: " + request.user +" Accion: ChangePassword Error:" + errorDescription)
+        form = PasswordForm()
+    logger.info("Usuario: " + str(request.user) +" Accion: ChangePassword Error:" + errorDescription)
     return render_to_response('change_password.html', {'temporaryUser': request.user, 'form': form, 'error': errorDescription,  'admin': True}, context_instance=RequestContext(request))
 
 @login_required    
@@ -305,6 +305,7 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
     userData = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)
     form = CompanyForm()
+    mensaje = ''
 
     #logica
     try:
@@ -327,6 +328,7 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
                         else:
                             if action == 'add':
                                 temporaryCompany = Empresa(nombre = companyName,  mail = companyEmail)
+                                temporaryCompany.save();
                             elif action == 'edit':
                                 temporaryCompany = Empresa.objects.get(idempresa = companyId)
                                 temporaryCompany.nombre = companyName
@@ -334,7 +336,7 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
                                 temporaryCompany.save();
                             else:
                                 errorDescription = "Accion no valida"
-                            logger.info("Usuario: " + userData.nombre +" Accion: " + action + "company Empresa: " + companyName + " Error:" + errorDescription)
+                            logger.info("Usuario: " + userData.nombre +" Accion: " + action + " company Empresa: " + companyName + " Error:" + errorDescription)
                         return HttpResponseRedirect('empresa')
                 #empiezan las excepciones
                 else:
@@ -367,6 +369,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
     form = UserForm()
     logger = logging.getLogger(__name__)
     temporaryUser = None
+    mensaje = ''
     
     try:
         if (userData.categoria == 'Administrador'):
@@ -543,9 +546,9 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
     logger = logging.getLogger(__name__)  
     superadmin = (userData.categoria == 'Administrador')
     form = StopForm()
-    stopList = []
     temporaryStop = None
     mensaje = ''
+    stopList=[]
     
     #logica
     try:
@@ -555,7 +558,11 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                     form = StopForm(request.POST)
                     if form.is_valid():
                         action = form.cleaned_data['action']
-                        stopOrder = form.cleaned_data['orden']
+                        temporaryStopPrevious = form.cleaned_data['orden']
+                        if temporaryStopPrevious == None:
+                            stopOrder = 0
+                        else:  
+                            stopOrder = temporaryStopPrevious.getOrder()
                         temporaryRoute= form.cleaned_data['linea']
                         if action == 'delete':
                             temporaryStop = Parada.objects.get(idparada = stopId)  
@@ -634,7 +641,6 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
     except Recorrido.DoesNotExist:
         return HttpResponseRedirect('linea')
     except Parada.DoesNotExist:
-        form = StopForm()
         errorDescription = "No existen paradas"
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
     return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList, 'mensaje':mensaje, 'temporaryStop':temporaryStop},  context_instance=RequestContext(request))
@@ -660,52 +666,55 @@ def stopList(request, routeId):
     logger = logging.getLogger(__name__)
     form = StopsForm()
     superadmin = (userData.categoria == 'Administrador')
+    stopList = []
     
     #logica
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         try:
             if request.method == 'POST':
-                form = RoutesForm(request.POST)
-                if request.POST.get('action') == 'addStop':
-                    return HttpResponseRedirect('stopdata' + routeId + '?add')
-                else:
-                    if form.is_valid():
-                        temporaryOrder = form.cleaned_data['orden']
-                        if request.POST.get('action') == 'editStop': 
-                            temporaryStop = Parada.objects.get(linea = (Recorrido.objects.get(linea = routeId)).getId(), orden = temporaryOrder)
-                            return HttpResponseRedirect('stopdata'+str(temporaryStop.getId())+'?edit')
-                        elif request.POST.get('action') == 'delStop': 
-                            temporaryStop = Parada.objects.get(linea = (Recorrido.objects.get(linea = routeId)).getId(), orden = temporaryOrder)
-                            return HttpResponseRedirect('stopdata'+str(temporaryStop.getId())+'?delete')
-                        elif request.POST.get('action') == 'addMasiveStop': #Falta implementar carga masiva
-                            if (request.FILES['masivo'] != ''):
-                                fileName = request.FILES['masivo']
-                                temporaryOrder = int(Parada.objects.filter(linea = (Recorrido.objects.get(linea = routeId)).getId()).count())
-                                errors = 0
-                                for route in fileName:
-                                    values = route.split(';') 
-                                    try:
-                                        tempLat = float(values[0])
-                                        tempLon = float(values[1])
-                                        stopName1 = values[2]
-                                        stopName2 = values[3]
-                                        temporaryOrder = temporaryOrder + 1
-                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2)  
-                                        newParada.save()
-                                    except:
-                                        errors = errors + 1
-                                        errorDescription = "se encontraron " + str(errors) + " errors de datos"
-                            else:
-                                errorDescription = "No selecciono ningun archivo"
+                form = StopsForm(request.POST)
+                if form.is_valid():
+                    temporaryOrden = form.cleaned_data['orden']
+                    temporaryRoute = Recorrido.objects.get(linea = routeId)
+                    if request.POST.get('action') == 'addStop':
+                        return HttpResponseRedirect('stopdata'+routeId+'?add')
+                    elif request.POST.get('action') == 'editStop':
+                        temporaryStop = Parada.objects.get(linea = temporaryRoute, orden = temporaryOrden)                    
+                        return HttpResponseRedirect('stopdata'+ str(temporaryStop.getId()) +'?edit')
+                    elif request.POST.get('action') == 'delStop':
+                        temporaryStop = Parada.objects.get(linea = temporaryRoute, orden = temporaryOrden)
+                        return HttpResponseRedirect('stopdata'+ str(temporaryStop.getId()) +'?delete')
+                    elif request.POST.get('action') == 'addMasiveStop': #Falta implementar carga masiva
+                        if (request.FILES['masivo'] != ''):
+                            fileName = request.FILES['masivo']
+                            temporaryOrder = int(Parada.objects.filter(linea = (Recorrido.objects.get(linea = routeId)).getId()).count())
+                            errors = 0
+                            for route in fileName:
+                                values = route.split(';') 
+                                try:
+                                    tempLat = float(values[0])
+                                    tempLon = float(values[1])
+                                    stopName1 = values[2]
+                                    stopName2 = values[3]
+                                    temporaryOrder = temporaryOrder + 1
+                                    newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2)  
+                                    newParada.save()
+                                except:
+                                    errors = errors + 1
+                                    errorDescription = "se encontraron " + str(errors) + " errors de datos"
+                        else:
+                            errorDescription = "No selecciono ningun archivo"
                     else:
                         errorDescription = "Accion no Valida"
                     logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Stops: " + routeId + " Error:" + errorDescription)
+            else:
+                stopList = Parada.objects.filter(linea = Recorrido.objects.get(linea = routeId))
         except Recorrido.DoesNotExist:
             return HttpResponseRedirect('linea')
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Stops Error:" + errorDescription)
-    return render_to_response('stopslist.html',  {'superadmin':superadmin},  context_instance=RequestContext(request))
+    return render_to_response('stopslist.html',  {'form':form, 'stopList':stopList, 'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required
 def frecuency(request, routeId):
