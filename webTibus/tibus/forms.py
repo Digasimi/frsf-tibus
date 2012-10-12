@@ -5,8 +5,8 @@ from tibus.models import Recorrido, Parada
 
 class PredictionForm(forms.Form):
     linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea', help_text='Nombre de la linea')
-    orden = forms.ModelChoiceField(queryset=Parada.objects.all(), empty_label=None, label='Parada', help_text='Nombre de la linea')
-    apto = forms.BooleanField(required=False, label='Vehiculo Especial')
+    orden = forms.ModelChoiceField(queryset=Parada.objects.all(), empty_label=None, label='Parada', help_text='Ubicacion de la parada')
+    apto = forms.BooleanField(required=False, label='Vehiculo Especial', help_text='Vehiculo con Rampa')
     
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
