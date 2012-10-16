@@ -3,18 +3,15 @@
 
 {% block extras %}
 <div class="container">
-<table style="text-align: left; height: 100%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
-	<tr><td>
-	<legend>{% if mensaje %}{{ mensaje }}{% endif %}</legend>
-  	{% if error %} <font color="red" size=2>Error: {{ error }}</font>{% endif %}
-	<form class="uniForm" method="post" enctype="multipart/form-data">{% crispy form %}</form>
-	</td><td>
+
+	<div>{% if mensaje %}{{ mensaje }}{% endif %}</div>
+  	{% if error %} <div>Error: {{ error }}</div>{% endif %}
+	{% crispy form %}
+	
 	<input class="formee-button" type="button" name="back" id="back" value="Volver " onClick="javaScript:history.back();">
-	</td></tr>
-	<tr><td>
-	<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div></td>
-  		<!-- Acomodar la tabla de Paradas -->
-	<td><div id="lista" style="width:100%; height:350px;">
+	
+	<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div>
+	<div id="lista">
 	    {% if stopList %}
   		<table>
   			<thead>
@@ -29,8 +26,7 @@
   		{% else %}
   		<span>No hay paradas disponibles</span>
   		{% endif %}
-	</div></td></tr>
-    </table>
+	</div>
 </div>
 
 

@@ -1,7 +1,8 @@
 from django import forms
 from tibus.models import Empresa, Recorrido, Parada
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from crispy_forms.bootstrap import FormActions
 
 #Formulario con los datos para cargar una parada
 class StopForm(forms.Form):
@@ -10,7 +11,7 @@ class StopForm(forms.Form):
     latitud = forms.FloatField(required=False, label='Latitud')
     longitud = forms.FloatField(required=False, label='Longitud')
     calle1 = forms.CharField(label='Nombre de la Calle')
-    calle2 = forms.CharField(required=False, label='Nombre de la Intercepcion')
+    calle2 = forms.CharField(required=False, label='Nombre de la Interseccion')
     paradaactiva = forms.BooleanField(required=False, label='Parada Activa')
     action = forms.CharField(widget=forms.HiddenInput)
     
@@ -20,17 +21,56 @@ class StopForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_id = 'id-StopForm'
-        self.helper.form_class = 'blueForms'
+        #self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         self.helper.form_action = 'submit_survey'
+        
+        self.helper.layout = Layout(
+            Fieldset(
+                'Datos de la parada',
+                'linea',
+                'orden',
+                'latitud',
+                'longitud',
+                'calle1',
+                'calle2',
+                'paradaactiva',                
+            ),
+            ButtonHolder(
+                Submit('save', 'Guardar', css_class='button white')
+            )
+        )
 
-        self.helper.add_input(Submit('save', 'Guardar'))
+        #self.helper.add_input(Submit('save', 'Guardar'))
         super(StopForm, self).__init__(*args, **kwargs)
 
 #Formulario con los datos para cargar una route
 class RoutesForm(forms.Form):
     linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None)
     empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label=None)
+    
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-RoutesForm'
+        #self.helper.form_class = 'blueForms'
+        self.helper.form_method = 'post'
+        self.helper.form_action = ''
+        
+        self.helper.layout = Layout(
+            Fieldset(
+                'Datos de la parada',
+                'linea',
+                'empresa',                                
+            ),
+            FormActions(
+                Submit('action', 'addRoute', css_class="btn-primary"),
+                Submit('action','editRoute', css_class="btn-primary"),
+                Submit('action','delRoute')
+            ),
+        )
+        #self.helper.add_input(Submit('save', 'Guardar'))
+        super(RoutesForm, self).__init__(*args, **kwargs)
+
     
 class RouteForm(forms.Form):
     linea = forms.CharField(label='Nombre/identificador de la linea')
@@ -42,9 +82,8 @@ class RouteForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_id = 'id-RouteForm'
-        self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'submit_survey'
+        self.helper.form_action = ''
 
         self.helper.add_input(Submit('save', 'Guardar'))
         self.helper.add_input(Submit('stops', 'Paradas'))
@@ -61,11 +100,23 @@ class BusForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_id = 'id-BusForm'
-        self.helper.form_class = 'blueForms'
+        #self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         self.helper.form_action = 'submit_survey'
+        
+        self.helper.layout = Layout(
+            Fieldset(
+                'Unidad',
+                'linea',
+                'apto_movilidad_reducida',
+                'id_unidad_linea',                                
+            ),
+            FormActions(
+                Submit('save', 'Guardar', css_class="btn-primary")                
+            ),
+        )
 
-        self.helper.add_input(Submit('save', 'Guardar'))
+        #self.helper.add_input(Submit('save', 'Guardar'))
         super(BusForm, self).__init__(*args, **kwargs)
 
 class CompanyForm(forms.Form):
@@ -84,22 +135,38 @@ class CompanyForm(forms.Form):
         super(CompanyForm, self).__init__(*args, **kwargs)
     
 class UserForm(forms.Form):
-    nombre = forms.CharField(label='Nombre del usuario')
-    email = forms.EmailField(required=False,label='Email de Contacto del usuario')
-    categoria = forms.ChoiceField(widget=forms.RadioSelect, choices=[('Administrador','Administrador'),('Empresa','Empresa')], label='Categoria del Usuario')
-    empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label="Todas", label='Empresa Asociada')
-    password = forms.CharField(widget=forms.PasswordInput, label='Password nuevo')
+    nombre = forms.CharField(label='Nombre')
+    email = forms.EmailField(required=False,label='email')
+    categoria = forms.ChoiceField(widget=forms.RadioSelect, choices=[('Administrador','Administrador'),('Empresa','Empresa')], label='Categoria')
+    empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label="Todas", label='Empresa')
+    password = forms.CharField(widget=forms.PasswordInput, label='Password')
     confirmacion = forms.CharField(widget=forms.PasswordInput, label='Confirmar Password')
     action = forms.CharField(widget=forms.HiddenInput)
     
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_id = 'id-UserForm'
-        self.helper.form_class = 'blueForms'
+        #self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         self.helper.form_action = 'submit_survey'
+        
+        self.helper.layout = Layout(
+            Fieldset(
+                'Datos de usuario',
+                'nombre',
+                'email',
+                'categoria',
+                'empresa',
+                'password',
+                'confirmacion',
+                'action',                            
+            ),
+            FormActions(
+                Submit('save', 'Guardar', css_class="btn-primary")                
+            ),
+        )
 
-        self.helper.add_input(Submit('save', 'Guardar'))
+        #self.helper.add_input(Submit('save', 'Guardar'))
         super(UserForm, self).__init__(*args, **kwargs)
     
 class PasswordForm(forms.Form):
