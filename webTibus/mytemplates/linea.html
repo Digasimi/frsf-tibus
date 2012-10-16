@@ -1,35 +1,41 @@
 {% extends "baseMenu.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 
   
+  <div class="row-fluid pagination-centered">
+  			{% crispy form %}
+
+			{% if error %}<div>Error: {{ error }}</div>{% endif %}
+  </div>
   
-  <div class="container">
-  	{% if error %} <div class="formee-msg-error"> Error: {{ error }}</div>{% endif %}
+<!--   <div class="container"> -->
+<!--   	{% if error %} <div class="formee-msg-error"> Error: {{ error }}</div>{% endif %} -->
   
   
-  	<form name="formLinea" class="formee" action="" method="post" enctype="multipart/form-data">
-  	<fieldset>
-  		<legend>Lineas</legend>
-		{% csrf_token %}
-		<div class="grid-12-12"> 
-		<label for="id_empresa"> Empresa: </label>{{form.empresa }} 
+<!--   	<form name="formLinea" class="formee" action="" method="post" enctype="multipart/form-data"> -->
+<!--   	<fieldset> -->
+<!--   		<legend>Lineas</legend> -->
+<!-- 		{% csrf_token %} -->
+<!-- 		<div class="grid-12-12">  -->
+<!-- 		<label for="id_empresa"> Empresa: </label>{{form.empresa }}  -->
 		
-		<BUTTON class="formee-button" type="submit" name="action" value="viewCompany">Filtrar por Empresa</BUTTON>
+<!-- 		<BUTTON class="formee-button" type="submit" name="action" value="viewCompany">Filtrar por Empresa</BUTTON> -->
 			
-		<br /> <label for="id_linea"> Linea: </label> {{ form.linea }} <br />
-		</div>
+<!-- 		<br /> <label for="id_linea"> Linea: </label> {{ form.linea }} <br /> -->
+<!-- 		</div> -->
 		
-		<div class="grid-12-12">
-			<BUTTON class="formee-button" type="submit" name="action" value="addRoute">
-				Agregar Linea</BUTTON>
+<!-- 		<div class="grid-12-12"> -->
+<!-- 			<BUTTON class="formee-button" type="submit" name="action" value="addRoute"> -->
+<!-- 				Agregar Linea</BUTTON> -->
 			
-			<BUTTON class="formee-button" type="submit" name="action" value="editRoute">
-				Modificar Linea</BUTTON>
+<!-- 			<BUTTON class="formee-button" type="submit" name="action" value="editRoute"> -->
+<!-- 				Modificar Linea</BUTTON> -->
 			
-			<BUTTON class="formee-button" type="submit" name="action" value="delRoute">
-				Eliminar Linea</BUTTON>
-		</div>
-		</fieldset>
-	</form> {% endblock %}
-</div>
+<!-- 			<BUTTON class="formee-button" type="submit" name="action" value="delRoute"> -->
+<!-- 				Eliminar Linea</BUTTON> -->
+<!-- 		</div> -->
+<!-- 		</fieldset> -->
+<!-- 	</form> -->
+	 {% endblock %}
+<!-- </div> -->

@@ -81,7 +81,7 @@ def result(request): #pagina que mostrara las predicciones
     stopList = Parada.objects.all()
     
     #logica
-    routeName = request.GET.get('linea').upper()
+    routeName = request.GET.get('linea')
     destinyStopId= request.GET.get('parada')
     aptoPrediction = request.GET.get('apto')
     if request.POST.get('action') == 'prediction':
@@ -92,7 +92,7 @@ def result(request): #pagina que mostrara las predicciones
         elif destinyStopId == '':
             errorDescription = "No ingreso la parada"
         else:
-            temporaryRoute= Recorrido.objects.get(linea = routeName.upper())
+            temporaryRoute= Recorrido.objects.get(linea = routeName)
             stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
             destinyStop = Parada.objects.get(linea = temporaryRoute, orden = destinyStopId)
             

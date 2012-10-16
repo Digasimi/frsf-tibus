@@ -7,19 +7,22 @@
 	<img style="width: 302px; height: 132px;" alt="Logo" src="../Archivos/Logo.png">
 	<img style="width: 722px; height: 132px;" alt="Titulo" src="../Archivos/Nombre.png">
 </div>
-<div id='cssmenu'>
-<ul>
-   <li class='active '><a href='index'><span>Home</span></a></li>
-   <li class='has-sub '><a href='admin'><span>Administración</span></a>
-      <ul>
-         <li><a href='linea'><span>Línea</span></a></li>
-         <li><a href='unidad'><span>Unidad</span></a></li>
-         <li><a href='empresa'><span>Empresas</span></a></li>
-         <li><a href='usuario'><span>Usuarios</span></a></li>
-      </ul>
-   </li>
+<div class="navbar">
+  <div class="navbar-inner">
+<ul class="nav">
+   <li><a href='index'><span>Home</span></a></li>
+    <li class="dropdown">
+	<a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">Administración<b class="caret"></b></a>
+	
+	<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li><a tabindex="-1" href="linea">Línea</a></li>
+                        <li><a tabindex="-1" href="unidad">Unidad</a></li>
+                        <li><a tabindex="-1" href="empresa">Empresas</a></li>
+                        <li><a tabindex="-1" href="usuario">Usuarios</a></li>                       
+                      </ul></li>
    <li><a href='prediccion'><span>Predicción</span></a></li>
    <li><a href='#'><span>Contacto</span></a></li>
 </ul>
+</div>
 </div>
 {% endblock %}

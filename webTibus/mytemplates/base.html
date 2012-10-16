@@ -4,18 +4,22 @@
   <head>
     <title>{% block title %}Tibus: Sistema de prediccion de tiempos de arribo{% endblock %}</title>
 
-    <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" />
+<!--     <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% load adminmedia %}{% admin_media_prefix %}css/base.css{% endblock %}" /> -->
     <link href="../Archivos/css/bootstrap.css" rel="stylesheet">
-	<link rel="stylesheet" href="../Archivos/css/formee-structure.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="../Archivos/css/formee-style.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="../Archivos/css/menu-styles.css" type="text/css" media="screen" />
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <link href="../Archivos/css/bootstrap-responsive.css" rel="stylesheet">
+<!-- 	<link rel="stylesheet" href="../Archivos/css/formee-structure.css" type="text/css" media="screen" /> -->
+<!-- 	<link rel="stylesheet" href="../Archivos/css/formee-style.css" type="text/css" media="screen" /> -->
+<!-- 	<link rel="stylesheet" href="../Archivos/css/menu-styles.css" type="text/css" media="screen" /> -->
 	
     {% block extrastyle %}{% endblock %}
     {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
 
     <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
-    <script type="text/javascript" src="../Archivos/js/jquery-1.6.4.min.js"></script>
-	<script type="text/javascript" src="../Archivos/js/formee.js"></script>
+<!--     <script type="text/javascript" src="../Archivos/js/jquery-1.6.4.min.js"></script> -->
+<!-- 	<script type="text/javascript" src="../Archivos/js/formee.js"></script> -->
+<!-- 	<script src="http://code.jquery.com/jquery-latest.js"></script> -->
+ 	<script src="../Archivos/js/bootstrap.js"></script>
 	
     {% block extrahead %}{% endblock %}
     {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}	
@@ -26,7 +30,7 @@
 <body class=" {% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}" {% block extrabody %} {% endblock %}>
 
 <!-- Container -->
-<div id="container">
+<div class="container">
 
     {% if not is_popup %}
     <!-- Header -->
@@ -87,7 +91,6 @@
     {% block footer %}<div id="footer"></div>{% endblock %}
 </div>
 <!-- END Container -->
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script src="../Archivos/js/bootstrap.min.js"></script>
+
 </body>
 </html>
