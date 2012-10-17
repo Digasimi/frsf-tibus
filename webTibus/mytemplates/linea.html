@@ -1,41 +1,23 @@
-{% extends "baseMenu.html" %}
+{% extends "datatable.html" %}
 {% load crispy_forms_tags %}
-{% block content %}
 
-  
-  <div class="row-fluid pagination-centered">
-  			{% crispy form %}
-
-			{% if error %}<div>Error: {{ error }}</div>{% endif %}
-  </div>
-  
-<!--   <div class="container"> -->
-<!--   	{% if error %} <div class="formee-msg-error"> Error: {{ error }}</div>{% endif %} -->
-  
-  
-<!--   	<form name="formLinea" class="formee" action="" method="post" enctype="multipart/form-data"> -->
-<!--   	<fieldset> -->
-<!--   		<legend>Lineas</legend> -->
-<!-- 		{% csrf_token %} -->
-<!-- 		<div class="grid-12-12">  -->
-<!-- 		<label for="id_empresa"> Empresa: </label>{{form.empresa }}  -->
-		
-<!-- 		<BUTTON class="formee-button" type="submit" name="action" value="viewCompany">Filtrar por Empresa</BUTTON> -->
-			
-<!-- 		<br /> <label for="id_linea"> Linea: </label> {{ form.linea }} <br /> -->
-<!-- 		</div> -->
-		
-<!-- 		<div class="grid-12-12"> -->
-<!-- 			<BUTTON class="formee-button" type="submit" name="action" value="addRoute"> -->
-<!-- 				Agregar Linea</BUTTON> -->
-			
-<!-- 			<BUTTON class="formee-button" type="submit" name="action" value="editRoute"> -->
-<!-- 				Modificar Linea</BUTTON> -->
-			
-<!-- 			<BUTTON class="formee-button" type="submit" name="action" value="delRoute"> -->
-<!-- 				Eliminar Linea</BUTTON> -->
-<!-- 		</div> -->
-<!-- 		</fieldset> -->
-<!-- 	</form> -->
-	 {% endblock %}
-<!-- </div> -->
+	{% block datos %}
+    	{% if routeList %}
+			<thead>
+				<tr>
+					<th><a href="#">Linea</a></th>
+					<th><a href="#">Empresa</a></th>
+				</tr>
+			</thead>
+			<tbody>
+      		{% for linea in routeList %}
+      			<tr>
+      				<td>{{ linea.linea }}</td>
+      				<td>{{ linea.empresa }}</td>
+  				</tr>
+			{% endfor %}
+      		</tbody>
+		{% else %}
+		<a>No hay lineas disponibles</a>
+    	{% endif %}
+	{% endblock %}
