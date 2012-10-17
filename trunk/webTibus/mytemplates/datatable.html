@@ -1,0 +1,49 @@
+{% extends "baseMenu.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<script src="../Archivos/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/ZeroClipboard.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/TableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/dataTables.bootstrap.js"></script>
+
+<link href="../Archivos/css/dataTables.bootstrap.css" rel="stylesheet">
+
+<script type="text/javascript" charset="utf-8">
+			$(document).ready( function () {
+				$('#data').dataTable( {
+					"sDom": "<'row-fluid'<'span6'T><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons": [
+									]
+					}
+				} );
+				
+				$("#data").click(function() {
+					var oTT = TableTools.fnGetInstance( 'data' );
+				    var aSelectedTrs = oTT.fnGetSelected();
+					var input = $('#id_identificador');
+					
+					
+					if(aSelectedTrs.length !== 0)
+		            	input.val(aSelectedTrs[0].cells[0].innerText);
+					else
+						input.val('');
+					});
+			} );
+			
+			
+		</script>
+
+<div class="row-fluid pagination-centered">
+  	<div class="span10">
+  		<table  id="data" class="table table-striped table-bordered">
+        	{% block datos %}{% endblock %}
+		</table>
+	</div>
+  	<div class="span2">{% crispy form %}</div>
+</div>
+{% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
+
+{% endblock %}

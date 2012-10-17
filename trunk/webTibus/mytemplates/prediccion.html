@@ -2,12 +2,10 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-	<div style="width:40%">
-	<div class="row-fluid pagination-centered">
+	<div style="width:40%" class="row-fluid pagination-centered">
   			{% crispy form %}
 
 			{% if error %}<div>Error: {{ error }}</div>{% endif %}
-	</div>
 	</div>
 	
 {% endblock %}

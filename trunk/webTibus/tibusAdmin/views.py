@@ -1,4 +1,3 @@
-# Create your views here.
 import logging
 
 from django.core.context_processors import csrf
@@ -6,8 +5,8 @@ from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Max
-from tibusAdmin.forms import StopForm,  RouteForm,  BusForm, CompanyForm,  UserForm, PasswordForm, RoutesForm,\
-    StopsForm
+from tibusAdmin.forms import StopForm, RouteForm, BusForm, CompanyForm, UserForm, PasswordForm, RoutesForm,\
+    StopsForm, BussForm, UsersForm, CompaniesForm
 from tibus.models import Parada, Recorrido, Unidad, Empresa
 from django.contrib.auth.decorators import login_required
 from tibusAdmin.models import Usuario 
@@ -26,19 +25,21 @@ def route(request):#pagina de ABM de lineas
     logger = logging.getLogger(__name__)
     form = RoutesForm()
     superadmin = (userData.categoria == 'Administrador')
+    routeList = Recorrido.objects.all()
     
     #logica
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         if request.method == 'POST':
             form = RoutesForm(request.POST)
-            if request.POST.get('action') == 'addRoute':
+            if request.POST.get('action') == 'Agregar':
                 return HttpResponseRedirect('recorrido0?add')
             else:
                 if form.is_valid():
-                    temporaryRoute = form.cleaned_data['linea']
-                    if request.POST.get('action') == 'editRoute':  #edicion de route.
+                    routeName = form.cleaned_data['identificador']
+                    temporaryRoute = Recorrido.objects.get(linea = routeName)
+                    if request.POST.get('action') == 'Modificar':  #edicion de route.
                         return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?edit')
-                    elif request.POST.get('action') == 'delRoute':  #edicion de route.
+                    elif request.POST.get('action') == 'Eliminar':  #edicion de route.
                         return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?delete')
                 else:
                     errorDescription = "Accion no Valida"
@@ -46,7 +47,7 @@ def route(request):#pagina de ABM de lineas
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Route Error:" + errorDescription)
-    return render_to_response('linea.html',  {'user': request.user,'form':form, 'error':errorDescription , 'admin': True, 'superadmin':superadmin },  context_instance=RequestContext(request))
+    return render_to_response('linea.html',  {'user': request.user,'routeList':routeList,'form':form, 'error':errorDescription , 'admin': True, 'superadmin':superadmin },  context_instance=RequestContext(request))
 
 @login_required    
 def bus(request): #pagina de ABM de unidades - faltan excepciones
@@ -57,7 +58,7 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
     userData = Usuario.objects.get(nombre = request.user)
     busList=[]
     logger = logging.getLogger(__name__)
-    form = BusForm()
+    form = BussForm()
     
     if (userData.categoria == 'Administrador'):
         busList = Unidad.objects.all().order_by('linea','id_unidad_linea')
@@ -69,17 +70,16 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         if request.method == 'POST':
             try:
-                form = BusForm(request.POST)
-                if request.POST.get('action') == 'addBus':
+                form = BussForm(request.POST)
+                if request.POST.get('action') == 'Agregar':
                         return HttpResponseRedirect('unidaddata0?add')
                 elif form.is_valid():
-                    routeName=form.cleaned_data['linea']
-                    busId=form.cleaned_data['id_unidad_linea']
-                    if request.POST.get('action') == 'editBus':
-                        temporaryBus = Unidad.objects.get(linea = routeName,  id_unidad_linea = busId)
+                    busId=form.cleaned_data['identificador']
+                    if request.POST.get('action') == 'Modificar':
+                        temporaryBus = Unidad.objects.get(idunidad = busId)
                         return HttpResponseRedirect('unidaddata'+ str(temporaryBus.getId()) +'?edit')
-                    elif request.POST.get('action') == 'delBus': 
-                        temporaryBus = Unidad.objects.get(linea = routeName,  id_unidad_linea = busId)
+                    elif request.POST.get('action') == 'Eliminar': 
+                        temporaryBus = Unidad.objects.get(idunidad = busId)
                         return HttpResponseRedirect('unidaddata'+ str(temporaryBus.getId()) +'?delete')
                 else:
                     if request.POST.get('id_unidad_linea')=='':
@@ -90,7 +90,6 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
             except Unidad.DoesNotExist:
                 errorDescription = "No existe/n unidad/es"
     else:
-        form = BusForm()
         form.initial = {'id_unidad_linea':0}
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Bus Error:" + errorDescription)
@@ -114,22 +113,23 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
     errorDescription = ""
     userData = Usuario.objects.get(nombre = request.user)
     logger = logging.getLogger(__name__)
-    form = CompanyForm()
+    form = CompaniesForm()
     companyList = []
     
-        #logica
+    #logica
     if (userData.categoria == 'Administrador'):
         superadmin = True
         companyList = Empresa.objects.all()
         if request.method == 'POST':
             try:
-                if request.POST.get('action') == 'addCompany':
+                companyName = request.POST.get('identificador')
+                if request.POST.get('action') == 'Agregar':
                     return HttpResponseRedirect('empresadata0?add')
-                elif request.POST.get('action') == 'editCompany':
-                    temporaryCompany = Empresa.objects.get(nombre = request.POST.get('nombre'))                    
+                elif request.POST.get('action') == 'Modificar':
+                    temporaryCompany = Empresa.objects.get(nombre = companyName)                    
                     return HttpResponseRedirect('empresadata'+ str(temporaryCompany.getId()) +'?edit')                #else:
-                elif request.POST.get('action') == 'delCompany':
-                    temporaryCompany = Empresa.objects.get(nombre = request.POST.get('nombre'))                    
+                elif request.POST.get('action') == 'Eliminar':
+                    temporaryCompany = Empresa.objects.get(nombre = companyName)                    
                     return HttpResponseRedirect('empresadata'+ str(temporaryCompany.getId()) +'?delete')                #else:
             #empiezan las excepciones
             except Empresa.DoesNotExist:
@@ -149,28 +149,27 @@ def user(request): #pagina de ABM de unidades - faltan excepciones
     userData = Usuario.objects.get(nombre = request.user)
     userList = []
     logger = logging.getLogger(__name__)
-    form = UserForm()
+    form = UsersForm()
     
     if (userData.categoria == 'Administrador'):
         userList=Usuario.objects.filter(is_active = True).order_by('nombre')
         superadmin = True
         if request.method == 'POST':
             try:
-                userName=request.POST.get('nombre').upper()
-                if request.POST.get('action') == 'addUser':
+                userName=request.POST.get('identificador')
+                if request.POST.get('action') == 'Agregar':
                     return HttpResponseRedirect('usuariodata0?add')
-                elif request.POST.get('action') == 'editUser':
-                    temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
+                elif request.POST.get('action') == 'Modificar':
+                    temporaryUser = Usuario.objects.get(nombre = userName)                    
                     return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?edit')
-                elif request.POST.get('action') == 'rehabUser':
-                    temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
-                    return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?rehab')
-                elif request.POST.get('action') == 'delUser':
-                    temporaryUser = Usuario.objects.get(nombre = request.POST.get('nombre'))                    
+                elif request.POST.get('action') == 'Eliminar':
+                    temporaryUser = Usuario.objects.get(nombre = userName)                    
                     return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?delete')
             #empiezan las excepciones
             except Usuario.DoesNotExist:
                 errorDescription = "No existe el usuario"
+            if userName == None:
+                userName = ''
             logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
     else:
         superadmin = False
@@ -320,7 +319,7 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
                         return HttpResponseRedirect('empresa')
                     else:
                         companyEmail = form.cleaned_data['email'].lower()
-                        companyName = form.cleaned_data['nombre'].upper()
+                        companyName = form.cleaned_data['nombre']
                         if companyName == '':
                             errorDescription = "El nombre no puede ser vacio"
                         elif companyEmail == '':
@@ -356,7 +355,7 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
     except Empresa.DoesNotExist:
         errorDescription = "No existe la empresa"
     logger.info("Usuario: " + userData.nombre +" in CompanyData Error:" + errorDescription)        
-    return render_to_response('empresadata.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True, 'mensaje': mensaje },  context_instance=RequestContext(request))
+    return render_to_response('data.html',  {'user': request.user, 'admin': True,'form':form,  'error': errorDescription, 'superadmin': True, 'mensaje': mensaje },  context_instance=RequestContext(request))
 
 @login_required    
 def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
@@ -378,7 +377,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
             if request.method == 'POST':
                 form = UserForm(request.POST)
                 if form.is_valid():
-                    userName = form.cleaned_data['nombre'].upper()
+                    userName = form.cleaned_data['nombre']
                     action = form.cleaned_data['action'].lower()
                     if action == 'delete': #Asume que la accion por omision es borrar
                         if userName == '':
@@ -442,13 +441,11 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
             else:
                 if request.GET.get('add') == None:
                     temporaryUser = Usuario.objects.get(nombre = userId)
-                    form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.getMail(), 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
                     if request.GET.get('edit') == '':
                         mensaje = 'Modificacion de Usuario Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Usuario'
-                    elif request.GET.get('rehab') == '':
-                        mensaje = 'Confirmacion de Rehabilitacion de Usuario'
+                    form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.getMail(), 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
                 else:
                     mensaje = 'Alta de Nuevo Usuario'
         else:
@@ -460,7 +457,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
     except Empresa.DoesNotExist:
         errorDescription = "No existe la compania"
     logger.info("Usuario: " + userData.nombre +" in User Error:" + errorDescription)        
-    return render_to_response('usuariodata.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True, 'categoryList':categoryList, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryUser':temporaryUser},  context_instance=RequestContext(request))
+    return render_to_response('data.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True, 'categoryList':categoryList, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryUser':temporaryUser},  context_instance=RequestContext(request))
 
 @login_required    
 def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
@@ -534,7 +531,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
     except Unidad.DoesNotExist:
         errorDescription = "No existe/n unidad/es"  
     logger.info("Usuario: " + userData.nombre +" in Bus Error:" + errorDescription)
-    return render_to_response('unidaddata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryBus':temporaryBus},  context_instance=RequestContext(request))
+    return render_to_response('data.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryBus':temporaryBus},  context_instance=RequestContext(request))
 
 @login_required    
 def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
@@ -676,15 +673,15 @@ def stopList(request, routeId):
                 if form.is_valid():
                     temporaryOrden = form.cleaned_data['orden']
                     temporaryRoute = Recorrido.objects.get(linea = routeId)
-                    if request.POST.get('action') == 'addStop':
+                    if request.POST.get('action') == 'Agregar':
                         return HttpResponseRedirect('stopdata'+routeId+'?add')
-                    elif request.POST.get('action') == 'editStop':
+                    elif request.POST.get('action') == 'Modificar':
                         temporaryStop = Parada.objects.get(linea = temporaryRoute, orden = temporaryOrden)                    
                         return HttpResponseRedirect('stopdata'+ str(temporaryStop.getId()) +'?edit')
-                    elif request.POST.get('action') == 'delStop':
+                    elif request.POST.get('action') == 'Eliminar':
                         temporaryStop = Parada.objects.get(linea = temporaryRoute, orden = temporaryOrden)
                         return HttpResponseRedirect('stopdata'+ str(temporaryStop.getId()) +'?delete')
-                    elif request.POST.get('action') == 'addMasiveStop': #Falta implementar carga masiva
+                    elif request.POST.get('action') == 'Carga Masiva': #Falta implementar carga masiva
                         if (request.FILES['masivo'] != ''):
                             fileName = request.FILES['masivo']
                             temporaryOrder = int(Parada.objects.filter(linea = (Recorrido.objects.get(linea = routeId)).getId()).count())

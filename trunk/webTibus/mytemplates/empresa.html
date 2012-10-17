@@ -1,44 +1,20 @@
-{% extends "baseMenu.html" %}
+{% extends "datatable.html" %}
 
-{% block content %}
-<table style="text-align: left; height: 100%; width: 90%;border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
-  	{% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  	<tr>
-  		<td style="width: 80%;" align=center >
-  			<a>Empresas Existentes:</a>
-  				<div id="tableContainer" class="tableContainer">
-				{% if companyList %}
-					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
-						<thead class="fixedHeader">
-	        				<tr>
-	        					<th style="width: 50%;"><a href="#">Nombre</a></th>
-	        					<th><a href="#">Email</a></th>
-       					</tr></thead>
-      					<tbody class="scrollContent">
-        					{% for company in companyList %}<tr>
-        						<td style="width: 50%;">{{ company.nombre }}</td>
-        						<td>{{ company.mail}}</td>
-        					</tr>
-        				{% endfor %}
-        			</tbody></table>
-    			{% else %}<a>No empresas disponibles</a>
-    			{% endif %}
-		</div></td>
-  		<td><form name="formEmpresa" action="" method="post">{% csrf_token %}
-	       		<label for="id_empresa"> Empresa: </label> {{ form.nombre }} 
-	       		<BUTTON type="submit" name="action" value="addCompany"> Agregar Empresa </BUTTON>
-	       		<BUTTON type="submit" name="action" value="editCompany"> Modificar Empresa </BUTTON>
-	       		<BUTTON type="submit" name="action"  value="delCompany" > Eliminar Empresa </BUTTON>
-   		</form></td>
-   	</tr>
-</table>
-{% endblock %}
-
-{% block extrahead %}
-<script type="text/javascript">
-    function confirmation(){
-        if (confirm("Esta seguro de querer eliminar este registro?")){
-            document.formEmpresa.action = "delCompany"
-            document.formEmpresa.submit();
-        }
-    }</script>{% endblock %}
+		{% block datos %}
+			{% if companyList %}
+					<thead>
+        				<tr>
+        					<th><a href="#">Nombre</a></th>
+        					<th><a href="#">Email</a></th>
+      					</tr></thead>
+     					<tbody>
+       					{% for company in companyList %}<tr>
+       						<td>{{ company.nombre }}</td>
+       						<td>{{ company.mail}}</td>
+       					</tr>
+       				{% endfor %}
+       			</tbody>
+   			{% else %}
+   				<a>No empresas disponibles</a>
+   			{% endif %}
+		{% endblock %}
