@@ -1,6 +1,6 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+from crispy_forms.layout import Layout, Fieldset, Submit
 from tibus.models import Recorrido, Parada
 
 class PredictionForm(forms.Form):
@@ -11,9 +11,7 @@ class PredictionForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_id = 'id-predictionForm'
-        #self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'resultado'
         
         self.helper.layout = Layout(
             Fieldset(
@@ -22,9 +20,6 @@ class PredictionForm(forms.Form):
                 'orden',
                 'apto',
             ),
-#            ButtonHolder(
-#                Submit('submit', 'Consultar', css_class='button white')
-#            )
         )
 
         self.helper.add_input(Submit('action', 'resultado'))

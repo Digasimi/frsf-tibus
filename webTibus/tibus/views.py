@@ -30,14 +30,14 @@ def prediction(request): #pagina que mostrara las predicciones
     if request.method == 'POST':
         form = PredictionForm(request.POST)
         try:
-            if request.POST.get('action')=='prediction':
+            if request.POST.get('action')=='resultado':
                 if form.is_valid():
                     routePrediction = form.cleaned_data['linea']
                     stopPrediction = form.cleaned_data['orden']
                     aptoPrediction = form.cleaned_data['apto']
                     if aptoPrediction == None:
                         aptoPrediction = False
-                    return HttpResponseRedirect('resultado?linea=' + str(routePrediction.getLinea()) + '&parada='+ str(stopPrediction)+'&apto='+str(aptoPrediction))
+                    return HttpResponseRedirect('resultado?linea=' + str(routePrediction) + '&parada='+ str(stopPrediction)+'&apto='+str(aptoPrediction))
                 else:
                     if request.POST.get('linea') == None:
                         errorDescription = "No ingreso la linea"
