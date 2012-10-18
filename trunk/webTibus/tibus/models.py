@@ -4,6 +4,16 @@ from xml.sax.handler import ContentHandler
 
 import re
 
+DIASSEMANA = (
+    ('LUNES', 'Lunes'),
+    ('MARTES', 'Martes'),
+    ('MIERCOLES', 'Miercoles'),
+    ('JUEVES', 'Jueves'),
+    ('VIERNES', 'Viernes'),
+    ('SABADO', 'Sabado'),
+    ('DOMINGO', 'Domingo'),
+)
+    
 class Empresa(models.Model):
         idempresa = models.AutoField(primary_key=True)
         nombre = models.CharField(max_length=50, help_text="Nombre de la empresa")
@@ -32,7 +42,6 @@ class Empresa(models.Model):
 class Recorrido(models.Model):
     idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
     linea = models.CharField(max_length=50)
-    frecuencia = models.IntegerField()
     empresa = models.ForeignKey(Empresa)
     
     class Meta:
@@ -42,7 +51,7 @@ class Recorrido(models.Model):
         return self.linea
         
     def validate(self):
-        if self.linea == "" or self.frecuencia == "" or re.search("[^a-zA-Z0-9]", self.linea) :
+        if self.linea == "" or re.search("[^a-zA-Z0-9]", self.linea) :
             return False
         return True
         
@@ -51,9 +60,6 @@ class Recorrido(models.Model):
     
     def getLinea(self):
         return self.linea
-    
-    def getFrecuency(self):
-        return self.frecuencia
     
     def getCompany(self):
         return self.empresa
@@ -138,6 +144,27 @@ class TiempoRecorrido(models.Model):
     
     def _unicode_(self): 
         return self.promedio
+    
+class Frecuencia(models.Model):
+    idfrecuencia = models.AutoField(primary_key=True)
+    linea = models.ForeignKey(Recorrido, related_name = "recorrido")
+    dia_semana = models.CharField(max_length=10, choices=DIASSEMANA)
+    hora = models.TimeField()
+    
+    def getLinea(self):
+        return self.linea
+    
+    def getDiaSemana(self):
+        return self.dia_semana
+    
+    def getHora(self):
+        return self.hora
+        
+    def getId(self):
+        return self.idfrecuencia
+    
+    class Meta:
+        db_table = 'frecuencia'
 
 class MyListener(object):
     message = ''

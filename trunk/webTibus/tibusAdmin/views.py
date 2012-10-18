@@ -6,8 +6,9 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Max
 from tibusAdmin.forms import StopForm, RouteForm, BusForm, CompanyForm, UserForm, PasswordForm, RoutesForm,\
-    StopsForm, BussForm, UsersForm, CompaniesForm, EliminarForm
-from tibus.models import Parada, Recorrido, Unidad, Empresa
+    StopsForm, BussForm, UsersForm, CompaniesForm, EliminarForm, FrecuenciesForm,\
+    FrecuencyForm
+from tibus.models import Parada, Recorrido, Unidad, Empresa, Frecuencia
 from django.contrib.auth.decorators import login_required
 from tibusAdmin.models import Usuario 
 
@@ -217,33 +218,26 @@ def stop(request, routeId): #Pagina de ABM de paradas
                         except Recorrido.DoesNotExist:
                             errorDescription = "Primero debe guardar datos del recorrido"
                     elif action == 'edit' or action == 'add':
-                        routeFrecuency = form.cleaned_data['frecuencia']
-                        if validateFrecuency(routeFrecuency) != '':
-                            errorDescription = validateFrecuency(routeFrecuency)
-                        else:
-                            if action == 'add':
-                                temporaryRoute = Recorrido(linea = routeName, frecuencia = routeFrecuency, empresa = routeCompany)
-                                if temporaryRoute.validate():
-                                    temporaryRoute.save();
-                                else:
-                                    errorDescription = "Nombre no valido"
-                            elif action == 'edit':
-                                temporaryRoute = Recorrido.objects.get(linea = routeId)
-                                temporaryRoute.linea = routeName
-                                temporaryRoute.frecuencia = routeFrecuency
-                                temporaryRoute.empresa = routeCompany
-                                if temporaryRoute.validate():
-                                    temporaryRoute.save
-                                else:
-                                    errorDescription = "Nombre no valido"
+                        if action == 'add':
+                            temporaryRoute = Recorrido(linea = routeName, empresa = routeCompany)
+                            if temporaryRoute.validate():
+                                temporaryRoute.save();
+                            else:
+                                errorDescription = "Nombre no valido"
+                        elif action == 'edit':
+                            temporaryRoute = Recorrido.objects.get(linea = routeId)
+                            temporaryRoute.linea = routeName
+                            temporaryRoute.empresa = routeCompany
+                            if temporaryRoute.validate():
+                                temporaryRoute.save
+                            else:
+                                errorDescription = "Nombre no valido"
                     else:
                         errorDescription = "Accion no valida"
                     logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(routeId) + " Error:" + str(errorDescription))
                 else:
                     if request.POST.get('linea') == '':
                         errorDescription = "El nombre no puede ser vacio"
-                    elif request.POST.get('frecuencia') == '':
-                        errorDescription = "La frecuencia no puede ser vacia"
                     elif request.POST.get('empresa') == '':
                         errorDescription = "La empresa ingresada no es valida"
                     else:    
@@ -251,7 +245,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
             else:
                 if request.GET.get('add') == None:
                     temporaryRoute = Recorrido.objects.get(linea = routeId)
-                    form.initial = {'linea': temporaryRoute.getLinea(), 'frecuencia' : temporaryRoute.getFrecuency(), 'empresa': temporaryRoute.getCompany()}
+                    form.initial = {'linea': temporaryRoute.getLinea(), 'empresa': temporaryRoute.getCompany()}
                     stopList = Parada.objects.filter(linea = temporaryRoute.getId()).order_by('orden')
                     if request.GET.get('edit') == '':
                         mensaje = 'Modificacion de Linea Existente'
@@ -634,17 +628,6 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
     logger.info("Usuario: " + userData.nombre +" in Stop Error:" + errorDescription)
     return render_to_response('stopdata.html',  {'user': request.user,'form':form,  'error': errorDescription, 'admin': True, 'superadmin':superadmin, 'stopList': stopList, 'mensaje':mensaje, 'temporaryStop':temporaryStop},  context_instance=RequestContext(request))
 
-def validateFrecuency(frecuency):
-    error = ''
-    try:
-        if frecuency == '':
-            error = 'La frecuencia no puede ser nula/vacia'
-        elif int(frecuency) <= 0:
-            error = 'La frecuencia debe ser mayor que 0'
-    except ValueError:
-        error = "La frecuencia debe ser un numero entero"
-    return error
-
 @login_required
 def stopList(request, routeId):
     #carga inicial
@@ -707,9 +690,37 @@ def stopList(request, routeId):
 
 @login_required
 def frecuency(request, routeId):
+    #carga inicial
     c = {}
     c.update(csrf(request))
-    return render_to_response('frecuency.html',  {},  context_instance=RequestContext(request))
+    errorDescription = ""
+    userData = Usuario.objects.get(nombre = request.user)
+    FrecuenciesList = []
+    logger = logging.getLogger(__name__)
+    form = FrecuenciesForm()
+    
+    if (userData.categoria == 'Administrador'):
+        temporaryRoute = Recorrido.objects.get(linea = routeId)
+        FrecuenciesList = Frecuencia.objects.filter(linea = temporaryRoute)
+        superadmin = True
+        if request.method == 'POST':
+            try:
+                form = FrecuenciesForm(request.POST)
+                idFrecuencia = request.POST.get('identificador')
+                if request.POST.get('action') == 'Agregar':
+                    return HttpResponseRedirect('frecuencydata'+routeId+'?add')
+                elif request.POST.get('action') == 'Eliminar':
+                    temporaryFrecuency = Frecuencia.objects.get(idfrecuencia = idFrecuencia)                    
+                    return HttpResponseRedirect('eliminar?type=frecuencia&id='+ str(temporaryFrecuency.getId()))
+                logger.info("Frecuencia: " + userData.nombre +" Accion: " + request.POST.get('action') + " Frecuencia: " + str(temporaryFrecuency.getId()) + " Error:" + errorDescription)
+            #empiezan las excepciones
+            except Frecuencia.DoesNotExist:
+                errorDescription = "No existe el usuario"
+    else:
+        superadmin = False
+        errorDescription = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + userData.nombre +" in Frecuency Error:" + errorDescription)        
+    return render_to_response('frecuency.html',  {'user': request.user,'form':form,  'error': errorDescription,  'list':FrecuenciesList,  'admin': True,  'superadmin':superadmin},  context_instance=RequestContext(request))
 
 @login_required
 def eliminar(request):
@@ -735,6 +746,8 @@ def eliminar(request):
                 temporary = Parada.objects.get(idparada = identificador)
             elif dataType == 'unidad':
                 temporary = Unidad.objects.get(idunidad = identificador)
+            elif dataType == 'frecuencia':
+                temporary = Frecuencia.objects.get(idfrecuencia = identificador)    
             if request.method == 'POST' and temporary != None:
                 temporary.delete()
                 return HttpResponseRedirect('index')
@@ -747,9 +760,54 @@ def eliminar(request):
         except Parada.DoesNotExist:
             errorDescription = "No existe parada"
         except Unidad.DoesNotExist:
-            errorDescription = "No existe unidad"                                                            
+            errorDescription = "No existe unidad"   
+        except Frecuencia.DoesNotExist:
+            errorDescription = "No existe frecuencia"                    
         logger.info("Usuario: " + userData.nombre +" in Eliminar Type: " + dataType + " identificador "+ str(identificador) + "Error:" + errorDescription)
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Eliminar Error:" + errorDescription)
     return render_to_response('eliminar.html',  {'form':form,'error':errorDescription},  context_instance=RequestContext(request))
+
+@login_required
+def frecuencydata(request, routeId):
+    c = {}
+    c.update(csrf(request))
+    errorDescription = ""
+    userData = Usuario.objects.get(nombre = request.user)
+    superadmin = (userData.categoria == 'Administrador')
+    form = FrecuencyForm()
+    logger = logging.getLogger(__name__)
+    temporaryFrecuency = None
+    mensaje = ''
+    
+    try:
+        #logica
+        if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
+            if request.method == 'POST':
+                form = FrecuencyForm(request.POST)
+                if form.is_valid():
+                    action = form.cleaned_data['action'].lower()
+                    routeName = form.cleaned_data['linea']
+                    dayFrecuency = form.cleaned_data['dia']
+                    timeFrecuency = form.cleaned_data['hora']
+                    if action == 'add':
+                        try:
+                            temporaryFrecuency = Frecuencia.objects.get(linea = routeName, dia_semana = dayFrecuency, hora = timeFrecuency) #da verdadero si la bus ya existe
+                            errorDescription = "Frecuencia ya cargada"
+                        except Frecuencia.DoesNotExist:
+                            temporaryFrecuency = Frecuencia(linea = routeName, dia_semana = dayFrecuency, hora = timeFrecuency) #da verdadero si la bus ya existe
+                            temporaryFrecuency.save()
+                    else: 
+                        errorDescription = "Accion no permitida"
+                    logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + routeName.getLinea() + " Frecuencia: " + dayFrecuency +"-" + request.POST.get('hora') + " Error:" + errorDescription)
+                    return HttpResponseRedirect('frecuency'+routeId)
+                else:
+                    if request.POST.get('hora') == '':
+                        errorDescription = "No ingreso la hora"
+        else:
+            errorDescription = "No posee permisos para ejecutar esta accion"
+    except Frecuencia.DoesNotExist:
+        errorDescription = "Frecuencia no existe"
+    logger.info("Usuario: " + userData.nombre +" in frecuencyData Error:" + errorDescription)
+    return render_to_response('data.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryFrecuency':temporaryFrecuency},  context_instance=RequestContext(request))
