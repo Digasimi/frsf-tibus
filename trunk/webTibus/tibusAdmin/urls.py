@@ -16,5 +16,6 @@ urlpatterns = patterns('tibusAdmin.views',
     (r'^empresadata(?P<companyId>\w+)$', 'companydata'),
     (r'^usuario$', 'user'),
     (r'^usuariodata(?P<userId>\w+)$', 'userdata'),
+    (r'^eliminar$', 'eliminar'),
     (r'^password$', 'changepassword'),
 )

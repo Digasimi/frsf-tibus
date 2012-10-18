@@ -6,7 +6,7 @@ import re
 
 # Create your models here.
 class Usuario(User):
-    nombre = models.CharField(max_length = 50, primary_key=True)
+    nombre = models.CharField(max_length = 50)
     mail = models.EmailField()
     categoria = models.CharField(max_length = 50)
     empresa = models.ForeignKey(Empresa, null=True)
@@ -27,6 +27,9 @@ class Usuario(User):
     
     def getMail(self):
         return self.mail
+    
+    def getId(self):
+        return self.id
     
     def __unicode__(self):
         return self.nombre

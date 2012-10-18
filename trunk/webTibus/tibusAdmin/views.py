@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.models import Max
 from tibusAdmin.forms import StopForm, RouteForm, BusForm, CompanyForm, UserForm, PasswordForm, RoutesForm,\
-    StopsForm, BussForm, UsersForm, CompaniesForm
+    StopsForm, BussForm, UsersForm, CompaniesForm, EliminarForm
 from tibus.models import Parada, Recorrido, Unidad, Empresa
 from django.contrib.auth.decorators import login_required
 from tibusAdmin.models import Usuario 
@@ -25,7 +25,7 @@ def route(request):#pagina de ABM de lineas
     logger = logging.getLogger(__name__)
     form = RoutesForm()
     superadmin = (userData.categoria == 'Administrador')
-    routeList = Recorrido.objects.all()
+    routeList = Recorrido.objects.all().order_by('linea','empresa')
     
     #logica
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
@@ -40,7 +40,7 @@ def route(request):#pagina de ABM de lineas
                     if request.POST.get('action') == 'Modificar':  #edicion de route.
                         return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?edit')
                     elif request.POST.get('action') == 'Eliminar':  #edicion de route.
-                        return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?delete')
+                        return HttpResponseRedirect('eliminar?type=linea&id='+ temporaryRoute.getLinea())
                 else:
                     errorDescription = "Accion no Valida"
                 logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + temporaryRoute.getLinea() + " Error:" + errorDescription)
@@ -80,7 +80,7 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
                         return HttpResponseRedirect('unidaddata'+ str(temporaryBus.getId()) +'?edit')
                     elif request.POST.get('action') == 'Eliminar': 
                         temporaryBus = Unidad.objects.get(idunidad = busId)
-                        return HttpResponseRedirect('unidaddata'+ str(temporaryBus.getId()) +'?delete')
+                        return HttpResponseRedirect('eliminar?type=unidad&id='+ str(temporaryBus.getId()))
                 else:
                     if request.POST.get('id_unidad_linea')=='':
                         errorDescription = "No ingreso identificador de linea"
@@ -130,7 +130,7 @@ def company(request): #pagina de ABM de unidades - faltan excepciones
                     return HttpResponseRedirect('empresadata'+ str(temporaryCompany.getId()) +'?edit')                #else:
                 elif request.POST.get('action') == 'Eliminar':
                     temporaryCompany = Empresa.objects.get(nombre = companyName)                    
-                    return HttpResponseRedirect('empresadata'+ str(temporaryCompany.getId()) +'?delete')                #else:
+                    return HttpResponseRedirect('eliminar?type=empresa&id='+ str(temporaryCompany.getId()))
             #empiezan las excepciones
             except Empresa.DoesNotExist:
                 errorDescription = "No existe la empresa"
@@ -164,7 +164,7 @@ def user(request): #pagina de ABM de unidades - faltan excepciones
                     return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?edit')
                 elif request.POST.get('action') == 'Eliminar':
                     temporaryUser = Usuario.objects.get(nombre = userName)                    
-                    return HttpResponseRedirect('usuariodata'+ temporaryUser.getName() +'?delete')
+                    return HttpResponseRedirect('eliminar?type=usuario&id='+ str(temporaryUser.getId()))
             #empiezan las excepciones
             except Usuario.DoesNotExist:
                 errorDescription = "No existe el usuario"
@@ -386,17 +386,9 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                             errorDescription = "No se puede eliminar el ultimo usuario Administrador"
                         else:
                             temporaryUser = Usuario.objects.get(nombre = userName)
-                            temporaryUser.is_active = False
-                            temporaryUser.save()
-                    elif action == 'rehab':
-                        if userName == '':
-                            errorDescription = "No ingreso el nombre de Usuario"
-                        else:
-                            temporaryUser = Usuario.objects.get(nombre = userName)
-                            temporaryUser.is_active = True
-                            temporaryUser.save()
+                            temporaryUser.delete()
                     else:                                
-                        userEmail = form.cleaned_data['email'].lower()
+                        userEmail = form.cleaned_data['email']
                         userCategory = form.cleaned_data['categoria']
                         userCompany= form.cleaned_data['empresa']
                         userPassword = form.cleaned_data['password']
@@ -411,7 +403,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                                 errorDescription = "Usuario ya existente"
                             except:
                                 if (userPassword == userConfirmation):
-                                    temporaryUser = Usuario(username = userName, nombre = userName,  mail = userName,  categoria=userCategory,  empresa=company)
+                                    temporaryUser = Usuario(username = userName, nombre = userName,  mail = userEmail,  categoria=userCategory,  empresa=company)
                                     temporaryUser.set_password(userPassword)
                                     if (userCategory =='Administrador'):
                                         temporaryUser.is_superuser = True
@@ -441,11 +433,11 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
             else:
                 if request.GET.get('add') == None:
                     temporaryUser = Usuario.objects.get(nombre = userId)
+                    form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.getMail(), 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany(), 'password':'nuevo','confirmacion':'nuevo'}
                     if request.GET.get('edit') == '':
                         mensaje = 'Modificacion de Usuario Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Usuario'
-                    form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.getMail(), 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany()}
                 else:
                     mensaje = 'Alta de Nuevo Usuario'
         else:
@@ -511,7 +503,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
                     else:
                         try:
                             int(request.POST.get('id_unidad_linea') =='')
-                            Recorrido.objects.get(linea = request.POST.get('linea'))
+                            Recorrido.objects.get(idrecorrido = request.POST.get('linea'))
                         except ValueError:
                             errorDescription = "El identificador de la linea debe ser un numero entero"
             else:
@@ -680,7 +672,7 @@ def stopList(request, routeId):
                         return HttpResponseRedirect('stopdata'+ str(temporaryStop.getId()) +'?edit')
                     elif request.POST.get('action') == 'Eliminar':
                         temporaryStop = Parada.objects.get(linea = temporaryRoute, orden = temporaryOrden)
-                        return HttpResponseRedirect('stopdata'+ str(temporaryStop.getId()) +'?delete')
+                        return HttpResponseRedirect('eliminar?type=parada&id='+ str(temporaryStop.getId()))
                     elif request.POST.get('action') == 'Carga Masiva': #Falta implementar carga masiva
                         if (request.FILES['masivo'] != ''):
                             fileName = request.FILES['masivo']
@@ -705,7 +697,7 @@ def stopList(request, routeId):
                         errorDescription = "Accion no Valida"
                     logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Stops: " + routeId + " Error:" + errorDescription)
             else:
-                stopList = Parada.objects.filter(linea = Recorrido.objects.get(linea = routeId))
+                stopList = Parada.objects.filter(linea = Recorrido.objects.get(linea = routeId)).order_by('orden')
         except Recorrido.DoesNotExist:
             return HttpResponseRedirect('linea')
     else:
@@ -718,3 +710,46 @@ def frecuency(request, routeId):
     c = {}
     c.update(csrf(request))
     return render_to_response('frecuency.html',  {},  context_instance=RequestContext(request))
+
+@login_required
+def eliminar(request):
+    #carga inicial
+    c = {}
+    c.update(csrf(request))
+    errorDescription = ""
+    userData = Usuario.objects.get(nombre = request.user)
+    logger = logging.getLogger(__name__)
+    form = EliminarForm()
+    
+    if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
+        dataType = request.GET.get('type')
+        identificador = request.GET.get('id')
+        try:
+            if dataType == 'usuario':
+                temporary = Usuario.objects.get(id = identificador)
+            elif dataType == 'empresa':
+                temporary = Empresa.objects.get(idempresa = identificador)
+            elif dataType == 'linea':
+                temporary = Recorrido.objects.get(linea = identificador)
+            elif dataType == 'parada':
+                temporary = Parada.objects.get(idparada = identificador)
+            elif dataType == 'unidad':
+                temporary = Unidad.objects.get(idunidad = identificador)
+            if request.method == 'POST' and temporary != None:
+                temporary.delete()
+                return HttpResponseRedirect('index')
+        except Usuario.DoesNotExist:
+            errorDescription = "No existe usuario"
+        except Empresa.DoesNotExist:
+            errorDescription = "No existe empresa"
+        except Recorrido.DoesNotExist:
+            errorDescription = "No existe recorrido"
+        except Parada.DoesNotExist:
+            errorDescription = "No existe parada"
+        except Unidad.DoesNotExist:
+            errorDescription = "No existe unidad"                                                            
+        logger.info("Usuario: " + userData.nombre +" in Eliminar Type: " + dataType + " identificador "+ str(identificador) + "Error:" + errorDescription)
+    else:
+        errorDescription = "No posee permisos para ejecutar esta accion"
+    logger.info("Usuario: " + userData.nombre +" in Eliminar Error:" + errorDescription)
+    return render_to_response('eliminar.html',  {'form':form,'error':errorDescription},  context_instance=RequestContext(request))

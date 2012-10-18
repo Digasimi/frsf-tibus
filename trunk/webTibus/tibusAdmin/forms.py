@@ -149,7 +149,8 @@ class BusForm(forms.Form):
                 'Unidad',
                 'linea',
                 'apto_movilidad_reducida',
-                'id_unidad_linea',                                
+                'id_unidad_linea',
+                'action'                                
             ),
             FormActions(
                 Submit('save', 'Guardar', css_class="btn-primary")                
@@ -224,7 +225,7 @@ class UserForm(forms.Form):
     nombre = forms.CharField(label='Nombre')
     email = forms.EmailField(required=False,label='email')
     categoria = forms.ChoiceField(widget=forms.RadioSelect, choices=[('Administrador','Administrador'),('Empresa','Empresa')], label='Categoria')
-    empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label="Todas", label='Empresa')
+    empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label="Todas", label='Empresa',required=False)
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
     confirmacion = forms.CharField(widget=forms.PasswordInput, label='Confirmar Password')
     action = forms.CharField(widget=forms.HiddenInput)
@@ -273,3 +274,20 @@ class PasswordForm(forms.Form):
             ),
         )
         super(PasswordForm, self).__init__(*args, **kwargs)
+        
+class EliminarForm(forms.Form):
+    identificador = forms.CharField(widget=forms.HiddenInput)
+    
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-EliminarForm'
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Confirmacion de Eliminacion'
+            ),
+            FormActions(
+                Submit('eliminar', 'Eliminar', css_class="btn-primary")                
+            ),
+        )
+        super(EliminarForm, self).__init__(*args, **kwargs)      
