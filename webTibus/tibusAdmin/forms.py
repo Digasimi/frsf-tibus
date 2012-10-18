@@ -1,5 +1,5 @@
 from django import forms
-from tibus.models import Empresa, Recorrido, Parada
+from tibus.models import Empresa, Recorrido, Parada, DIASSEMANA
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 from crispy_forms.bootstrap import FormActions
@@ -88,7 +88,6 @@ class RoutesForm(forms.Form):
     
 class RouteForm(forms.Form):
     linea = forms.CharField(label='Nombre/identificador de la linea')
-    frecuencia = forms.IntegerField(required=False,label='Frecuencia de salida')
     empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label=None,label='Empresa asociada')
     action = forms.CharField(widget=forms.HiddenInput)
     
@@ -100,7 +99,6 @@ class RouteForm(forms.Form):
             Fieldset(
                 'Datos de la linea',
                 'linea',
-                'frecuencia',
                 'empresa',
                 'action',
             ),
@@ -291,3 +289,46 @@ class EliminarForm(forms.Form):
             ),
         )
         super(EliminarForm, self).__init__(*args, **kwargs)      
+        
+class FrecuenciesForm(forms.Form):
+    identificador = forms.CharField(label='Frecuencia de Linea',initial='', widget=forms.HiddenInput)
+    
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-FrecuenciesForm'
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Acciones',
+                'identificador',                               
+            ),
+            FormActions(
+                Submit('action','Agregar', css_class="btn-primary"),
+                Submit('action','Eliminar', css_class="btn-primary")
+            ),
+        )
+        super(FrecuenciesForm, self).__init__(*args, **kwargs)
+            
+class FrecuencyForm(forms.Form):
+    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea')
+    dia = forms.CharField(label='Dia de la semana', widget=forms.Select(choices=DIASSEMANA))
+    hora = forms.TimeField(label='Hora de salida de la unidad')
+    action = forms.CharField(widget=forms.HiddenInput)
+    
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-FrecuencyForm'
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Frecuencias de Recorrido',
+                'linea',
+                'dia',
+                'hora',
+                'action',                            
+            ),
+            FormActions(
+                Submit('save', 'Guardar', css_class="btn-primary")                
+            ),
+        )
+        super(FrecuencyForm, self).__init__(*args, **kwargs)

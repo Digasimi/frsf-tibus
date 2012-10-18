@@ -1,1 +1,26 @@
-{% extends "baseMenu.html" %}
+{% extends "datatable.html" %}
+
+	{% block datos%}
+    	{% if list %}
+			<thead>
+				<tr>
+					<th><a href="#">Identificador</a></th>
+					<th><a href="#">Linea</a></th>
+					<th><a href="#">Dia</a></th>
+					<th><a href="#">Hora Salida</a></th>
+				</tr>
+			</thead>
+			<tbody>
+      		{% for object in list %}
+      			<tr>
+      				<td>{{ object.idfrecuencia }}</td>
+      				<td>{{ object.linea }}</td>
+      				<td>{{ object.dia_semana }}</td>
+      				<td>{{ object.hora }}</td>
+     				</tr>
+			{% endfor %}
+      		</tbody>
+		{% else %}
+		<a>No hay frecuencias cargadas</a>
+    	{% endif %}
+   	{% endblock %}
