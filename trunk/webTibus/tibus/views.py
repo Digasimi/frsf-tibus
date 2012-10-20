@@ -31,22 +31,14 @@ def prediction(request): #pagina que mostrara las predicciones
         form = PredictionForm(request.POST)
         try:
             if request.POST.get('action')=='resultado':
-                if form.is_valid():
-                    routePrediction = form.cleaned_data['linea']
-                    stopPrediction = form.cleaned_data['orden']
-                    aptoPrediction = form.cleaned_data['apto']
-                    if aptoPrediction == None:
-                        aptoPrediction = False
-                    return HttpResponseRedirect('resultado?linea=' + str(routePrediction) + '&parada='+ str(stopPrediction)+'&apto='+str(aptoPrediction))
-                else:
-                    if request.POST.get('linea') == None:
-                        errorDescription = "No ingreso la linea"
-                    elif request.POST.get('orden') == None:
-                        errorDescription = "No ingreso la parada"
-                    else:                    
-                        errorDescription = "Datos en formato incorrecto"
+                routePrediction = Recorrido.objects.get(idrecorrido=request.POST.get('linea'))
+                stopPrediction = Parada.objects.get(idparada = request.POST.get('orden'))
+                aptoPrediction = request.POST.get('apto')
+                if aptoPrediction == None:
+                    aptoPrediction = False
+                return HttpResponseRedirect('resultado?linea=' + str(routePrediction) + '&parada='+ str(stopPrediction)+'&apto='+str(aptoPrediction))
             else:
-                form.orden.queryset = Parada.objects.filter(linea=form.linea)
+                form.setQueryOrden(request.POST.get('linea'))
             #empiezan las excepciones
         except ValueError:
             errorDescription = "Datos en formato incorrecto - Valor de datos"
