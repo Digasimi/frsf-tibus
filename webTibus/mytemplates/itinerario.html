@@ -1,0 +1,103 @@
+{% extends "baseMenuMapa.html" %}
+{% load crispy_forms_tags %}
+
+{% block extras %}
+<script src="../Archivos/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/ZeroClipboard.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/TableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/dataTables.bootstrap.js"></script>
+
+<link href="../Archivos/css/dataTables.bootstrap.css" rel="stylesheet">
+
+<script type="text/javascript" charset="utf-8">
+			$(document).ready( function () {
+				$('#stopList').dataTable( {
+					"sDom": "<'row-fluid'<'span6'T><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons": [
+									]
+					}
+				} );
+
+				$(document).ready( function () {
+					$('#frecuencyList').dataTable( {
+						"sDom": "<'row-fluid'<'span6'T><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+						"oTableTools": {
+							"sRowSelect": "single",
+							"aButtons": [
+										]
+						}
+					} );
+			} );
+</script>
+		
+<div class="row-fluid pagination-centered">
+	  	{% crispy form %}
+	  	{% if error %} <div class="span6">Error: {{ error }}</div>{% endif %}
+	  	
+		<div class="span6">
+			<div id="mapas" style="width:100%; height:400px;">Aca va el mapa</div>
+		</div>
+		<div class="span4">
+		    {% if stopList %}
+	  		<table  id="stopList" class="table table-striped table-bordered">
+	  			<thead>
+	  				<tr><th>Orden</th><th>Calle</th><th>Interseccion</th></tr>
+				</thead>
+	  			<tbody>	
+		  		{% for stop in stopList %}
+		  			<tr><td>{{ stop.orden }}</td><td>{{ stop.calle1 }}</td><td>{{ stop.calle2 }}</td></tr>
+		  		{% endfor%}
+	  			</tbody>
+	  		</table>
+	  		{% else %}
+	  		<span>No hay paradas disponibles</span>
+	  		{% endif %}
+  		</div>
+		<div class="span2">
+		    {% if frecuencyList %}
+	  		<table  id="frecuencyList" class="table table-striped table-bordered">
+	  			<thead>
+	  				<tr><th>Dia</th><th>Hora</th></tr>
+				</thead>
+	  			<tbody>	
+		  		{% for frecuency in frecuencyList %}
+		  			<tr><td>{{ frecuency.dia_semana }}</td><td>{{ frecuency.hora }}</td></tr>
+		  		{% endfor%}
+	  			</tbody>
+	  		</table>
+	  		{% else %}
+	  		<span>No hay horarios disponibles</span>
+	  		{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block marcas %}
+    {% if stopList %}
+    {% for stop in stopList %}
+    markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
+    marker = new google.maps.Marker({
+        map:map,
+        draggable:false,
+        position: markerPosition,
+        icon: markerImage
+    });
+    {% endfor %}
+    
+    var flightPlanCoordinates = [
+      {% for stop in stopList %}
+	    new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}}),
+      {% endfor %}
+	];
+	var flightPath = new google.maps.Polyline({
+	    path: flightPlanCoordinates,
+	    strokeColor: "#FF0000",
+	    strokeOpacity: 1.0,
+	    strokeWeight: 2
+	});
+ 	flightPath.setMap(map);
+    {% endif %}   
+{% endblock %}

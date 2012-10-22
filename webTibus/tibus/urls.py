@@ -9,5 +9,6 @@ urlpatterns = patterns('tibus.views',
     (r'^prediccion$', 'prediction'), 
     (r'^resultado$', 'result'),
     (r'^modelo$', 'model'), 
-    (r'^ayuda$', 'tibushelp'), 
+    (r'^ayuda$', 'tibushelp'),
+    (r'^itinerario$', 'itinerary'), 
 )
