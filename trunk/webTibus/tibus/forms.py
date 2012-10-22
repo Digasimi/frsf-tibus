@@ -28,3 +28,23 @@ class PredictionForm(forms.Form):
         self.fields['orden'].queryset = Parada.objects.filter(linea = lineaId)
         self.fields['orden'].empty_label = None
         self.helper.add_input(Submit('action', 'resultado'))
+        
+class ItineraryForm(forms.Form):
+    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea')
+    linea.widget.attrs["onchange"]="this.form.submit()"
+    
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-itineraryForm'
+        self.helper.form_method = 'post'
+        
+        self.helper.layout = Layout(
+            Fieldset(
+                'Itinerario',
+                'linea',
+            ),
+        )
+        super(ItineraryForm, self).__init__(*args, **kwargs)
+        
+    def setQueryOrden(self, lineaId):
+        self.helper.add_input(Submit('action', 'Itinerario'))

@@ -6,8 +6,9 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.utils import DatabaseError
 from django.http import HttpResponseRedirect
-from tibus.forms import PredictionForm
-from tibus.models import Parada, Recorrido, Unidad, MyListener, PresponseHandler
+from tibus.forms import PredictionForm, ItineraryForm
+from tibus.models import Parada, Recorrido, Unidad, MyListener, PresponseHandler,\
+    Frecuencia
 from xml.sax import parseString,  SAXParseException
 
 def index(request): #pagina principal
@@ -36,7 +37,7 @@ def prediction(request): #pagina que mostrara las predicciones
                 aptoPrediction = request.POST.get('apto')
                 if aptoPrediction == None:
                     aptoPrediction = False
-                return HttpResponseRedirect('resultado?linea=' + str(routePrediction) + '&parada='+ str(stopPrediction)+'&apto='+str(aptoPrediction))
+                return HttpResponseRedirect('resultado?linea=' + str(routePrediction.getId()) + '&parada='+ str(stopPrediction.getId())+'&apto='+str(aptoPrediction))
             else:
                 form.setQueryOrden(request.POST.get('linea'))
             #empiezan las excepciones
@@ -84,9 +85,9 @@ def result(request): #pagina que mostrara las predicciones
         elif destinyStopId == '':
             errorDescription = "No ingreso la parada"
         else:
-            temporaryRoute= Recorrido.objects.get(linea = routeName)
+            temporaryRoute= Recorrido.objects.get(idrecorrido = routeName)
             stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
-            destinyStop = Parada.objects.get(linea = temporaryRoute, orden = destinyStopId)
+            destinyStop = Parada.objects.get(idparada = destinyStopId)
             
             #formato nuevo
             conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
@@ -142,4 +143,20 @@ def result(request): #pagina que mostrara las predicciones
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('resultado.html',  {'route': routeName, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': routeName, 'parada': destinyStopId},  context_instance=RequestContext(request))
+    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'parada': destinyStop},  context_instance=RequestContext(request))
+
+def itinerary(request):
+    c = {}
+    c.update(csrf(request))
+    errorDescription = ""
+    if request.method == 'POST':
+        temporaryRoute = Recorrido.objects.get(idrecorrido = request.POST.get('linea'))
+        stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
+        frecuencyList = Frecuencia.objects.filter(linea = temporaryRoute)
+    else:
+        temporaryRoute = None
+        stopList = []
+        frecuencyList = []
+    form = ItineraryForm()
+    
+    return render_to_response('itinerario.html',  {'stopList':stopList, 'frecuencyList':frecuencyList, 'error': errorDescription, 'form': form},  context_instance=RequestContext(request))

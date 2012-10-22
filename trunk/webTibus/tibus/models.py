@@ -78,7 +78,10 @@ class Parada(models.Model):
         db_table = 'parada'
         
     def __unicode__(self):
-        return str(self.orden)
+        nombre = str(self.calle1)
+        if self.calle2 != '' and self.calle2 != None:
+            nombre = nombre + ' & ' + str(self.calle2) 
+        return nombre
           
     def getOrder(self):
         return self.orden
