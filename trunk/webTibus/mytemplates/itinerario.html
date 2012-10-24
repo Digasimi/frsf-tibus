@@ -19,45 +19,29 @@
 									]
 					}
 				} );
+			});
 
-				$(document).ready( function () {
-					$('#frecuencyList').dataTable( {
-						"sDom": "<'row-fluid'<'span6'T><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
-						"oTableTools": {
-							"sRowSelect": "single",
-							"aButtons": [
-										]
-						}
-					} );
-			} );
+			$(document).ready( function () {
+				$('#frecuencyList').dataTable( {
+					"sDom": "<'row-fluid'<'span6'T><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons": [
+									]
+					}
+				} );
+			});
 </script>
 		
 <div class="row-fluid pagination-centered">
 	  	{% crispy form %}
-	  	{% if error %} <div class="span6">Error: {{ error }}</div>{% endif %}
-	  	
-		<div class="span6">
+	  	{% if error %} <div class="span12">Error: {{ error }}</div>{% endif %}
+	  	<div class="span6">
 			<div id="mapas" style="width:100%; height:400px;">Aca va el mapa</div>
 		</div>
-		<div class="span4">
-		    {% if stopList %}
-	  		<table  id="stopList" class="table table-striped table-bordered">
-	  			<thead>
-	  				<tr><th>Orden</th><th>Calle</th><th>Interseccion</th></tr>
-				</thead>
-	  			<tbody>	
-		  		{% for stop in stopList %}
-		  			<tr><td>{{ stop.orden }}</td><td>{{ stop.calle1 }}</td><td>{{ stop.calle2 }}</td></tr>
-		  		{% endfor%}
-	  			</tbody>
-	  		</table>
-	  		{% else %}
-	  		<span>No hay paradas disponibles</span>
-	  		{% endif %}
-  		</div>
-		<div class="span2">
+		<div class="span5">
 		    {% if frecuencyList %}
-	  		<table  id="frecuencyList" class="table table-striped table-bordered">
+	  		<table id="frecuencyList" class="table table-striped table-bordered">
 	  			<thead>
 	  				<tr><th>Dia</th><th>Hora</th></tr>
 				</thead>
@@ -71,6 +55,30 @@
 	  		<span>No hay horarios disponibles</span>
 	  		{% endif %}
 		</div>
+		<div class="span11">
+		    {% if stopList %}
+	  		<table id="stopList" class="table table-striped table-bordered">
+	  			<thead>
+	  				<tr>
+	  					<th><a href="#">Orden</a></th>
+	  					<th><a href="#">Calle</a></th>
+	  					<th><a href="#">Interseccion</a></th>
+  					</tr>
+				</thead>
+	  			<tbody>	
+		  		{% for stop in stopList %}
+		  			<tr>
+		  				<td>{{ stop.orden }}</td>
+		  				<td>{{ stop.calle1 }}</td>
+		  				<td>{{ stop.calle2 }}</td>
+	  				</tr>
+		  		{% endfor%}
+	  			</tbody>
+	  		</table>
+	  		{% else %}
+	  		<span>No hay paradas disponibles</span>
+	  		{% endif %}
+  		</div>
 	</div>
 </div>
 {% endblock %}
