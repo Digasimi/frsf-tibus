@@ -4,7 +4,7 @@ from crispy_forms.layout import Layout, Fieldset, Submit
 from tibus.models import Recorrido, Parada
 
 class PredictionForm(forms.Form):
-    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea')
+    linea = forms.ModelChoiceField(queryset=Recorrido.objects.filter(predictable = True), empty_label=None, label='Linea')
     linea.widget.attrs["onchange"]="this.form.submit()"
     orden = forms.ModelChoiceField(queryset=Parada.objects.none(), empty_label='Debe Seleccionar la linea primero', label='Parada', required=False)
     apto = forms.BooleanField(required=False, label='Vehiculo con Rampa')

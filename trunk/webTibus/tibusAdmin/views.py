@@ -11,6 +11,7 @@ from tibusAdmin.forms import StopForm, RouteForm, BusForm, CompanyForm, UserForm
 from tibus.models import Parada, Recorrido, Unidad, Empresa, Frecuencia
 from django.contrib.auth.decorators import login_required
 from tibusAdmin.models import Usuario 
+from django.utils.datastructures import MultiValueDictKeyError
 
 @login_required
 def tadmin(request):#pagina de ABM de lineas
@@ -200,6 +201,9 @@ def stop(request, routeId): #Pagina de ABM de paradas
                 if form.is_valid():
                     routeName = form.cleaned_data['linea']
                     routeCompany = form.cleaned_data['empresa']
+                    routePredictable = form.cleaned_data['predictable']
+                    if routePredictable == None:
+                        routePredictable = False
                     action = form.cleaned_data['action'].lower()
                     if action == 'delete':
                         temporaryRoute = Recorrido.objects.get(linea = routeId)
@@ -219,7 +223,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
                             errorDescription = "Primero debe guardar datos del recorrido"
                     elif action == 'edit' or action == 'add':
                         if action == 'add':
-                            temporaryRoute = Recorrido(linea = routeName, empresa = routeCompany)
+                            temporaryRoute = Recorrido(linea = routeName, empresa = routeCompany, predictable = routePredictable)
                             if temporaryRoute.validate():
                                 temporaryRoute.save();
                             else:
@@ -228,10 +232,12 @@ def stop(request, routeId): #Pagina de ABM de paradas
                             temporaryRoute = Recorrido.objects.get(linea = routeId)
                             temporaryRoute.linea = routeName
                             temporaryRoute.empresa = routeCompany
+                            temporaryRoute.predictable = routePredictable
                             if temporaryRoute.validate():
-                                temporaryRoute.save
+                                temporaryRoute.save()
                             else:
                                 errorDescription = "Nombre no valido"
+                        return HttpResponseRedirect('linea')
                     else:
                         errorDescription = "Accion no valida"
                     logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(routeId) + " Error:" + str(errorDescription))
@@ -245,7 +251,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
             else:
                 if request.GET.get('add') == None:
                     temporaryRoute = Recorrido.objects.get(linea = routeId)
-                    form.initial = {'linea': temporaryRoute.getLinea(), 'empresa': temporaryRoute.getCompany()}
+                    form.initial = {'linea': temporaryRoute.getLinea(), 'empresa': temporaryRoute.getCompany(), 'predictable': temporaryRoute.getPredictable()}
                     stopList = Parada.objects.filter(linea = temporaryRoute.getId()).order_by('orden')
                     if request.GET.get('edit') == '':
                         mensaje = 'Modificacion de Linea Existente'
@@ -503,7 +509,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
             else:
                 if request.GET.get('add') == None:
                     temporaryBus = Unidad.objects.get(idunidad = busId)
-                    form.initial = {'linea': temporaryBus.getLinea(), 'aptoMovilidadReducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea()}
+                    form.initial = {'linea': temporaryBus.getLinea(), 'apto_movilidad_reducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea()}
                     if request.GET.get('edit') == '':
                         mensaje = 'Modificacion de Unidad Existente'
                     elif request.GET.get('delete') == '':
@@ -539,6 +545,9 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
             if request.method == 'POST':
                 try:
                     form = StopForm(request.POST)
+                    if request.POST.get('save')=="Volver":
+                        temporaryRoute = Recorrido.objects.get(idrecorrido = request.POST.get('linea'))
+                        return HttpResponseRedirect('stops' + temporaryRoute.getLinea())
                     if form.is_valid():
                         action = form.cleaned_data['action']
                         temporaryStopPrevious = form.cleaned_data['orden']
@@ -644,11 +653,13 @@ def stopList(request, routeId):
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         try:
             if request.method == 'POST':
-                form = StopsForm(request.POST)
+                form = StopsForm(request.POST, request.FILES)
                 if form.is_valid():
-                    temporaryOrden = form.cleaned_data['orden']
+                    temporaryOrden = form.cleaned_data['identificador']
                     temporaryRoute = Recorrido.objects.get(linea = routeId)
-                    if request.POST.get('action') == 'Agregar':
+                    if request.POST.get('action') == 'Volver':
+                        return HttpResponseRedirect('recorrido'+routeId+'?edit')
+                    elif request.POST.get('action') == 'Agregar':
                         return HttpResponseRedirect('stopdata'+routeId+'?add')
                     elif request.POST.get('action') == 'Modificar':
                         temporaryStop = Parada.objects.get(linea = temporaryRoute, orden = temporaryOrden)                    
@@ -683,10 +694,12 @@ def stopList(request, routeId):
                 stopList = Parada.objects.filter(linea = Recorrido.objects.get(linea = routeId)).order_by('orden')
         except Recorrido.DoesNotExist:
             return HttpResponseRedirect('linea')
+        except MultiValueDictKeyError:
+            errorDescription = "No selecciono ninguno ningun archivo"
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Stops Error:" + errorDescription)
-    return render_to_response('stopslist.html',  {'form':form, 'stopList':stopList, 'superadmin':superadmin},  context_instance=RequestContext(request))
+    return render_to_response('stopslist.html',  {'form':form, 'stopList':stopList, 'superadmin':superadmin, 'error':errorDescription},  context_instance=RequestContext(request))
 
 @login_required
 def frecuency(request, routeId):

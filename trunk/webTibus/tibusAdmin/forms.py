@@ -6,7 +6,7 @@ from crispy_forms.bootstrap import FormActions
 
 #Formulario con los datos para cargar una parada
 class StopsForm(forms.Form):
-    orden = forms.IntegerField(required=False, label='Orden de la parada seleccionada')
+    identificador = forms.IntegerField(required=False, widget=forms.HiddenInput)
     masivo = forms.FileField(required=False, help_text = "Las paradas deben estan en orden y una por linea con el formato: Latitud; Longitud;Calle;Interseccion",label='Archivo con lista de paradas')
     action = forms.CharField(widget=forms.HiddenInput)
     
@@ -17,7 +17,7 @@ class StopsForm(forms.Form):
         self.helper.layout = Layout(
             Fieldset(
                 'Lista de paradas',
-                'orden',
+                'identificador',
                 'masivo',
                 'action',                            
             ),
@@ -25,7 +25,8 @@ class StopsForm(forms.Form):
                 Submit('action', 'Carga Masiva', css_class="btn-primary"),
                 Submit('action', 'Agregar', css_class="btn-primary"),
                 Submit('action', 'Modificar', css_class="btn-primary"),
-                Submit('action', 'Eliminar', css_class="btn-primary")
+                Submit('action', 'Eliminar', css_class="btn-primary"),
+                Submit('action', 'Volver', css_class="btn-primary")
             ),
         )
         super(StopsForm, self).__init__(*args, **kwargs)
@@ -56,10 +57,12 @@ class StopForm(forms.Form):
                 'longitud',
                 'calle1',
                 'calle2',
-                'paradaactiva',                
+                'paradaactiva',
+                'action'                
             ),
             ButtonHolder(
-                Submit('save', 'Guardar', css_class='button white')
+                Submit('save', 'Guardar', css_class='button white'),
+                Submit('save', 'Volver', css_class='button white')
             )
         )
         super(StopForm, self).__init__(*args, **kwargs)
@@ -89,7 +92,9 @@ class RoutesForm(forms.Form):
 class RouteForm(forms.Form):
     linea = forms.CharField(label='Nombre/identificador de la linea')
     empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label=None,label='Empresa asociada')
+    predictable = forms.BooleanField(required=False, label='Permitir Prediccion')
     action = forms.CharField(widget=forms.HiddenInput)
+    
     
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -100,6 +105,7 @@ class RouteForm(forms.Form):
                 'Datos de la linea',
                 'linea',
                 'empresa',
+                'predictable',
                 'action',
             ),
             ButtonHolder(
