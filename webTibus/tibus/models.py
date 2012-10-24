@@ -43,6 +43,7 @@ class Recorrido(models.Model):
     idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
     linea = models.CharField(max_length=50)
     empresa = models.ForeignKey(Empresa)
+    predictable = models.BooleanField()
     
     class Meta:
         db_table = 'recorrido'
@@ -51,7 +52,7 @@ class Recorrido(models.Model):
         return self.linea
         
     def validate(self):
-        if self.linea == "" or re.search("[^a-zA-Z0-9]", self.linea) :
+        if self.linea == "" or (re.search("[^a-zA-Z0-9]", self.linea)!=None):
             return False
         return True
         
@@ -63,6 +64,9 @@ class Recorrido(models.Model):
     
     def getCompany(self):
         return self.empresa
+    
+    def getPredictable(self):
+        return self.predictable
 
 class Parada(models.Model):
     idparada = models.AutoField(primary_key=True) #agregado para el cambio de tablespace

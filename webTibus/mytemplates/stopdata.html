@@ -2,19 +2,20 @@
 {% load crispy_forms_tags %}
 
 {% block extras %}
-<table style="text-align: left; height: 100%; border: 3px solid rgb(0,0,0); padding:10px; box-shadow: 0px 0px 10px 10px rgba(70,70,70, 0.4) inset;background-color:rgb(255,255,255);">
-  {% if mensaje %}<tr><td>{{ mensaje }}</td></tr>{% endif %}
-  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  <tr><td><form class="uniForm" method="post">{% crispy form %}</form></td></tr>
-</table>
-<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div>
+{% if error %} <div><font color="red" size=2>Error: {{ error }}</font></div>{% endif %}
+<div class="span8">
+	<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div>
+</div>
+<div class="span2">
+	{% crispy form %}
+</div>
 {% endblock %}
 
 {% block funcDblClick %}
 function mostrarCoordenadas(location, map) { //funcion javascript
 	document.getElementById("id_latitud").value = location.lat();
 	document.getElementById("id_longitud").value = location.lng();
-    }
+    };
 {% endblock %}
    
 {% block defFuncDblClick %}  
@@ -27,7 +28,7 @@ function mostrarCoordenadas(location, map) { //funcion javascript
 	            });
             else
             	marker.setPosition(event.latLng);
-            mostrarCoordenadas(event.latLng,map)
+            mostrarCoordenadas(event.latLng,map);
 {% endblock %}
 
 {% block marcas %}

@@ -2,34 +2,72 @@
 {% load crispy_forms_tags %}
 
 {% block extras %}
-<div class="container">
+<script src="../Archivos/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/ZeroClipboard.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/TableTools.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="../Archivos/js/dataTables.bootstrap.js"></script>
 
-	<div>{% if mensaje %}{{ mensaje }}{% endif %}</div>
+<link href="../Archivos/css/dataTables.bootstrap.css" rel="stylesheet">
+
+<script type="text/javascript" charset="utf-8">
+			$(document).ready( function () {
+				$('#stopList').dataTable( {
+					"sDom": "<'row-fluid'<'span6'T><'span6'f>r>t<'row-fluid'<'span6'i><'span6'p>>",
+					"oTableTools": {
+						"sRowSelect": "single",
+						"aButtons": [
+									]
+					}
+				} );
+			
+			$("#stopList").click(function() {
+				var oTT = TableTools.fnGetInstance( 'stopList' );
+			    var aSelectedTrs = oTT.fnGetSelected();
+				var input = $('#id_identificador');
+				
+				if(aSelectedTrs.length !== 0)
+	            	input.val(aSelectedTrs[0].cells[0].innerText);
+				else
+					input.val('');
+				});
+		} );
+</script>
+
+<div class="row-fluid pagination-centered">
   	{% if error %} <div>Error: {{ error }}</div>{% endif %}
-	{% crispy form %}
-	
-	<input class="formee-button" type="button" name="back" id="back" value="Volver " onClick="javaScript:history.back();">
-	
-	<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div>
-	<div id="lista">
-	    {% if stopList %}
-  		<table>
-  			<thead>
-  				<tr><th>Orden</th><th>Calle</th><th>Interseccion</th></tr>
-			</thead>
-  			<tbody>	
-	  		{% for stop in stopList %}
-	  			<tr><td>{{ stop.orden }}</td><td>{{ stop.calle1 }}</td><td>{{ stop.calle2 }}</td></tr>
-	  		{% endfor%}
-  			</tbody>
-  		</table>
-  		{% else %}
-  		<span>No hay paradas disponibles</span>
-  		{% endif %}
+	<div class="span8">
+		<div id="lista">
+		    {% if stopList %}
+	  		<table id="stopList" class="table table-striped table-bordered">
+	  			<thead>
+	  				<tr>
+	  					<th>Orden</th>
+	  					<th>Calle</th>
+	  					<th>Interseccion</th>
+					</tr>
+				</thead>
+	  			<tbody>	
+		  		{% for stop in stopList %}
+		  			<tr>
+		  				<td>{{ stop.orden }}</td>
+	  					<td>{{ stop.calle1 }}</td>
+	  					<td>{{ stop.calle2 }}</td>
+					</tr>
+		  		{% endfor%}
+	  			</tbody>
+	  		</table>
+	  		{% else %}
+	  		<span>No hay paradas disponibles</span>
+	  		{% endif %}
+		</div>
+	</div>
+	<div class="span1">
+		{% crispy form %}
+	</div>
+	<div class="span11">
+		<div id="mapas" style="width:100%; height:350px;">Aca va el mapa</div>
 	</div>
 </div>
-
-
 {% endblock %}
 
 {% block marcas %}
