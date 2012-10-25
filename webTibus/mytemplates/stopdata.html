@@ -43,7 +43,8 @@ function mostrarCoordenadas(location, map) { //funcion javascript
         position: markerPosition,
         icon: markerImage
     });
-        
+	limits.extend(markerPosition);
+	        
     google.maps.event.addListener(marker, 'click', function(event) {
     	var message = "La posicion es Latitud "+ event.latLng.lat() + "y longitud " + event.latLng.lng();
  		var infowindow = new google.maps.InfoWindow(

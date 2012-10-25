@@ -13,6 +13,7 @@
       var markerImage = "http://google-maps-icons.googlecode.com/files/bus.png";
       var marker;
       var map;
+      var limits = new google.maps.LatLngBounds();
       var infoWindow = new google.maps.InfoWindow({ content: message[number],
     	          			size: new google.maps.Size(50,50)
     	        	    })
@@ -39,24 +40,28 @@
         	map.setCenter(event.latLng);
       	  	{% block defFuncDblClick %}{% endblock %}
      	});
+        map.fitBounds(limits);
       }
       
       function toggleBounce() {
-
-        if (marker.getAnimation() != null) {
-          marker.setAnimation(null);
-        } else {
-          marker.setAnimation(google.maps.Animation.BOUNCE);
-        }
-
+	      if (marker.getAnimation() != null) {
+    	    marker.setAnimation(null);
+       	  } 
+	      else {
+          	marker.setAnimation(google.maps.Animation.BOUNCE);
+          }
       }
 
       function closeInfoWindow() {
           infoWindow.open();
       }
 
+      function centrarMapa(lat,lon) {
+    	  map.setCenter(new google.maps.LatLng(lat,lon));
+  	      map.panTo(new google.maps.LatLng(lat,lon));
+      }
     </script>
-  {% block extraScripts %}{% endblock %}
+	{% block extraScripts %}{% endblock %}
 {% endblock %}
 
 {% block content %}
