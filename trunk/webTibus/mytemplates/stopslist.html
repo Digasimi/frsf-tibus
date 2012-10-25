@@ -19,14 +19,16 @@
 									]
 					}
 				} );
-			
+				
 			$("#stopList").click(function() {
 				var oTT = TableTools.fnGetInstance( 'stopList' );
 			    var aSelectedTrs = oTT.fnGetSelected();
 				var input = $('#id_identificador');
 				
-				if(aSelectedTrs.length !== 0)
+				if(aSelectedTrs.length !== 0){
 	            	input.val(aSelectedTrs[0].cells[0].innerText);
+					centrarMapa(aSelectedTrs[0].cells[3].innerText,aSelectedTrs[0].cells[4].innerText);
+				}
 				else
 					input.val('');
 				});
@@ -44,6 +46,8 @@
 	  					<th>Orden</th>
 	  					<th>Calle</th>
 	  					<th>Interseccion</th>
+	  					<th style="display:none">Latitud</th>
+	  					<th style="display:none">Longitud</th>
 					</tr>
 				</thead>
 	  			<tbody>	
@@ -52,6 +56,8 @@
 		  				<td>{{ stop.orden }}</td>
 	  					<td>{{ stop.calle1 }}</td>
 	  					<td>{{ stop.calle2 }}</td>
+	  					<td style="display:none">{{ stop.latitud }}</td>
+	  					<td style="display:none">{{ stop.longitud }}</td>
 					</tr>
 		  		{% endfor%}
 	  			</tbody>
@@ -81,7 +87,7 @@
         position: markerPosition,
         icon: markerImage
     });
-        
+    limits.extend(markerPosition);    
     {% endfor %}
     
     var flightPlanCoordinates = [
