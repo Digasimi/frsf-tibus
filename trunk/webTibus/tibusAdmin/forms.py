@@ -22,20 +22,20 @@ class StopsForm(forms.Form):
                 'action',                            
             ),
             FormActions(
-                Submit('action', 'Carga Masiva', css_class="btn-primary"),
-                Submit('action', 'Agregar', css_class="btn-primary"),
-                Submit('action', 'Modificar', css_class="btn-primary"),
-                Submit('action', 'Eliminar', css_class="btn-primary"),
-                Submit('action', 'Volver', css_class="btn-primary")
+                Submit('action', 'Carga Masiva', css_class="btn-primary btn-block"),
+                Submit('action', 'Agregar', css_class="btn-primary btn-block"),
+                Submit('action', 'Modificar', css_class="btn-primary btn-block"),
+                Submit('action', 'Eliminar', css_class="btn-primary btn-block"),
+                Submit('action', 'Volver', css_class="btn-primary btn-block")
             ),
         )
         super(StopsForm, self).__init__(*args, **kwargs)
         
 class StopForm(forms.Form):
     linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, widget=forms.HiddenInput)
-    orden = forms.ModelChoiceField(queryset=Parada.objects.all(), required=False, empty_label='Parada Inicial')
-    latitud = forms.FloatField(required=False, label='Latitud')
-    longitud = forms.FloatField(required=False, label='Longitud')
+    orden = forms.ModelChoiceField(queryset=Parada.objects.all(), required=False, empty_label='Parada Inicial', label='Insertar despues de')
+    latitud = forms.FloatField(required=False, label='Latitud',widget=forms.HiddenInput)
+    longitud = forms.FloatField(required=False, label='Longitud',widget=forms.HiddenInput)
     calle1 = forms.CharField(label='Nombre de la Calle')
     calle2 = forms.CharField(required=False, label='Nombre de la Interseccion')
     paradaactiva = forms.BooleanField(required=False, label='Parada Activa')
@@ -81,9 +81,9 @@ class RoutesForm(forms.Form):
                 'identificador',                                
             ),
             FormActions(
-                Submit('action','Agregar', css_class="btn-primary"),
-                Submit('action','Modificar', css_class="btn-primary"),
-                Submit('action','Eliminar', css_class="btn-primary")
+                Submit('action','Agregar', css_class="btn-primary btn-block"),
+                Submit('action','Modificar', css_class="btn-primary btn-block"),
+                Submit('action','Eliminar', css_class="btn-primary btn-block")
             ),
         )
         super(RoutesForm, self).__init__(*args, **kwargs)
@@ -130,9 +130,9 @@ class BussForm(forms.Form):
                 'identificador',                                
             ),
             FormActions(
-                Submit('action','Agregar', css_class="btn-primary"),
-                Submit('action','Modificar', css_class="btn-primary"),
-                Submit('action','Eliminar', css_class="btn-primary")
+                Submit('action','Agregar', css_class="btn-primary btn-block"),
+                Submit('action','Modificar', css_class="btn-primary btn-block"),
+                Submit('action','Eliminar', css_class="btn-primary btn-block")
             ),
         )
         super(BussForm, self).__init__(*args, **kwargs)
@@ -175,9 +175,9 @@ class CompaniesForm(forms.Form):
                 'identificador',                                
             ),
             FormActions(
-                Submit('action','Agregar', css_class="btn-primary"),
-                Submit('action','Modificar', css_class="btn-primary"),
-                Submit('action','Eliminar', css_class="btn-primary")
+                Submit('action','Agregar', css_class="btn-primary btn-block"),
+                Submit('action','Modificar', css_class="btn-primary btn-block"),
+                Submit('action','Eliminar', css_class="btn-primary btn-block")
             ),
         )
         super(CompaniesForm, self).__init__(*args, **kwargs)
@@ -218,9 +218,9 @@ class UsersForm(forms.Form):
                 'identificador',                               
             ),
             FormActions(
-                Submit('action','Agregar', css_class="btn-primary"),
-                Submit('action','Modificar', css_class="btn-primary"),
-                Submit('action','Eliminar', css_class="btn-primary")
+                Submit('action','Agregar', css_class="btn-primary btn-block"),
+                Submit('action','Modificar', css_class="btn-primary btn-block"),
+                Submit('action','Eliminar', css_class="btn-primary btn-block")
             ),
         )
         super(UsersForm, self).__init__(*args, **kwargs)
@@ -309,8 +309,8 @@ class FrecuenciesForm(forms.Form):
                 'identificador',                               
             ),
             FormActions(
-                Submit('action','Agregar', css_class="btn-primary"),
-                Submit('action','Eliminar', css_class="btn-primary")
+                Submit('action','Agregar', css_class="btn-primary btn-block"),
+                Submit('action','Eliminar', css_class="btn-primary btn-block")
             ),
         )
         super(FrecuenciesForm, self).__init__(*args, **kwargs)

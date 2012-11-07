@@ -6,16 +6,18 @@
   <tr><td> Predicciones para la parada {{ parada }} de la linea {{ linea }}</td></tr>
   {% if timeStamp %}<tr><td><a>Tiempos Calculados a {{ timeStamp }}</a></td></tr>{% endif %}
   <tr><td align=center >
-    <div id="tableContainer" class="tableContainer">
+    <div id="tableContainer" class="row">
       {% if predicciones %}
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" class="scrollTable">
-      	<thead class="fixedHeader">
+      <div id="mapas" class="span8">Aca va el mapa</div>
+      <div class="span4 center">
+      <table class="table table-striped">
+      	<thead>
 			<tr>
-				<th><a href="#">Colectivo</a></th>
-				<th><a href="#">Tiempo estimado [s]</a></th>
+				<th>Colectivo</a></th>
+				<th>Tiempo estimado [s]</a></th>
 			</tr>
 		</thead>
-		<tbody class="scrollContent">
+		<tbody>
       {% for bus in predicciones %}
         <tr>
         	<td>{{ bus.bus }}</td>
@@ -24,6 +26,7 @@
       {% endfor %}
       </tbody></table>
     {% endif %}
+    </div>
 </div></td></tr>
   <tr><td><form name = "formPrediccion" action="" method="post">{% csrf_token %}
    	<BUTTON type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
@@ -44,7 +47,6 @@
     			});
         
     			google.maps.event.addListener(marker, 'click', toggleBounce); //Click sobre el marker
-	
     		{% endfor %}		
     	{% endif %} 
     	
