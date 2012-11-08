@@ -7,8 +7,8 @@ from django.shortcuts import render_to_response
 from django.db.utils import DatabaseError
 from django.http import HttpResponseRedirect
 from tibus.forms import PredictionForm, ItineraryForm
-from tibus.models import Parada, Recorrido, Unidad, MyListener, PresponseHandler,\
-    Frecuencia
+from tibus.models import Parada, Recorrido, Unidad, Frecuencia
+from tibus.listenerParseXML import MyListener, PresponseHandler
 from xml.sax import parseString,  SAXParseException
 
 def index(request): #pagina principal
@@ -149,14 +149,16 @@ def itinerary(request):
     c = {}
     c.update(csrf(request))
     errorDescription = ""
+    form = ItineraryForm()
     if request.method == 'POST':
         temporaryRoute = Recorrido.objects.get(idrecorrido = request.POST.get('linea'))
         stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
         frecuencyList = Frecuencia.objects.filter(linea = temporaryRoute)
+        form.quitEmptyOption()
+        form.initial = {'linea':request.POST.get('linea')}
     else:
         temporaryRoute = None
         stopList = []
         frecuencyList = []
-    form = ItineraryForm()
     
     return render_to_response('itinerario.html',  {'stopList':stopList, 'frecuencyList':frecuencyList, 'error': errorDescription, 'form': form},  context_instance=RequestContext(request))

@@ -18,6 +18,7 @@
   <div class="navbar-inner">
 <ul class="nav">
    <li><a href='index'><span>Home</span></a></li>
+   {% if user.is_active%}
     <li class="dropdown">
 	<a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">Administración<b class="caret"></b></a>
 	
@@ -27,6 +28,7 @@
                         <li><a tabindex="-1" href="empresa">Empresas</a></li>
                         <li><a tabindex="-1" href="usuario">Usuarios</a></li>                       
                       </ul></li>
+   {% endif %}                   
    <li><a href='prediccion'><span>Predicción</span></a></li>
    <li><a href='itinerario'><span>Recorridos</span></a></li>
    <li><a href='#'><span>Contacto</span></a></li>
