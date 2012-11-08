@@ -8,13 +8,13 @@
   <tr><td align=center >
     <div id="tableContainer" class="row">
       {% if predicciones %}
-      <div id="mapas" class="span8">Aca va el mapa</div>
+      <div id="mapas" style="height:350px" class="span8">Aca va el mapa</div>
       <div class="span4 center">
       <table class="table table-striped">
       	<thead>
 			<tr>
 				<th>Colectivo</a></th>
-				<th>Tiempo estimado [s]</a></th>
+				<th>Tiempo estimado [m]</a></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -47,6 +47,7 @@
     			});
         
     			google.maps.event.addListener(marker, 'click', toggleBounce); //Click sobre el marker
+    			limits.extend(markerPosition);
     		{% endfor %}		
     	{% endif %} 
     	

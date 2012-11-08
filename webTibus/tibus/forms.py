@@ -30,7 +30,7 @@ class PredictionForm(forms.Form):
         self.helper.add_input(Submit('action', 'resultado'))
         
 class ItineraryForm(forms.Form):
-    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea')
+    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label='Seleccione una linea', label='Linea')
     linea.widget.attrs["onchange"]="this.form.submit()"
     
     def __init__(self, *args, **kwargs):
@@ -46,5 +46,5 @@ class ItineraryForm(forms.Form):
         )
         super(ItineraryForm, self).__init__(*args, **kwargs)
         
-    def setQueryOrden(self, lineaId):
-        self.helper.add_input(Submit('action', 'Itinerario'))
+    def quitEmptyOption(self):
+        self.fields['linea'].empty_label = None
