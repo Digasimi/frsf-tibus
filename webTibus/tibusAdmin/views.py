@@ -161,6 +161,8 @@ def user(request): #pagina de ABM de unidades - faltan excepciones
             superadmin = True
             if request.method == 'POST':
                 userName=request.POST.get('identificador')
+                if userName == None:
+                    userName = ''
                 if request.POST.get('action') == 'Agregar':
                     return HttpResponseRedirect('usuariodata0?add')
                 elif request.POST.get('action') == 'Modificar':
@@ -169,9 +171,7 @@ def user(request): #pagina de ABM de unidades - faltan excepciones
                 elif request.POST.get('action') == 'Eliminar':
                     temporaryUser = Usuario.objects.get(nombre = userName)                    
                     return HttpResponseRedirect('eliminar?type=usuario&id='+ str(temporaryUser.getId()))
-            if userName == None:
-                userName = ''
-            logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
+                logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Nombre_Usuario: " + userName + " Error:" + errorDescription)
         else:
             superadmin = False
             errorDescription = "No posee permisos para ejecutar esta accion"

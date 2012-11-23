@@ -22,7 +22,8 @@
         map:map,
         draggable:false,
         position: markerPosition,
-        icon: markerImage
+        icon: markerImage,
+        title: "Parada: {{ stop.calle1 }} {% if stop.calle2 %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
     });
 	limits.extend(markerPosition);        
     {% endfor %}

@@ -8,17 +8,11 @@
     <link href="../Archivos/css/bootstrap_celurean.min.css" rel="stylesheet">
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <link href="../Archivos/css/bootstrap-responsive.css" rel="stylesheet">
-<!-- 	<link rel="stylesheet" href="../Archivos/css/formee-structure.css" type="text/css" media="screen" /> -->
-<!-- 	<link rel="stylesheet" href="../Archivos/css/formee-style.css" type="text/css" media="screen" /> -->
-<!-- 	<link rel="stylesheet" href="../Archivos/css/menu-styles.css" type="text/css" media="screen" /> -->
 	
     {% block extrastyle %}{% endblock %}
     {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% admin_media_prefix %}css/rtl.css{% endblock %}" />{% endif %}
 
     <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% admin_media_prefix %}{% endfilter %}";</script>
-<!--     <script type="text/javascript" src="../Archivos/js/jquery-1.6.4.min.js"></script> -->
-<!-- 	<script type="text/javascript" src="../Archivos/js/formee.js"></script> -->
-<!-- 	<script src="http://code.jquery.com/jquery-latest.js"></script> -->
  	<script src="../Archivos/js/bootstrap.js"></script>
 	
     {% block extrahead %}{% endblock %}
@@ -59,10 +53,6 @@
                 {% trans 'Desconectarse' %}</a>
             {% endblock %}
          </div>
-        {% else %}
-        <div id="user-tools" align=right style="font-family: Arial; font-size: 12px;">
-        	<a href="login">Iniciar Sesion</a>
-       	</div>
         {% endif %}
         {% block nav-global %}{% endblock %}
     </div>

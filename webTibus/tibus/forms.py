@@ -27,6 +27,7 @@ class PredictionForm(forms.Form):
     def setQueryOrden(self, lineaId):
         self.fields['orden'].queryset = Parada.objects.filter(linea = lineaId)
         self.fields['orden'].empty_label = None
+        self._errors = {}
         self.helper.add_input(Submit('action', 'resultado'))
         
 class ItineraryForm(forms.Form):
