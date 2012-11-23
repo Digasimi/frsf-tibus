@@ -3,12 +3,10 @@
 {% block extras %}
 <table style="text-align: center; height: 100%; width: 100%;">
   {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  <tr><td> Predicciones para la parada {{ parada }} de la linea {{ linea }}</td></tr>
-  {% if timeStamp %}<tr><td><a>Tiempos Calculados a {{ timeStamp }}</a></td></tr>{% endif %}
+  <tr><td><font size=4>Predicciones para la parada {{ parada }} de la linea {{ linea }}</font></td></tr>
   <tr><td align=center >
     <div id="tableContainer" class="row">
       {% if predicciones %}
-      <div id="mapas" style="height:350px" class="span8">Aca va el mapa</div>
       <div class="span4 center">
       <table class="table table-striped">
       	<thead>
@@ -25,8 +23,10 @@
        	</tr>
       {% endfor %}
       </tbody></table>
+      {% if timeStamp %}<a><font size=2>Tiempos Calculados a {{ timeStamp }}</font></a>{% endif %}
+      </div>
+      <div id="mapas" style="height:350px" class="span8">Aca va el mapa</div>
     {% endif %}
-    </div>
 </div></td></tr>
   <tr><td><form name = "formPrediccion" action="" method="post">{% csrf_token %}
    	<BUTTON type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
@@ -37,16 +37,20 @@
 {% block marcas %}   
     {% if route %}
     	{% if stopList %}
-    		{% for parada in stopList %}
-    			markerPosition = new google.maps.LatLng({{ parada.latitud }},{{ parada.longitud}});
+    		{% for stop in stopList %}
+    			markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
        			marker = new google.maps.Marker({
         			map:map,
         			draggable:false,
         			position: markerPosition,
-        			icon: markerImage
+        			title: "Parada: {{ stop.calle1 }} {% if stop.calle2 %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
+        			{% if parada = stop %}icon: markerImageSelected{% else %}icon: markerImage{% endif %}
     			});
-        
-    			google.maps.event.addListener(marker, 'click', toggleBounce); //Click sobre el marker
+       
+    			{% if parada = stop %}
+    			markerSelected = marker
+    			google.maps.event.addListener(map, 'click', toggleBounce); //Click sobre el marker
+    			{% endif %}
     			limits.extend(markerPosition);
     		{% endfor %}		
     	{% endif %} 
