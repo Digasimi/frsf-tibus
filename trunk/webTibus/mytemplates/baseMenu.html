@@ -10,8 +10,10 @@
  -->
  <div class="row" style="background-image: ../Archivos/img/stripes.png">
     <div class="span12">
-      <h1 style="font-size: 60px;">tibus</h1>
-      <h3>Sistema de predicción de tiempos de arribos</h3>
+    <table><tbody><tr>
+  	  <td><img style="width: 302px;max-width:none" alt="Logo" src="../Archivos/Logo.png"></img></td>
+      <td><h1 style="font-size: 90px;">TiBus</h1><h4>Sistema de predicción de tiempos de arribos</h3></td>
+      </tr></tbody></table>      
     </div>
   </div>
  <div class="navbar navbar-inverse">
@@ -28,8 +30,13 @@
                         <li><a tabindex="-1" href="empresa">Empresas</a></li>
                         <li><a tabindex="-1" href="usuario">Usuarios</a></li>                       
                       </ul></li>
-   {% endif %}                   
-   <li><a href='prediccion'><span>Predicción</span></a></li>
+   {% endif %} 
+    <li class="dropdown">
+	<a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">Prediccion<b class="caret"></b></a>
+	<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li><a tabindex="-1" href="prediccion">Arribo</a></li>
+                        <li><a tabindex="-1" href="viaje">Viaje</a></li>
+   </ul></li>                  
    <li><a href='itinerario'><span>Recorridos</span></a></li>
    <li><a href='#'><span>Contacto</span></a></li>
 </ul>

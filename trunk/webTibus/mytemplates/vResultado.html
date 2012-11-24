@@ -1,0 +1,88 @@
+{% extends "baseMenuMapa.html" %}
+
+{% block extras %}
+<table style="text-align: center; height: 100%; width: 100%;">
+  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
+  <tr><td><font size=4>Predicciones para la viaje desde {{ origen }} a {{ destino}} de la linea {{ linea }}</font></td></tr>
+  <tr><td align=center >
+    <div id="tableContainer" class="row">
+      {% if predicciones %}
+      <div class="span4 center">
+      <table class="table table-striped">
+      	<thead>
+			<tr>
+				<th>Tiempo estimado [m]</a></th>
+			</tr>
+		</thead>
+		<tbody>
+      {% for bus in predicciones %}
+        <tr>
+        	<td>{{ bus.time }}</td>
+       	</tr>
+      {% endfor %}
+      </tbody></table>
+      {% if timeStamp %}<a><font size=2>Tiempos Calculados a {{ timeStamp }}</font></a>{% endif %}
+      </div>
+      <div id="mapas" style="height:350px" class="span8">Aca va el mapa</div>
+    {% endif %}
+</div></td></tr>
+  <tr><td><form name = "formPrediccion" action="" method="post">{% csrf_token %}
+   	<BUTTON type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
+  </form></td></tr>
+</table>
+{% endblock %}
+
+{% block marcas %}   
+    {% if route %}
+    	{% if stopList %}
+    		{% for stop in stopList %}
+    			markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
+       			marker = new google.maps.Marker({
+        			map:map,
+        			draggable:false,
+        			position: markerPosition,
+        			title: "Parada: {{ stop.calle1 }} {% if stop.calle2 %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
+        			{% if origen = stop or destino = stop %}icon: markerImageSelected{% else %}icon: markerImage{% endif %}
+    			});
+       
+    			{% if origen = stop or destino = stop %}
+    			markerSelected = marker
+    			google.maps.event.addListener(map, 'click', toggleBounce); //Click sobre el marker
+    			{% endif %}
+    			limits.extend(markerPosition);
+    		{% endfor %}		
+    	{% endif %} 
+    	
+    	var flightPlanCoordinates = [
+	      {% for stop in stopList %}
+		    new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}}),
+	      {% endfor %}
+		];
+		var flightPath = new google.maps.Polyline({
+		    path: flightPlanCoordinates,
+		    strokeColor: "#FF0000",
+		    strokeOpacity: 1.0,
+		    strokeWeight: 2
+		});
+	
+	 	flightPath.setMap(map);
+    {% endif %}
+    
+    /* La lista de posiciones de los colectivos - corregir
+    {% if listaUnidades %}
+    var point2 = new GLatLng(0,0);
+    {% for unidad in listaUnidades %}
+	point2 = new GLatLng({{ unidad.latitud }},{{ unidad.longitud}} );
+    marcador2 = new GMarker(point2, markerOptions2);
+	
+    google.maps.Event.addListener(marcador2, 'click', function(overly, latlng, overlaylatlng) { //funcion que muestra la ventana de informacion
+        map.openInfoWindowHtml(new GLatLng({{ unidad.latitud }},{{ unidad.longitud}} ), "<div style='font-size: 8pt; font-family: verdana'><p>Linea : {{ parada.linea}} </p><p>Orden: {{ parada.orden }} </p><p>Latitud: {{ unidad.latitud }} </p><p>Longitud:{{ unidad.longitud}} </p></div>"); 
+    });
+    map.addOverlay(marcador2);   
+    
+    {% endfor %}
+    {% endif %} Para cuando se pase las posiciones de los colectivos
+    */
+{% endblock %}
+
+{% block extraScripts %}<script>setTimeout('document.location.reload()',60000); </script>{% endblock %}
