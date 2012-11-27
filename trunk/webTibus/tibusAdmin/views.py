@@ -683,9 +683,9 @@ def stopList(request, routeId):
                                     stopName2 = values[3]
                                     if stopName2 == None or stopName2 == '\n':
                                         stopName2 = ''
-                                    if stopName1 != None:
+                                    if stopName1 != None and (tempLat <= 90 and tempLat >= -90) and (tempLon <= 180 and tempLon >= -180):
                                         temporaryOrder = temporaryOrder + 1
-                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2)  
+                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2, paradaactiva = True)  
                                         newParada.save()
                                     else:
                                         errors = errors + 1
