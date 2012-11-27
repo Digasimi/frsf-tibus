@@ -681,12 +681,18 @@ def stopList(request, routeId):
                                     tempLon = float(values[1])
                                     stopName1 = values[2]
                                     stopName2 = values[3]
-                                    temporaryOrder = temporaryOrder + 1
-                                    newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2)  
-                                    newParada.save()
+                                    if stopName2 == None or stopName2 == '\n':
+                                        stopName2 = ''
+                                    if stopName1 != None:
+                                        temporaryOrder = temporaryOrder + 1
+                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2)  
+                                        newParada.save()
+                                    else:
+                                        errors = errors + 1
                                 except:
                                     errors = errors + 1
                                     errorDescription = "se encontraron " + str(errors) + " errors de datos"
+                            return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?edit')
                         else:
                             errorDescription = "No selecciono ningun archivo"
                     else:
