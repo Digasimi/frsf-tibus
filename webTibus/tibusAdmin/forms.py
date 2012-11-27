@@ -4,7 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 from crispy_forms.bootstrap import FormActions
 
-#Formulario con los datos para cargar una parada
+#Formulario para la cara masiva y seleccion de paradas
 class StopsForm(forms.Form):
     identificador = forms.IntegerField(required=False, widget=forms.HiddenInput)
     masivo = forms.FileField(required=False, help_text = "Las paradas deben estan en orden y una por linea con el formato: Latitud; Longitud;Calle;Interseccion",label='Archivo con lista de paradas')
@@ -31,6 +31,7 @@ class StopsForm(forms.Form):
         )
         super(StopsForm, self).__init__(*args, **kwargs)
         
+#Formulario para la carga de paradas
 class StopForm(forms.Form):
     linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, widget=forms.HiddenInput)
     orden = forms.ModelChoiceField(queryset=Parada.objects.all(), required=False, empty_label='Parada Inicial', label='Insertar despues de')
@@ -67,7 +68,7 @@ class StopForm(forms.Form):
         )
         super(StopForm, self).__init__(*args, **kwargs)
 
-#Formulario con los datos para cargar una route
+#Formulario para la lista de route
 class RoutesForm(forms.Form):
     identificador = forms.CharField(label='Nombre/identificador de la linea',initial='0', widget=forms.HiddenInput)
     
@@ -88,7 +89,7 @@ class RoutesForm(forms.Form):
         )
         super(RoutesForm, self).__init__(*args, **kwargs)
 
-    
+#Formulario para la carga de route    
 class RouteForm(forms.Form):
     linea = forms.CharField(label='Nombre/identificador de la linea')
     empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label=None,label='Empresa asociada')
@@ -116,7 +117,7 @@ class RouteForm(forms.Form):
         )
         super(RouteForm, self).__init__(*args, **kwargs)
     
-#Formulario con los datos para cargar una unidad de colectivo
+#Formulario para la lista de unidades
 class BussForm(forms.Form):
     identificador = forms.CharField(label='Nombre/identificador de la unidad',initial='0', widget=forms.HiddenInput)
     
@@ -137,7 +138,7 @@ class BussForm(forms.Form):
         )
         super(BussForm, self).__init__(*args, **kwargs)
         
-
+#Formulario con los datos para cargar una unidad de colectivo
 class BusForm(forms.Form):
     linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea la que pertenece la unidad')
     apto_movilidad_reducida = forms.BooleanField(required=False, label ='Unidad con rampa')
@@ -162,6 +163,7 @@ class BusForm(forms.Form):
         )
         super(BusForm, self).__init__(*args, **kwargs)
 
+#Formulario para la lista de empresas
 class CompaniesForm(forms.Form):
     identificador = forms.CharField(label='Nombre/identificador de la empresa',initial='', widget=forms.HiddenInput)
     
@@ -182,7 +184,7 @@ class CompaniesForm(forms.Form):
         )
         super(CompaniesForm, self).__init__(*args, **kwargs)
         
-
+#Formulario para la carga de company
 class CompanyForm(forms.Form):
     nombre = forms.CharField(label='Nombre de la empresa')
     email = forms.EmailField(required=False, label='Email de contacto')
@@ -205,6 +207,7 @@ class CompanyForm(forms.Form):
         )
         super(CompanyForm, self).__init__(*args, **kwargs)
 
+#Formulario para la lista de usuarios
 class UsersForm(forms.Form):
     identificador = forms.CharField(label='Nombre del Usuario',initial='', widget=forms.HiddenInput)
     
@@ -225,6 +228,7 @@ class UsersForm(forms.Form):
         )
         super(UsersForm, self).__init__(*args, **kwargs)
             
+#Formulario para la carga de user            
 class UserForm(forms.Form):
     nombre = forms.CharField(label='Nombre')
     email = forms.EmailField(required=False,label='email')
@@ -254,7 +258,8 @@ class UserForm(forms.Form):
             ),
         )
         super(UserForm, self).__init__(*args, **kwargs)
-    
+
+#Formulario para el cambio de password    
 class PasswordForm(forms.Form):
     nombre = forms.CharField(widget=forms.HiddenInput)
     oldPassword = forms.CharField(widget=forms.PasswordInput, label='Password anterior')
@@ -278,7 +283,8 @@ class PasswordForm(forms.Form):
             ),
         )
         super(PasswordForm, self).__init__(*args, **kwargs)
-        
+
+#Formulario generico para la confirmacion de la eliminacion        
 class EliminarForm(forms.Form):
     identificador = forms.CharField(widget=forms.HiddenInput)
     
@@ -295,7 +301,8 @@ class EliminarForm(forms.Form):
             ),
         )
         super(EliminarForm, self).__init__(*args, **kwargs)      
-        
+
+#Formulario para la lista de frecuencie        
 class FrecuenciesForm(forms.Form):
     identificador = forms.CharField(label='Frecuencia de Linea',initial='', widget=forms.HiddenInput)
     
@@ -315,6 +322,7 @@ class FrecuenciesForm(forms.Form):
         )
         super(FrecuenciesForm, self).__init__(*args, **kwargs)
             
+#Formulario para la carga de frecuenia            
 class FrecuencyForm(forms.Form):
     linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea')
     dia = forms.CharField(label='Dia de la semana', widget=forms.Select(choices=DIASSEMANA))

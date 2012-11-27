@@ -75,7 +75,7 @@
         map:map,
         draggable:false,
         position: markerPosition,
-        title: "Parada: {{ stop.calle1 }} {% if stop.calle2 %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
+        title: "Parada: {{ stop.calle1 }} {% if stop.calle2 == '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
         icon: markerImage
     });
     limits.extend(markerPosition);

@@ -60,7 +60,8 @@ def tibushelp(request):#pagina de ayuda
     c.update(csrf(request))
     return render_to_response('ayuda.html',  {'admin': False},  context_instance=RequestContext(request))
 
-def createMessage(route,  order):
+#Funcino que crea el mensaje xml dados los id de route y de unidad
+def createMessage(route,  order): 
     return '<prediction-request><linea>' + str(route) + '</linea><parada>' + str(order) + '</parada></prediction-request>'
 
 def arriveResult(request): #pagina que mostrara las predicciones
@@ -145,7 +146,7 @@ def arriveResult(request): #pagina que mostrara las predicciones
         errorDescription = "No hay unidades existentes"
     return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'parada': destinyStop},  context_instance=RequestContext(request))
 
-def itinerary(request):
+def itinerary(request): #pagina que muestra las recorridos de las distintas unidades
     c = {}
     c.update(csrf(request))
     errorDescription = ""
@@ -163,7 +164,7 @@ def itinerary(request):
     
     return render_to_response('itinerario.html',  {'stopList':stopList, 'frecuencyList':frecuencyList, 'error': errorDescription, 'form': form},  context_instance=RequestContext(request))
 
-def travelPrediction(request): #pagina que mostrara las predicciones
+def travelPrediction(request): #pagina que mostrara el formulario de datos para las predicciones de tiempos de viaje
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -199,7 +200,7 @@ def travelPrediction(request): #pagina que mostrara las predicciones
         form = TravelForm()
     return render_to_response('prediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
 
-def travelResult(request): #pagina que mostrara las predicciones
+def travelResult(request): #pagina que mostrara los resultados de las estimaciones de tiempos de viaje 
     #carga inicial
     c = {}
     c.update(csrf(request))
