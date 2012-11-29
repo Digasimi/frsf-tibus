@@ -27,8 +27,10 @@
 	<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
                         <li><a tabindex="-1" href="linea">Línea</a></li>
                         <li><a tabindex="-1" href="unidad">Unidad</a></li>
+                        {% if user.categoria == 'Administrador' %}
                         <li><a tabindex="-1" href="empresa">Empresas</a></li>
-                        <li><a tabindex="-1" href="usuario">Usuarios</a></li>                       
+                        <li><a tabindex="-1" href="usuario">Usuarios</a></li>
+                        {% endif %}                       
                       </ul></li>
    {% endif %} 
     <li class="dropdown">

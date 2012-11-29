@@ -27,10 +27,14 @@ def route(request):#pagina de ABM de lineas
     logger = logging.getLogger(__name__)
     form = RoutesForm()
     superadmin = (userData.categoria == 'Administrador')
-    routeList = Recorrido.objects.all().order_by('linea','empresa')
+    routeList = []
     
     #logica
     try:
+        if (userData.categoria == 'Administrador'):
+            routeList = Recorrido.objects.all().order_by('linea','empresa')
+        elif (userData.categoria == 'Empresa'):
+            routeList = Recorrido.objects.filter(empresa=userData.empresa).order_by('linea','empresa')
         if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
             if request.method == 'POST':
                 form = RoutesForm(request.POST)
@@ -198,6 +202,8 @@ def stop(request, routeId): #Pagina de ABM de paradas
     #logica
     try:
         if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
+            if (userData.categoria == 'Empresa'):
+                form.filtrarEmpresa(userData.empresa)
             if request.method == 'POST':
                 form = RouteForm(request.POST)
                 if form.is_valid():
@@ -469,6 +475,8 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
         superadmin = (userData.categoria == 'Administrador')
         #logica
         if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
+            if (userData.categoria == 'Empresa'):
+                form.filtrarEmpresa(userData.empresa)
             if request.method == 'POST':
                 form = BusForm(request.POST)
                 if form.is_valid():
