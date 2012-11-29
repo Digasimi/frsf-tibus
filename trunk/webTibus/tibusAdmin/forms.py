@@ -116,6 +116,9 @@ class RouteForm(forms.Form):
             )
         )
         super(RouteForm, self).__init__(*args, **kwargs)
+        
+    def filtrarEmpresa(self, companyUser):
+        self.fields['empresa'].queryset = Empresa.objects.filter(nombre = companyUser.getName())
     
 #Formulario para la lista de unidades
 class BussForm(forms.Form):
@@ -140,7 +143,7 @@ class BussForm(forms.Form):
         
 #Formulario con los datos para cargar una unidad de colectivo
 class BusForm(forms.Form):
-    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea la que pertenece la unidad')
+    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all().order_by('linea'), empty_label=None, label='Linea la que pertenece la unidad')
     apto_movilidad_reducida = forms.BooleanField(required=False, label ='Unidad con rampa')
     id_unidad_linea = forms.IntegerField(label='Identificador interno de la empresa')
     action = forms.CharField(widget=forms.HiddenInput)
@@ -162,6 +165,9 @@ class BusForm(forms.Form):
             ),
         )
         super(BusForm, self).__init__(*args, **kwargs)
+        
+    def filtrarEmpresa(self, companyUser):
+        self.fields['linea'].queryset = Recorrido.objects.filter(empresa__nombre = companyUser).order_by('linea')
 
 #Formulario para la lista de empresas
 class CompaniesForm(forms.Form):
