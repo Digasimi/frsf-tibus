@@ -120,6 +120,9 @@ TEMPLATE_DIRS = (
     "/home/dani/tibus/timetobus/mytemplates", 
 )
 
+#Variable necesaria para las pruebas
+CRISPY_TEMPLATE_PACK = 'bootstrap'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',

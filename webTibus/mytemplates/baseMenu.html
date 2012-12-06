@@ -1,13 +1,6 @@
 {% extends "base.html" %}
 
-{% block extrabody %} onload="initialize()" style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); " alink="#000099" link="#000099" vlink="#990099"{% endblock %}
-
 {% block menu %}
-<!-- <div style="width: 100% ; margin-left: auto ; margin-right: auto ;text-align: center">
-	<img style="width: 302px; height: 132px;" alt="Logo" src="../Archivos/Logo.png">
-	<img style="width: 722px; height: 132px;" alt="Titulo" src="../Archivos/Nombre.png">
-</div>
- -->
  <div class="row" style="background-image: ../Archivos/img/stripes.png">
     <div class="span12">
     <table><tbody><tr>
@@ -20,14 +13,14 @@
   <div class="navbar-inner">
 <ul class="nav">
    <li><a href='index'><span>Home</span></a></li>
-   {% if user.is_active%}
+   {% if user.is_active %}
     <li class="dropdown">
 	<a id="drop1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">Administración<b class="caret"></b></a>
 	
 	<ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
                         <li><a tabindex="-1" href="linea">Línea</a></li>
                         <li><a tabindex="-1" href="unidad">Unidad</a></li>
-                        {% if user.categoria == 'Administrador' %}
+                        {% if user.is_superuser %}
                         <li><a tabindex="-1" href="empresa">Empresas</a></li>
                         <li><a tabindex="-1" href="usuario">Usuarios</a></li>
                         {% endif %}                       
