@@ -1,5 +1,4 @@
 from xml.sax.handler import ContentHandler
-from tibus.models import Presponse
 
 #Clase que define un objeto que reenvia y recibe mensajes via stomp al servidor JMS
 class MyListener(object):
@@ -107,3 +106,29 @@ class PresponseHandler(ContentHandler):
     
     def getError(self):
         return self.error
+    
+    #Clase que guarda una estimacion de tiempo
+class Presponse(object):
+    bus = ''
+    time = 0
+    lat = 0
+    lon = 0
+    
+    def __init__ (self, c, t):
+        self.bus = c
+        self.time = t
+
+    def __unicode__(self):
+        return self.bus
+    
+    def getBus(self):
+        return self.bus
+    
+    def getTime(self):
+        return self.time
+    
+    def getLat(self):
+        return self.lat
+    
+    def getLon(self):
+        return self.lon
