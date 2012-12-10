@@ -61,8 +61,11 @@ def tibushelp(request):#pagina de ayuda
     return render_to_response('ayuda.html',  {'admin': False},  context_instance=RequestContext(request))
 
 #Funcino que crea el mensaje xml dados los id de route y de unidad
-def createMessage(route,  order): 
-    return '<prediction-request><linea>' + str(route) + '</linea><parada>' + str(order) + '</parada></prediction-request>'
+def createMessage(route,  order):
+    if route == None or order == None or route == '' or order == '':
+        return None
+    else: 
+        return '<prediction-request><linea>' + str(route) + '</linea><parada>' + str(order) + '</parada></prediction-request>'
 
 def arriveResult(request): #pagina que mostrara las predicciones
     #carga inicial
@@ -96,38 +99,41 @@ def arriveResult(request): #pagina que mostrara las predicciones
             conn.connect()
             responseQueue = '/temp-queue/responseQueue'
             msg = createMessage(temporaryRoute.getLinea(),  destinyStop.getId())
-            conn.set_listener('list', MyListener())
-            conn.send(msg, destination='/queue/predictions.requests',headers={'reply-to':responseQueue})
-            conn.subscribe(destination=responseQueue, ack='auto')
-            predictionXml = ""
-            lis1 = conn.get_listener('list')
-            timer = 0
-            while (predictionXml == '' and timer <= 15):
-                time.sleep(1)
-                timer=timer+1
-                predictionXml = lis1.getMessage()
-            if (timer == 15):
-                errorDescription = 'Tiempo de espera agotado'
+            if msg == None:
+                errorDescription = "Datos incompletos"
             else:
-                parseString(predictionXml, parser)
-                tempPredictionList = parser.getLista()
-                errorDescription = parser.getError()
-                if (aptoPrediction == 'True'):#filtrar lista con colec aptos
-                    for prediction in tempPredictionList:
-                        try:
-                            temporaryBus = Unidad.objects.get(id_unidad_linea = prediction.bus, linea__linea = routeName)
-                            if (temporaryBus.getApto() == True):
-                                predictionList = predictionList + [prediction]
-                        except Unidad.DoesNotExist:
-                            predictionList = predictionList
-                    if len(predictionList) == 0:
-                        errorDescription = "No hay estimaciones disponibles"
+                conn.set_listener('list', MyListener())
+                conn.send(msg, destination='/queue/predictions.requests',headers={'reply-to':responseQueue})
+                conn.subscribe(destination=responseQueue, ack='auto')
+                predictionXml = ""
+                lis1 = conn.get_listener('list')
+                timer = 0
+                while (predictionXml == '' and timer <= 15):
+                    time.sleep(1)
+                    timer=timer+1
+                    predictionXml = lis1.getMessage()
+                if (timer == 15):
+                    errorDescription = 'Tiempo de espera agotado'
                 else:
-                    predictionList = tempPredictionList
-                timeStampPrediction = parser.getTimeStamp()
-            conn.unsubscribe(destination=responseQueue)
-            conn.disconnect()
-            errorDescription = parser.getError()
+                    parseString(predictionXml, parser)
+                    tempPredictionList = parser.getLista()
+                    errorDescription = parser.getError()
+                    if (aptoPrediction == 'True'):#filtrar lista con colec aptos
+                        for prediction in tempPredictionList:
+                            try:
+                                temporaryBus = Unidad.objects.get(id_unidad_linea = prediction.bus, linea__linea = routeName)
+                                if (temporaryBus.getApto() == True):
+                                    predictionList = predictionList + [prediction]
+                            except Unidad.DoesNotExist:
+                                predictionList = predictionList
+                        if len(predictionList) == 0:
+                            errorDescription = "No hay estimaciones disponibles"
+                    else:
+                        predictionList = tempPredictionList
+                    timeStampPrediction = parser.getTimeStamp()
+                conn.unsubscribe(destination=responseQueue)
+                conn.disconnect()
+                errorDescription = parser.getError()
         #empiezan las excepciones
     except SAXParseException:
         errorDescription = "Datos en formato incorrecto - Error de conexion con servidor"

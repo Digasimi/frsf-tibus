@@ -159,29 +159,3 @@ class Frecuencia(models.Model):
     
     class Meta:
         db_table = 'frecuencia'
-        
-#Clase que guarda una estimacion de tiempo
-class Presponse(object):
-    bus = ''
-    time = 0
-    lat = 0
-    lon = 0
-    
-    def __init__ (self, c, t):
-        self.bus = c
-        self.time = t
-
-    def __unicode__(self):
-        return self.bus
-    
-    def getBus(self):
-        return self.bus
-    
-    def getTime(self):
-        return self.time
-    
-    def getLat(self):
-        return self.lat
-    
-    def getLon(self):
-        return self.lon
