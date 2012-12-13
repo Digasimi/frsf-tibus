@@ -117,6 +117,14 @@ class Parada(models.Model):
     
     def getActive(self):
         return self.paradaactiva
+    
+    def validate(self):
+        if self.calle1 == None or self.calle1 == '':
+            return False
+        if (self.latitud <= 90 and self.latitud >= -90) and (self.longitud <= 180 and self.longitud >= -180):
+            return True
+        return False 
+        
       
 class Unidad(models.Model):
     idunidad = models.AutoField(primary_key=True)

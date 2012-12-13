@@ -6,7 +6,7 @@ when you run "manage.py test".
 
 from django.test import TestCase
 from tibus.views import createMessage
-from tibus.models import Empresa, Recorrido, Parada, Unidad, Frecuencia, DIASSEMANA
+from tibus.models import Empresa, Recorrido, Parada, Unidad, Frecuencia
         
 class MessageTest(TestCase):
     def getValidMessageTest(self):
@@ -64,6 +64,19 @@ class BusTest(TestCase):
         routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
         busTemp = Unidad(linea = routeTemp, id_unidad_linea = 1234, apto_movilidad_reducida = True)
         self.assertTrue(busTemp.getApto())
+        
+    def notValidAptoBusTest(self):
+        """
+        Prueba que valida frecuencia
+        """
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        busTemp = Unidad(linea = routeTemp, id_unidad_linea = 1234, apto_movilidad_reducida = "False")
+        try:
+            busTemp.save()
+            self.assertTrue(False)
+        except:
+            self.assertTrue(True)        
             
 class FrecuencyTest(TestCase):
     def getValidFrecuencyTest(self):
@@ -74,3 +87,16 @@ class FrecuencyTest(TestCase):
         routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
         frecuencyTemp = Frecuencia(linea = routeTemp, dia_semana = 'MARTES', hora = "00:00:00")
         self.assertTrue(frecuencyTemp.getDiaSemana()== 'MARTES')
+        
+    def notValidHourFrecuencyTest(self):
+        """
+        Prueba que valida frecuencia
+        """
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        frecuencyTemp = Frecuencia(linea = routeTemp, dia_semana = 'MARTES', hora = "27:00:00")
+        try:
+            frecuencyTemp.save()
+            self.assertTrue(False)
+        except:
+            self.assertTrue(True)
