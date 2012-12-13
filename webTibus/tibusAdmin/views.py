@@ -12,6 +12,7 @@ from tibus.models import Parada, Recorrido, Unidad, Empresa, Frecuencia
 from django.contrib.auth.decorators import login_required
 from tibusAdmin.models import Usuario 
 from django.utils.datastructures import MultiValueDictKeyError
+from django.core.exceptions import ValidationError
 
 @login_required
 def tadmin(request):#pagina de ABM de lineas
@@ -106,10 +107,11 @@ def bus(request): #pagina de ABM de unidades - faltan excepciones
 def orderStopList(stopList): #metodo para ordenar las paradas e evitar saltar el orden
     i=1
     for tempStop in stopList:
+        print tempStop.getOrder()
         if tempStop.getOrder() > i:
             while tempStop.getOrder() > i:
                 tempStop.downOneOrder()
-            tempStop.save()
+        print tempStop.getOrder()        
         i = i +1
     return stopList
 
@@ -561,7 +563,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                     if form.is_valid():
                         action = form.cleaned_data['action']
                         temporaryStopPrevious = form.cleaned_data['orden']
-                        if temporaryStopPrevious == None:
+                        if temporaryStopPrevious == None or temporaryStopPrevious == '':
                             stopOrder = 0
                         else:  
                             stopOrder = temporaryStopPrevious.getOrder()
@@ -569,17 +571,14 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                         if action == 'delete':
                             temporaryStop = Parada.objects.get(idparada = stopId)  
                             temporaryStop.delete()
-                            #!reacomodar paradas                
-                            for temporaryStop in stopList: 
-                                if temporaryStop.getOrder() > int(stopOrder): 
-                                    temporaryStop.downOneOrder()
-                                    temporaryStop.save()
                             stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
+                            for tempStop in stopList:
+                                tempStop.save() 
                         else:
                             stopLat = form.cleaned_data['latitud']
                             stopLon = form.cleaned_data['longitud']
                             stopStreet1 = form.cleaned_data['calle1']
-                            if stopLat == '' or stopLon == '':
+                            if stopLat == '' or stopLon == '' or stopLat == None or stopLon == None:
                                 errorDescription = "Las coordenadas no pueden ser vacias"
                             elif stopStreet1 == '':
                                 errorDescription = "La descripcion de la calle 1 de la parada no pueden ser vacias"
@@ -587,8 +586,6 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                                 stopStreet2 = form.cleaned_data['calle2']
                                 stopActive = form.cleaned_data['paradaactiva']
                                 stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
-                                if stopOrder == None or stopOrder == '':
-                                    stopOrder = 0
                                 if int(stopOrder) >= 0:  #comprueba que el orden sea un entero mayor que 0
                                     if action == 'edit': #sin revisar - Falta ver que pasa si se cambia el orden.
                                         temporaryStop = Parada.objects.get(idparada = stopId)  
@@ -597,46 +594,51 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                                         temporaryStop.calle1 = stopStreet1
                                         temporaryStop.calle2 = stopStreet2
                                         temporaryStop.paradaactiva = stopActive
-                                        temporaryStop.save()
+                                        if temporaryStop.validate():
+                                            temporaryStop.save()
                                     elif action == 'add':
                                         if len(stopList) == 0: #comprueba que no sea la primer parada
-                                            stopOrder = 1
-                                        elif stopOrder != 0: #agrega la parada en una posicion especifica
-                                            for temporaryStop in stopList: 
-                                                if temporaryStop.getOrder() >= int(stopOrder): 
-                                                    temporaryStop.upOneOrder()
-                                                    temporaryStop.save()
+                                            stopOrder = 0
+                                        stopOrder += 1
+                                        temporaryStop = Parada(orden = stopOrder,  latitud = stopLat, longitud = stopLon, linea = temporaryRoute, calle1 = stopStreet1,calle2 = stopStreet2,paradaactiva = stopActive)
+                                        if temporaryStop.validate():  
+                                            for tempStop in stopList: 
+                                                if tempStop.getOrder() >= stopOrder: 
+                                                    tempStop.upOneOrder()
+                                                    tempStop.save()
                                             stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
-                                        else: #agrega la parada al final del recorrido
-                                            stopOrder = stopList.aggregate(orden=Max('orden')).get('orden') + 1
-                                        temporaryStop = Parada(orden = stopOrder,  latitud = stopLat, longitud = stopLon, linea = temporaryRoute, calle1 = stopStreet1,calle2 = stopStreet2,paradaactiva = stopActive)  
-                                        temporaryStop.save()
+                                            temporaryStop.save()
+                                        else:
+                                            errorDescription = "Faltan datos"
                                     else:
                                         errorDescription = "La accion no es valida"
+                                    return HttpResponseRedirect('stops' + str(temporaryRoute))
                                 else:
                                     errorDescription = "El orden debe ser un numero entero mayor a 0"
                                 logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + str(temporaryRoute) + " Parada: " + str(stopOrder) + " Error:" + errorDescription)
-                                return HttpResponseRedirect('recorrido' + str(temporaryRoute))
+                                return HttpResponseRedirect('stops' + str(temporaryRoute))
                     else:
                         errorDescription = "Los datos no son validos"
                 except ValueError:
                     errorDescription = "El orden debe ser un numero entero"
                 except TypeError:
-                    errorDescription = "Las coordenadas no pueden ser vacias"
+                    errorDescription = "Error de tipo de datos"
             else:
                 if request.GET.get('add') == '':
                     temporaryRoute = Recorrido.objects.get(linea = stopId)
                     form.initial = {'linea': temporaryRoute.getId()}
+                    form.setStopList(temporaryRoute.getId())
                     mensaje = 'Alta de Nueva Parada'
                 else:
                     temporaryStop = Parada.objects.get(idparada = stopId)
                     temporaryRoute= Recorrido.objects.get(linea = temporaryStop.getLinea())
                     form.initial = {'linea': temporaryRoute.getId(),'orden': temporaryStop.getOrder(), 'latitud': temporaryStop.getLat(), 'longitud': temporaryStop.getLon(), 'calle1': temporaryStop.getStreetName1(), 'calle2': temporaryStop.getStreetName2(), 'paradaactiva': temporaryStop.getActive()}
+                    form.setStopList(temporaryRoute.getId())
                     if request.GET.get('edit') == '':
                         mensaje = 'Modificacion de Parada Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Parada'
-                stopList = Parada.objects.filter(linea = temporaryRoute.getId()) 
+                stopList = Parada.objects.filter(linea = temporaryRoute.getId()).order_by('orden') 
         else:
             errorDescription = "No posee permisos para ejecutar esta accion"
     #empiezan las excepciones
@@ -693,8 +695,11 @@ def stopList(request, routeId):
                                         stopName2 = ''
                                     if stopName1 != None and (tempLat <= 90 and tempLat >= -90) and (tempLon <= 180 and tempLon >= -180):
                                         temporaryOrder = temporaryOrder + 1
-                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2, paradaactiva = True)  
-                                        newParada.save()
+                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2, paradaactiva = True)
+                                        if newParada.validate():  
+                                            newParada.save()
+                                        else:
+                                            errors = errors + 1
                                     else:
                                         errors = errors + 1
                                 except:
@@ -733,7 +738,7 @@ def frecuency(request, routeId):
     form = FrecuenciesForm()
     
     try:
-        if (userData.categoria == 'Administrador'):
+        if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
             temporaryRoute = Recorrido.objects.get(linea = routeId)
             FrecuenciesList = Frecuencia.objects.filter(linea = temporaryRoute)
             superadmin = True
@@ -844,5 +849,7 @@ def frecuencydata(request, routeId):
             errorDescription = "No posee permisos para ejecutar esta accion"
     except Frecuencia.DoesNotExist:
         errorDescription = "Frecuencia no existe"
+    except ValidationError:
+        errorDescription = "Frecuencia no valida"
     logger.info("Usuario: " + userData.nombre +" in frecuencyData Error:" + errorDescription)
     return render_to_response('data.html',  {'user': request.user,'form':form,  'error': errorDescription,  'admin': True, 'superadmin':superadmin, 'mensaje':mensaje, 'temporaryFrecuency':temporaryFrecuency},  context_instance=RequestContext(request))

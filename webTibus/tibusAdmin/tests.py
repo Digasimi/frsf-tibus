@@ -8,7 +8,8 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 #from django.utils.unittest import TestCase
 from tibusAdmin.models import Usuario
-from tibus.models import Empresa
+from tibus.models import Empresa, Parada, Recorrido
+from tibusAdmin.views import orderStopList
 
 class UsuarioTest(TestCase):
     def nameEmtpyTest(self):
@@ -48,3 +49,32 @@ class UsuarioTest(TestCase):
         """
         usuarioPrueba = Usuario(nombre='diegoluka', mail='sf@google.com', categoria ='Empresa')
         self.assertFalse(usuarioPrueba.validate(), "nombre empresa vacio")
+        
+class OrderStopListTest(TestCase):
+    def oneStopTest(self):
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        stopTemp = Parada(orden = 3, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        stopsList = [stopTemp]
+        orderStopList(stopsList)
+        self.assertEqual(stopsList[0].getOrder(), 1, "Falla")
+        
+    def twoStopTest(self):
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        stopTemp1 = Parada(orden = 2, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        stopTemp2 = Parada(orden = 3, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        stopsList = [stopTemp1, stopTemp2]
+        orderStopList(stopsList)
+        self.assertEqual(stopsList[1].getOrder(), 2, "Falla")
+        
+    def fourStopTest(self):
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        stopTemp1 = Parada(orden = 2, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        stopTemp2 = Parada(orden = 3, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        stopTemp3 = Parada(orden = 8, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        stopTemp4 = Parada(orden = 53, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        stopsList = [stopTemp1, stopTemp2,stopTemp3, stopTemp4]
+        orderStopList(stopsList)
+        self.assertEqual(stopsList[3].getOrder(), 4, "Falla")                

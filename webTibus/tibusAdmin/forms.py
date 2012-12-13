@@ -67,6 +67,9 @@ class StopForm(forms.Form):
             )
         )
         super(StopForm, self).__init__(*args, **kwargs)
+        
+    def setStopList(self, lineaId): #funcion que actualiza la lista de paradas al cambiar la seleccion de la linea
+        self.fields['orden'].queryset = Parada.objects.filter(linea = lineaId).order_by('orden')
 
 #Formulario para la lista de route
 class RoutesForm(forms.Form):
