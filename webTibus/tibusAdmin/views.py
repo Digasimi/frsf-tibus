@@ -556,7 +556,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                         else:
                             stopStreet2 = form.cleaned_data['calle2']
                             stopActive = form.cleaned_data['paradaactiva']
-                            stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
+                            stopList = Parada.objects.filter(linea = temporaryRoute.getId()).order_by('orden')
                             if int(stopOrder) >= 0:  #comprueba que el orden sea un entero mayor que 0
                                 if action == 'edit': #sin revisar - Falta ver que pasa si se cambia el orden.
                                     temporaryStop = Parada.objects.get(idparada = stopId)  
@@ -576,8 +576,6 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                                         for tempStop in stopList: 
                                             if tempStop.getOrder() >= stopOrder: 
                                                 tempStop.upOneOrder()
-                                                tempStop.save()
-                                        stopList = orderStopList(Parada.objects.filter(linea = temporaryRoute).order_by('orden'))
                                         for tempStop in stopList:
                                             tempStop.save()
                                         temporaryStop.save()
