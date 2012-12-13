@@ -52,8 +52,44 @@ class StopTest(TestCase):
         """
         companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
         routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
-        stopTemp = Parada(orden = 1, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
-        self.assertTrue(stopTemp.getActive())
+        stopTemp = Parada(orden = 1, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2")
+        self.assertTrue(stopTemp.validate())
+        
+    def getNotValidLatStopTest(self):
+        """
+        Prueba que verifica parada latitud no valida
+        """
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        stopTemp = Parada(orden = 1, latitud = 97.2, longitud = 30.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        self.assertFalse(stopTemp.validate())
+        
+    def getNotValidLonStopTest(self):
+        """
+        Prueba que verifica parada longitud no valida
+        """
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        stopTemp = Parada(orden = 1, latitud = 37.2, longitud = 230.1, linea = routeTemp, calle1 = "calle1", calle2="calle2", paradaactiva = True)
+        self.assertFalse(stopTemp.validate())
+        
+    def getNotStreetStopTest(self):
+        """
+        Prueba que verifica descripcion de parada no existente
+        """
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        stopTemp = Parada(orden = 1, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = None, calle2="calle2", paradaactiva = True)
+        self.assertFalse(stopTemp.validate())
+        
+    def getEmptyStreetStopTest2(self):
+        """
+        Prueba que verifica descripcion de parada vacia
+        """
+        companyTemp = Empresa(nombre = "company", mail = "company@gmail.com")
+        routeTemp = Recorrido(linea = "route1", empresa = companyTemp, predictable = True)
+        stopTemp = Parada(orden = 1, latitud = 37.2, longitud = 30.1, linea = routeTemp, calle1 = '', calle2="calle2", paradaactiva = True)
+        self.assertFalse(stopTemp.validate())
             
 class BusTest(TestCase):
     def getValidBusTest(self):
