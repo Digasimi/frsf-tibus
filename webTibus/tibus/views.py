@@ -55,10 +55,10 @@ def prediction(request): #pagina que mostrara las predicciones
         form = PredictionForm()
     return render_to_response('prediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
     
-def tibushelp(request):#pagina de ayuda
+def contact(request):#pagina de ayuda
     c={}
     c.update(csrf(request))
-    return render_to_response('ayuda.html',  {'admin': False},  context_instance=RequestContext(request))
+    return render_to_response('contact.html',  {'admin': False},  context_instance=RequestContext(request))
 
 #Funcino que crea el mensaje xml dados los id de route y de unidad
 def createMessage(route,  order):
