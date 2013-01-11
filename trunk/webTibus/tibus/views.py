@@ -184,7 +184,7 @@ def travelPrediction(request): #pagina que mostrara el formulario de datos para 
                 routePrediction = Recorrido.objects.get(idrecorrido=request.POST.get('linea'))
                 origenStopPrediction = Parada.objects.get(idparada = request.POST.get('origen'))
                 destinyStopPrediction = Parada.objects.get(idparada = request.POST.get('destino'))
-                if (destinyStopPrediction.getOrder() > origenStopPrediction.getOrder()):
+                if (destinyStopPrediction.getOrder() >= origenStopPrediction.getOrder()):
                     return HttpResponseRedirect('rViaje?linea=' + str(routePrediction.getId()) + '&origen='+ str(origenStopPrediction.getId())+'&destino='+ str(destinyStopPrediction.getId()))
                 else:
                     errorDescription = "La parada destino debe ser posterior a la parada origen"
