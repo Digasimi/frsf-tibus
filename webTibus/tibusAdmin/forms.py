@@ -70,6 +70,9 @@ class StopForm(forms.Form):
         
     def setStopList(self, lineaId): #funcion que actualiza la lista de paradas al cambiar la seleccion de la linea
         self.fields['orden'].queryset = Parada.objects.filter(linea = lineaId).order_by('orden')
+        
+    def setEditOption(self):
+        self.fields['orden'].widget.attrs["disabled"]="disabled"
 
 #Formulario para la lista de route
 class RoutesForm(forms.Form):
@@ -171,6 +174,9 @@ class BusForm(forms.Form):
         
     def filtrarEmpresa(self, companyUser):
         self.fields['linea'].queryset = Recorrido.objects.filter(empresa__nombre = companyUser).order_by('linea')
+        
+    def setEditOption(self):
+        self.fields['linea'].widget.attrs["disabled"]="disabled"
 
 #Formulario para la lista de empresas
 class CompaniesForm(forms.Form):
@@ -267,6 +273,10 @@ class UserForm(forms.Form):
             ),
         )
         super(UserForm, self).__init__(*args, **kwargs)
+        
+    def setEditOption(self):
+        self.fields['categoria'].widget.attrs["disabled"]="disabled"
+        self.fields['empresa'].widget.attrs["disabled"]="disabled"
 
 #Formulario para el cambio de password    
 class PasswordForm(forms.Form):
