@@ -261,6 +261,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
                     form.initial = {'linea': temporaryRoute.getLinea(), 'empresa': temporaryRoute.getCompany(), 'predictable': temporaryRoute.getPredictable()}
                     stopList = Parada.objects.filter(linea = temporaryRoute.getId()).order_by('orden')
                     if request.GET.get('edit') == '':
+                        form.filtrarEmpresa(temporaryRoute.getCompany())
                         mensaje = 'Modificacion de Linea Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Linea'
@@ -428,6 +429,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                     temporaryUser = Usuario.objects.get(nombre = userId)
                     form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.getMail(), 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany(), 'password':'nuevo','confirmacion':'nuevo'}
                     if request.GET.get('edit') == '':
+                        form.setEditOption()
                         mensaje = 'Modificacion de Usuario Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Usuario'
@@ -502,6 +504,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
                     temporaryBus = Unidad.objects.get(idunidad = busId)
                     form.initial = {'linea': temporaryBus.getLinea(), 'apto_movilidad_reducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea()}
                     if request.GET.get('edit') == '':
+                        form.setEditOption()
                         mensaje = 'Modificacion de Unidad Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Unidad'
@@ -607,6 +610,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                     form.initial = {'linea': temporaryRoute.getId(),'orden': temporaryStop.getOrder(), 'latitud': temporaryStop.getLat(), 'longitud': temporaryStop.getLon(), 'calle1': temporaryStop.getStreetName1(), 'calle2': temporaryStop.getStreetName2(), 'paradaactiva': temporaryStop.getActive()}
                     form.setStopList(temporaryRoute.getId())
                     if request.GET.get('edit') == '':
+                        form.setEditOption()
                         mensaje = 'Modificacion de Parada Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Parada'
