@@ -136,7 +136,7 @@ def arriveResult(request): #pagina que mostrara las predicciones
                 errorDescription = parser.getError()
         #empiezan las excepciones
     except SAXParseException:
-        errorDescription = "Datos en formato incorrecto - Error de conexion con servidor"
+        errorDescription = "Error de conexion con servidor"
         #Ver posibilidad de no estimacion
     except ValueError:
         errorDescription = "Datos en formato incorrecto - Valor de datos"
@@ -275,7 +275,6 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
                     parseString(predictionXml, parser)
                     predictionList2 = parser.getLista()
                     errorDescription = parser.getError()
-                #Falta calcular tiempos de viaje
                 if errorDescription == "":
                     if predictionList1 == [] or predictionList2 == []:
                         errorDescription = "No hay predicciones disponibles"

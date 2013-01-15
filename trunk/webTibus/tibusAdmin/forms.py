@@ -336,14 +336,15 @@ class FrecuenciesForm(forms.Form):
             ),
             FormActions(
                 Submit('action','Agregar', css_class="btn-primary btn-block"),
-                Submit('action','Eliminar', css_class="btn-primary btn-block")
+                Submit('action','Eliminar', css_class="btn-primary btn-block"),
+                Submit('action', 'Volver', css_class="btn-primary btn-block")
             ),
         )
         super(FrecuenciesForm, self).__init__(*args, **kwargs)
             
 #Formulario para la carga de frecuenia            
 class FrecuencyForm(forms.Form):
-    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all(), empty_label=None, label='Linea')
+    linea = forms.ModelChoiceField(queryset=Recorrido.objects.all().order_by('linea'), empty_label=None, label='Linea')
     dia = forms.CharField(label='Dia de la semana', widget=forms.Select(choices=DIASSEMANA))
     hora = forms.TimeField(label='Hora de salida de la unidad')
     action = forms.CharField(widget=forms.HiddenInput)
@@ -365,3 +366,6 @@ class FrecuencyForm(forms.Form):
             ),
         )
         super(FrecuencyForm, self).__init__(*args, **kwargs)
+        
+    def setForm(self, idLinea):
+        self.fields['linea'].queryset = Recorrido.objects.filter(linea = idLinea).order_by('linea')
