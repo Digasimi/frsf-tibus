@@ -4,7 +4,6 @@ from django.core.context_processors import csrf
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.db.models import Max
 from tibusAdmin.forms import StopForm, RouteForm, BusForm, CompanyForm, UserForm, PasswordForm, RoutesForm,\
     StopsForm, BussForm, UsersForm, CompaniesForm, EliminarForm, FrecuenciesForm,\
     FrecuencyForm
@@ -716,11 +715,13 @@ def frecuency(request, routeId):
     try:
         if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
             temporaryRoute = Recorrido.objects.get(linea = routeId)
-            FrecuenciesList = Frecuencia.objects.filter(linea = temporaryRoute)
+            FrecuenciesList = Frecuencia.objects.filter(linea = temporaryRoute).order_by('hora')
             superadmin = True
             if request.method == 'POST':
                 form = FrecuenciesForm(request.POST)
                 idFrecuencia = request.POST.get('identificador')
+                if request.POST.get('action') == 'Volver':
+                    return HttpResponseRedirect('recorrido'+routeId+'?edit')
                 if request.POST.get('action') == 'Agregar':
                     return HttpResponseRedirect('frecuencydata'+routeId+'?add')
                 elif request.POST.get('action') == 'Eliminar':
@@ -819,7 +820,7 @@ def frecuencydata(request, routeId):
                 form = FrecuencyForm(request.POST)
                 if form.is_valid():
                     action = form.cleaned_data['action'].lower()
-                    routeName = form.cleaned_data['linea']
+                    routeName = Recorrido.objects.get(linea = routeId)
                     dayFrecuency = form.cleaned_data['dia']
                     timeFrecuency = form.cleaned_data['hora']
                     if action == 'add':
@@ -836,6 +837,8 @@ def frecuencydata(request, routeId):
                 else:
                     if request.POST.get('hora') == '':
                         errorDescription = "No ingreso la hora"
+            else:
+                form.setForm(routeId)
         else:
             errorDescription = "No posee permisos para ejecutar esta accion"
     except Frecuencia.DoesNotExist:
