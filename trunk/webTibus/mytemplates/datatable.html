@@ -26,10 +26,10 @@
 					var input = $('#id_identificador');
 					
 					
-					if(aSelectedTrs.length !== 0)
-		            	input.val(aSelectedTrs[0].cells[0].innerText);
-					else
+					if(aSelectedTrs.length == 0)
 						input.val('');
+					else
+						input.val(aSelectedTrs[0].cells[0].innerText);
 					});
 			} );
 		</script>
