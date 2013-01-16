@@ -711,6 +711,7 @@ def frecuency(request, routeId):
     FrecuenciesList = []
     logger = logging.getLogger(__name__)
     form = FrecuenciesForm()
+    superadmin = (userData.categoria == 'Administrador') 
     
     try:
         if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
@@ -823,6 +824,8 @@ def frecuencydata(request, routeId):
                     routeName = Recorrido.objects.get(linea = routeId)
                     dayFrecuency = form.cleaned_data['dia']
                     timeFrecuency = form.cleaned_data['hora']
+                    if request.POST.get('action') == 'Volver':
+                        return HttpResponseRedirect('frecuency'+routeId)
                     if action == 'add':
                         try:
                             temporaryFrecuency = Frecuencia.objects.get(linea = routeName, dia_semana = dayFrecuency, hora = timeFrecuency) #da verdadero si la bus ya existe

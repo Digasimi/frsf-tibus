@@ -40,6 +40,7 @@ class StopForm(forms.Form):
     calle1 = forms.CharField(label='Nombre de la Calle')
     calle2 = forms.CharField(required=False, label='Nombre de la Interseccion')
     paradaactiva = forms.BooleanField(required=False, label='Parada Activa')
+    sentido = forms.CharField(label='Sentido', widget=forms.Select(choices=(('IDA', 'Ida'),('VUELTA', 'Vuelta'))))
     action = forms.CharField(widget=forms.HiddenInput)
     
     def upOneOrder(self):
@@ -58,6 +59,7 @@ class StopForm(forms.Form):
                 'longitud',
                 'calle1',
                 'calle2',
+                'sentido',
                 'paradaactiva',
                 'action'                
             ),
@@ -362,7 +364,8 @@ class FrecuencyForm(forms.Form):
                 'action',                            
             ),
             FormActions(
-                Submit('save', 'Guardar', css_class="btn-primary")                
+                Submit('save', 'Guardar', css_class="btn-primary"),
+                Submit('action', 'Volver', css_class="btn-primary")             
             ),
         )
         super(FrecuencyForm, self).__init__(*args, **kwargs)
