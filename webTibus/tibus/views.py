@@ -289,7 +289,7 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
             conn.disconnect()
         #empiezan las excepciones
     except SAXParseException:
-        errorDescription = "Datos en formato incorrecto - Error de conexion con servidor"
+        errorDescription = "Error de conexion con servidor"
         #Ver posibilidad de no estimacion
     except ValueError:
         errorDescription = "Datos en formato incorrecto - Valor de datos"

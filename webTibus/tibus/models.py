@@ -76,6 +76,7 @@ class Parada(models.Model):
     calle1 = models.CharField(verbose_name="calle1", max_length=100,null=True)
     calle2 = models.CharField(verbose_name="calle2", max_length=100,null=True)
     paradaactiva = models.BooleanField(help_text="Indica si es una parada donde se detiene el colectivo o no")
+    sentido = models.CharField()
   
     class Meta:
         db_table = 'parada'
@@ -83,7 +84,7 @@ class Parada(models.Model):
     def __unicode__(self):
         nombre = str(self.calle1)
         if self.calle2 != '' and self.calle2 != None:
-            nombre = nombre + ' & ' + str(self.calle2) 
+            nombre = nombre + ' & ' + str(self.calle2) + ' ('+str(self.sentido)+')'
         return nombre
           
     def getOrder(self):
