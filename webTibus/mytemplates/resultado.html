@@ -38,6 +38,7 @@
     {% if route %}
     	{% if stopList %}
     		{% for stop in stopList %}
+    			{% if stop.paradaactiva %}
     			markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
        			marker = new google.maps.Marker({
         			map:map,
@@ -52,6 +53,7 @@
     			google.maps.event.addListener(map, 'click', toggleBounce); //Click sobre el marker
     			{% endif %}
     			limits.extend(markerPosition);
+    			{% endif%}
     		{% endfor %}		
     	{% endif %} 
     	

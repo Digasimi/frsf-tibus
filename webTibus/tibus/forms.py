@@ -26,7 +26,7 @@ class PredictionForm(forms.Form):
         super(PredictionForm, self).__init__(*args, **kwargs)
         
     def setQueryOrden(self, lineaId): #funcion que actualiza la lista de paradas al cambiar la seleccion de la linea
-        self.fields['orden'].queryset = Parada.objects.filter(linea = lineaId)
+        self.fields['orden'].queryset = Parada.objects.filter(linea = lineaId, paradaactiva = True).order_by('orden')
         self.fields['orden'].empty_label = None
         self._errors = {}
         self.helper.add_input(Submit('action', 'resultado'))
@@ -75,9 +75,9 @@ class TravelForm(forms.Form):
         super(TravelForm, self).__init__(*args, **kwargs)
         
     def setQueryOrden(self, lineaId): #funcion que actualiza la lista de paradas al cambiar la seleccion de la linea
-        self.fields['origen'].queryset = Parada.objects.filter(linea = lineaId).order_by('orden')
+        self.fields['origen'].queryset = Parada.objects.filter(linea = lineaId, paradaactiva = True).order_by('orden')
         self.fields['origen'].empty_label = None
-        self.fields['destino'].queryset = Parada.objects.filter(linea = lineaId).order_by('orden')
+        self.fields['destino'].queryset = Parada.objects.filter(linea = lineaId, paradaactiva = True).order_by('orden')
         self.fields['destino'].empty_label = None
         self._errors = {}
         self.helper.add_input(Submit('action', 'resultado'))

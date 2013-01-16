@@ -4,7 +4,7 @@
     	{% if list %}
 			<thead>
 				<tr>
-					<th><a href="#">Identificador</a></th>
+					<th style="display:none"><a href="#">Identificador</a></th>
 					<th><a href="#">Linea</a></th>
 					<th><a href="#">Dia</a></th>
 					<th><a href="#">Hora Salida</a></th>
@@ -13,7 +13,7 @@
 			<tbody>
       		{% for object in list %}
       			<tr>
-      				<td>{{ object.idfrecuencia }}</td>
+      				<td style="display:none">{{ object.idfrecuencia }}</td>
       				<td>{{ object.linea }}</td>
       				<td>{{ object.dia_semana }}</td>
       				<td>{{ object.hora }}</td>

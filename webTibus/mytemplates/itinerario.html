@@ -70,6 +70,7 @@
 {% block marcas %}
     {% if stopList %}
     {% for stop in stopList %}
+    {% if stop.paradaactiva %}
     markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
     marker = new google.maps.Marker({
         map:map,
@@ -79,6 +80,7 @@
         icon: markerImage
     });
     limits.extend(markerPosition);
+    {% endif%}
     {% endfor %}
     
     var flightPlanCoordinates = [

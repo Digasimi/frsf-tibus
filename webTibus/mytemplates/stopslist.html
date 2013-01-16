@@ -48,6 +48,7 @@
 	  					<th>Interseccion</th>
 	  					<th style="display:none">Latitud</th>
 	  					<th style="display:none">Longitud</th>
+	  					<th>Sentido</th>
 					</tr>
 				</thead>
 	  			<tbody>	
@@ -58,6 +59,7 @@
 	  					<td>{{ stop.calle2 }}</td>
 	  					<td style="display:none">{{ stop.latitud }}</td>
 	  					<td style="display:none">{{ stop.longitud }}</td>
+	  					<td>{{ stop.sentido }}</td>
 					</tr>
 		  		{% endfor%}
 	  			</tbody>
@@ -86,7 +88,11 @@
         draggable:false,
         position: markerPosition,
         title: "Parada: {{ stop.calle1 }} {% if stop.calle2 == '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
+        {% if stop.paradaactiva %}
         icon: markerImage
+        {% else %}
+        icon: markerImage2
+        {% endif%}
     });
     limits.extend(markerPosition);    
     {% endfor %}

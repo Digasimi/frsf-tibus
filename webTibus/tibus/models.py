@@ -84,7 +84,8 @@ class Parada(models.Model):
     def __unicode__(self):
         nombre = str(self.calle1)
         if self.calle2 != '' and self.calle2 != None:
-            nombre = nombre + ' & ' + str(self.calle2) + ' ('+str(self.sentido)+')'
+            nombre = nombre + ' & ' + str(self.calle2) 
+        nombre = nombre + ' ('+str(self.sentido)+')'
         return nombre
           
     def getOrder(self):

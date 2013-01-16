@@ -25,7 +25,7 @@ function mostrarCoordenadas(location, map) { //funcion javascript
 	                map:map,
 	                draggable:true,
 	                position: event.latLng,
-	                icon: markerImage
+	                icon: markerImage3
 	            });
             else
             	marker.setPosition(event.latLng);
@@ -43,7 +43,11 @@ function mostrarCoordenadas(location, map) { //funcion javascript
         draggable:false,
         position: markerPosition,
         title: "Parada: {{ stop.calle1 }} {% if stop.calle2 %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
+        {% if stop.paradaactiva %}
         icon: markerImage
+        {% else %}
+        icon: markerImage2
+        {% endif%}
     });
 	limits.extend(markerPosition);
 	        

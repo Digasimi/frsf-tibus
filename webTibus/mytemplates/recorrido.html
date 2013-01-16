@@ -17,6 +17,7 @@
 	document.getElementById("id_action").value = document.location.search.substr(1);
     {% if stopList %}
     {% for stop in stopList %}
+    {% if stop.paradaactiva %}
     markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
     marker = new google.maps.Marker({
         map:map,
@@ -25,7 +26,8 @@
         icon: markerImage,
         title: "Parada: {{ stop.calle1 }} {% if stop.calle2 == ''%}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
     });
-	limits.extend(markerPosition);        
+	limits.extend(markerPosition);
+	{% endif %}        
     {% endfor %}
     
     var flightPlanCoordinates = [

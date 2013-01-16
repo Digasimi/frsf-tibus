@@ -48,9 +48,9 @@ def route(request):#pagina de ABM de lineas
                             return HttpResponseRedirect('recorrido' + temporaryRoute.getLinea() +'?edit')
                         elif request.POST.get('action') == 'Eliminar':  #edicion de route.
                             return HttpResponseRedirect('eliminar?type=linea&id='+ temporaryRoute.getLinea())
+                        logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + temporaryRoute.getLinea() + " Error:" + errorDescription)
                     else:
                         errorDescription = "Accion no Valida"
-                    logger.info("Usuario: " + userData.nombre +" Accion: " + request.POST.get('action') + " Linea: " + temporaryRoute.getLinea() + " Error:" + errorDescription)
         else:
             errorDescription = "No posee permisos para ejecutar esta accion"
     except Recorrido.DoesNotExist:
@@ -551,6 +551,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                         stopLat = form.cleaned_data['latitud']
                         stopLon = form.cleaned_data['longitud']
                         stopStreet1 = form.cleaned_data['calle1']
+                        stopDirection = form.cleaned_data['sentido']
                         if stopLat == '' or stopLon == '' or stopLat == None or stopLon == None:
                             errorDescription = "Las coordenadas no pueden ser vacias"
                         elif stopStreet1 == '':
@@ -567,13 +568,14 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                                     temporaryStop.calle1 = stopStreet1
                                     temporaryStop.calle2 = stopStreet2
                                     temporaryStop.paradaactiva = stopActive
+                                    temporaryStop.sentido = stopDirection
                                     if temporaryStop.validate():
                                         temporaryStop.save()
                                 elif action == 'add':
                                     if len(stopList) == 0: #comprueba que no sea la primer parada
                                         stopOrder = 0
                                     stopOrder += 1
-                                    temporaryStop = Parada(orden = stopOrder,  latitud = stopLat, longitud = stopLon, linea = temporaryRoute, calle1 = stopStreet1,calle2 = stopStreet2,paradaactiva = stopActive)
+                                    temporaryStop = Parada(orden = stopOrder,  latitud = stopLat, longitud = stopLon, linea = temporaryRoute, calle1 = stopStreet1,calle2 = stopStreet2,paradaactiva = stopActive, sentido = stopDirection)
                                     if temporaryStop.validate():  
                                         for tempStop in stopList: 
                                             if tempStop.getOrder() >= stopOrder: 
@@ -592,6 +594,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                             return HttpResponseRedirect('stops' + str(temporaryRoute))
                     else:
                         errorDescription = "Los datos no son validos"
+                        form.setStopList(temporaryRoute.getId())
                 except ValueError:
                     errorDescription = "El orden debe ser un numero entero"
                 except TypeError:
@@ -670,7 +673,7 @@ def stopList(request, routeId):
                                         stopName2 = ''
                                     if stopName1 != None and (tempLat <= 90 and tempLat >= -90) and (tempLon <= 180 and tempLon >= -180):
                                         temporaryOrder = temporaryOrder + 1
-                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2, paradaactiva = True)
+                                        newParada = Parada(orden = temporaryOrder,  latitud = tempLat, longitud = tempLon, linea = Recorrido.objects.get(linea = routeId), calle1 = stopName1, calle2 = stopName2, paradaactiva = True, sentido = 'IDA')
                                         if newParada.validate():  
                                             newParada.save()
                                         else:
