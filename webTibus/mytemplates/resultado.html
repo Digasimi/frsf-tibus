@@ -36,9 +36,7 @@
 
 {% block marcas %}   
     {% if route %}
-    	{% if stopList %}
-    		{% for stop in stopList %}
-    			{% if stop.paradaactiva %}
+    	{% if stopList %}{% for stop in stopList %}{% if stop.paradaactiva %}
     			markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
        			marker = new google.maps.Marker({
         			map:map,
@@ -47,19 +45,15 @@
         			title: "Parada: {{ stop.calle1 }} {% if stop.calle2 == '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
         			{% if parada = stop %}icon: markerImageSelected{% else %}icon: markerImage{% endif %}
     			});
-       
-    			{% if parada = stop %}
+       			{% if parada = stop %}
     			markerSelected = marker
     			google.maps.event.addListener(map, 'click', toggleBounce); //Click sobre el marker
     			{% endif %}
     			limits.extend(markerPosition);
-    			{% endif%}
-    		{% endfor %}		
-    	{% endif %} 
+    	{% endif%}{% endfor %}{% endif %} 
     	
     	var flightPlanCoordinates = [
-	      {% for stop in stopList %}
-		    new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}}),
+	      {% for stop in stopList %}new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}}),
 	      {% endfor %}
 		];
 		var flightPath = new google.maps.Polyline({
@@ -71,22 +65,16 @@
 	
 	 	flightPath.setMap(map);
     {% endif %}
-    
-    /* La lista de posiciones de los colectivos - corregir
-    {% if listaUnidades %}
-    var point2 = new GLatLng(0,0);
-    {% for unidad in listaUnidades %}
-	point2 = new GLatLng({{ unidad.latitud }},{{ unidad.longitud}} );
-    marcador2 = new GMarker(point2, markerOptions2);
-	
-    google.maps.Event.addListener(marcador2, 'click', function(overly, latlng, overlaylatlng) { //funcion que muestra la ventana de informacion
-        map.openInfoWindowHtml(new GLatLng({{ unidad.latitud }},{{ unidad.longitud}} ), "<div style='font-size: 8pt; font-family: verdana'><p>Linea : {{ parada.linea}} </p><p>Orden: {{ parada.orden }} </p><p>Latitud: {{ unidad.latitud }} </p><p>Longitud:{{ unidad.longitud}} </p></div>"); 
-    });
-    map.addOverlay(marcador2);   
-    
-    {% endfor %}
-    {% endif %} Para cuando se pase las posiciones de los colectivos
-    */
+    {% if predicciones %}{% for unidad in predicciones %}
+    	markerPosition = new google.maps.LatLng({{ unidad.lat }},{{ unidad.lon}});
+       	marker = new google.maps.Marker({
+ 			map:map,
+ 			draggable:false,
+ 			position: markerPosition,
+ 			title: "Unidad: {{ unidad.bus }} - Latitud: {{ unidad.lat }} - Longitud: {{ unidad.lon}}",
+ 			icon: markerImageBus
+		});
+    {% endfor %}{% endif %}
 {% endblock %}
 
 {% block extraScripts %}<script>setTimeout('document.location.reload()',60000); </script>{% endblock %}

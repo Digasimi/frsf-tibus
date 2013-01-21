@@ -1,14 +1,10 @@
 package frsf.tibus.prediction.model.averagespeed;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import frsf.tibus.domain.PredictionResponse;
 
 import junit.framework.TestCase;
 
