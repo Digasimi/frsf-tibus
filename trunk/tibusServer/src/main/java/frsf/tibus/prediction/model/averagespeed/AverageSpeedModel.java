@@ -51,11 +51,13 @@ public class AverageSpeedModel implements PredictionModel {
 	@Override
 	public void procesarNuevaPosicion(BusPositionData busPosition) 
 	{
-		Route r = routes.get(busPosition.getRouteName());
-		r.processBusPosition(busPosition);
-		
-		Bus b = r.getBuses().get(busPosition.getIdColectivo());
-		saveSpeedData(b);
+		if (busPosition != null){
+			Route r = routes.get(busPosition.getRouteName());
+			if (r != null) {
+				r.processBusPosition(busPosition);
+				saveSpeedData(r.getBuses().get(busPosition.getIdColectivo()));
+			}
+		}
 	}
 
 	private void saveSpeedData(Bus b) {

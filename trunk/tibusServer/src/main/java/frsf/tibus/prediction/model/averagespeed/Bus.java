@@ -67,6 +67,9 @@ public class Bus {
 		
 		previousLocation = currentLocation;
 		currentLocation = busPosition;
+		
+		this.lat = busPosition.getLat();
+		this.lon = busPosition.getLon();
 	}
 
 	public Double calculateAverageSpeed() {

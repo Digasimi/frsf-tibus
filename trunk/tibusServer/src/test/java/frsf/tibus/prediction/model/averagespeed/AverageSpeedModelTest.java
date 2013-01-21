@@ -17,6 +17,7 @@ public class AverageSpeedModelTest {
 
 	@Before
 	public void setUp() throws Exception {
+		testModel = new AverageSpeedModel();
 	}
 
 	@Test
@@ -28,6 +29,13 @@ public class AverageSpeedModelTest {
 	@Test
 	public void testProcesarNuevaPosicion() {
 		BusPositionData busPosition = new BusPositionData(1234, new Float(37.7), new Float(-122.45), new Float(5.3), new DateTime(), "N");
+		testModel.procesarNuevaPosicion(busPosition);
+		assertTrue(busPosition != null);
+	}
+	
+	@Test
+	public void testProcesarNuevaPosicionLineaNoExistente() {
+		BusPositionData busPosition = new BusPositionData(1234, new Float(37.7), new Float(-122.45), new Float(5.3), new DateTime(), "ZZZ");
 		testModel.procesarNuevaPosicion(busPosition);
 		assertTrue(busPosition != null);
 	}
