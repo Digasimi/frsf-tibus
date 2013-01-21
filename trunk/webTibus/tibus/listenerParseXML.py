@@ -89,7 +89,7 @@ class PresponseHandler(ContentHandler):
         if name == 'lon':
             self.islonElement = 0
         if name == 'prediction':
-            prediction = int(self.bus)/60
+            prediction = int(self.time)/60
             self.list = self.list + [Presponse(self.bus, prediction, self.lat, self.lon)]
         if name == 'timestamp':
             self.isTimeStampElement = 0
