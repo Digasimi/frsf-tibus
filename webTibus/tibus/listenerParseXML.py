@@ -90,7 +90,8 @@ class PresponseHandler(ContentHandler):
             self.islonElement = 0
         if name == 'prediction':
             prediction = int(self.time)/60
-            self.list = self.list + [Presponse(self.bus, prediction, self.lat, self.lon)]
+            predictionSeg = int(self.time) % 60
+            self.list = self.list + [Presponse(self.bus, prediction, predictionSeg, self.lat, self.lon)]
         if name == 'timestamp':
             self.isTimeStampElement = 0
         if name == "error":
@@ -113,10 +114,12 @@ class Presponse(object):
     time = 0
     lat = 0
     lon = 0
+    timeseg = 0
     
-    def __init__ (self, c, t, la, lo):
+    def __init__ (self, c, t, ts, la, lo):
         self.bus = c
         self.time = t
+        self.timeseg = ts
         self.lat = la
         self.lon = lo
 
@@ -138,3 +141,6 @@ class Presponse(object):
     def setLatLon(self, nuevaLat, nuevaLon):
         self.lat = nuevaLat
         self.lon = nuevaLon
+        
+    def setTimeSeg(self, newTimeSeg):
+        self.timeseg = newTimeSeg
