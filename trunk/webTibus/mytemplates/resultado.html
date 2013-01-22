@@ -11,41 +11,40 @@
       <table class="table table-striped">
       	<thead>
 			<tr>
-				<th>Colectivo</a></th>
-				<th>Tiempo estimado [m]</a></th>
+				<th><a>Colectivo</a></th>
+				<th><a>Tiempo estimado [m]</a></th>
 			</tr>
 		</thead>
 		<tbody>
       {% for bus in predicciones %}
         <tr>
         	<td>{{ bus.bus }}</td>
-        	<td>{{ bus.time }}</td>
+        	<td>{{ bus.time }}:{{ bus.timeseg}}</td>
        	</tr>
       {% endfor %}
       </tbody></table>
-      {% if timeStamp %}<a><font size=2>Tiempos Calculados a {{ timeStamp }}</font></a>{% endif %}
+      {% if timeStamp %}<a><font size=2>Tiempos de calculo: {{ timeStamp }}</font></a>{% endif %}
       </div>
       <div id="mapas" style="height:350px" class="span8">Aca va el mapa</div>
     {% endif %}
 </div></td></tr>
   <tr><td><form name = "formPrediccion" action="" method="post">{% csrf_token %}
-   	<BUTTON type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
+   	<BUTTON type="submit" name="action" value="prediction">Volver a elegir destino</BUTTON>
   </form></td></tr>
 </table>
 {% endblock %}
 
 {% block marcas %}   
     {% if route %}
-    	{% if stopList %}{% for stop in stopList %}{% if stop.paradaactiva %}
+    	{% if stopList %}{% for stop in stopList %}{% if stop.paradaactiva %}{% if parada = stop %}
     			markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
        			marker = new google.maps.Marker({
         			map:map,
         			draggable:false,
         			position: markerPosition,
         			title: "Parada: {{ stop.calle1 }} {% if stop.calle2 == '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
-        			{% if parada = stop %}icon: markerImageSelected{% else %}icon: markerImage{% endif %}
+        			icon: markerImageSelected
     			});
-       			{% if parada = stop %}
     			markerSelected = marker
     			google.maps.event.addListener(map, 'click', toggleBounce); //Click sobre el marker
     			{% endif %}
