@@ -282,7 +282,13 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
                         for prediccion1 in predictionList1:
                             for prediccion2 in predictionList2:
                                 if prediccion1.bus == prediccion2.bus:
-                                    predictionList = [Presponse(prediccion1.bus, (prediccion2.time - prediccion1.time))]
+                                    if (prediccion2.timeseg >= prediccion1.timeseg):
+                                        predictionMinute = (prediccion2.time - prediccion1.time)
+                                        predictionSecond = (prediccion2.timeseg - prediccion1.timeseg)
+                                    else:
+                                        predictionMinute = (prediccion2.time - 1 - prediccion1.time)
+                                        predictionSecond = (prediccion2.timeseg + 60 - prediccion1.timeseg)
+                                    predictionList = [Presponse(prediccion1.bus, predictionMinute, predictionSecond,0,0)]
                         if predictionList == []:
                             errorDescription = "No hay predicciones disponibles"
             conn.unsubscribe(destination=responseQueue)
