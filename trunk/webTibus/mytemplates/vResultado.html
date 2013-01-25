@@ -11,13 +11,13 @@
       <table class="table table-striped">
       	<thead>
 			<tr>
-				<th>Tiempo estimado [m]</a></th>
+				<th>Tiempo estimado [m:ss]</a></th>
 			</tr>
 		</thead>
 		<tbody>
       {% for bus in predicciones %}
         <tr>
-        	<td>{{ bus.time }}</td>
+        	<td>{{ bus.time }}: {{ bus.timeseg }}</td>
        	</tr>
       {% endfor %}
       </tbody></table>
@@ -36,20 +36,17 @@
     {% if route %}
     	{% if stopList %}
     		{% for stop in stopList %}
-    			{% if stop.paradaactiva %}
+    			{% if origen = stop or destino = stop %}
     			markerPosition = new google.maps.LatLng({{ stop.latitud }},{{ stop.longitud}});
        			marker = new google.maps.Marker({
         			map:map,
         			draggable:false,
         			position: markerPosition,
-        			title: "Parada: {{ stop.calle1 }} {% if stop.calle2 == '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
-        			{% if origen = stop or destino = stop %}icon: markerImageSelected{% else %}icon: markerImage{% endif %}
+        			title: "Parada {% if origen = stop %}origen{% else%}destino{% endif %}: {{ stop.calle1 }} {% if stop.calle2 == '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
+        			icon: markerImageSelected
     			});
-       
-    			{% if origen = stop or destino = stop %}
     			markerSelected = marker
     			google.maps.event.addListener(map, 'click', toggleBounce); //Click sobre el marker
-    			{% endif %}
     			limits.extend(markerPosition);
     			{% endif %}
     		{% endfor %}		
