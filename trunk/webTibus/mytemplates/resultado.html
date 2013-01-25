@@ -12,14 +12,14 @@
       	<thead>
 			<tr>
 				<th><a>Colectivo</a></th>
-				<th><a>Tiempo estimado [m]</a></th>
+				<th><a>Tiempo estimado [m:ss]</a></th>
 			</tr>
 		</thead>
 		<tbody>
       {% for bus in predicciones %}
         <tr>
         	<td>{{ bus.bus }}</td>
-        	<td>{{ bus.time }}:{{ bus.timeseg}}</td>
+        	<td>{{ bus.time }}:{{ bus.timeseg }}</td>
        	</tr>
       {% endfor %}
       </tbody></table>

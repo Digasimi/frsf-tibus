@@ -150,7 +150,7 @@ def arriveResult(request): #pagina que mostrara las predicciones
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'parada': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:6],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'parada': destinyStop},  context_instance=RequestContext(request))
 
 def itinerary(request): #pagina que muestra las recorridos de las distintas unidades
     c = {}
@@ -303,4 +303,4 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('vResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList,  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('vResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:6],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))
