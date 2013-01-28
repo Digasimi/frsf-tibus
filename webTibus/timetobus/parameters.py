@@ -1,6 +1,6 @@
 '''
 Created on 28/01/2013
-
+Paramatros del Sistema
 @author: diego
 '''
 
