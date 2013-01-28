@@ -10,6 +10,7 @@ from tibus.forms import PredictionForm, ItineraryForm, TravelForm
 from tibus.models import Parada, Recorrido, Unidad, Frecuencia
 from tibus.listenerParseXML import MyListener, PresponseHandler, Presponse
 from xml.sax import parseString,  SAXParseException
+from timetobus.parameters import * 
 
 def index(request): #pagina principal
     c={}
@@ -94,25 +95,24 @@ def arriveResult(request): #pagina que mostrara las predicciones
             destinyStop = Parada.objects.get(idparada = destinyStopId)
             
             #formato nuevo
-            conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
+            conn = stomp.Connection(REQUESTSERVER) #Aca hay que definir el conector externo
             conn.start()
             conn.connect()
-            responseQueue = '/temp-queue/responseQueue'
             msg = createMessage(temporaryRoute.getLinea(),  destinyStop.getId())
             if msg == None:
                 errorDescription = "Datos incompletos"
             else:
                 conn.set_listener('list', MyListener())
-                conn.send(msg, destination='/queue/predictions.requests',headers={'reply-to':responseQueue})
-                conn.subscribe(destination=responseQueue, ack='auto')
+                conn.send(msg, destination = REQUESTQUEUENAME,headers={'reply-to':RESPONSEQUEUENAME})
+                conn.subscribe(destination = RESPONSEQUEUENAME, ack='auto')
                 predictionXml = ""
                 lis1 = conn.get_listener('list')
                 timer = 0
-                while (predictionXml == '' and timer <= 15):
+                while (predictionXml == '' and timer <= REQUESTTIMEOUT):
                     time.sleep(1)
                     timer=timer+1
                     predictionXml = lis1.getMessage()
-                if (timer == 15):
+                if (timer == REQUESTTIMEOUT):
                     errorDescription = 'Tiempo de espera agotado'
                 else:
                     parseString(predictionXml, parser)
@@ -131,7 +131,7 @@ def arriveResult(request): #pagina que mostrara las predicciones
                     else:
                         predictionList = tempPredictionList
                     timeStampPrediction = parser.getTimeStamp()
-                conn.unsubscribe(destination=responseQueue)
+                conn.unsubscribe(destination=RESPONSEQUEUENAME)
                 conn.disconnect()
                 errorDescription = parser.getError()
         #empiezan las excepciones
@@ -150,7 +150,7 @@ def arriveResult(request): #pagina que mostrara las predicciones
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:6],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'parada': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'parada': destinyStop},  context_instance=RequestContext(request))
 
 def itinerary(request): #pagina que muestra las recorridos de las distintas unidades
     c = {}
@@ -234,23 +234,22 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
             destinyStop = Parada.objects.get(idparada = destinyStopId)
             
             #formato nuevo
-            conn = stomp.Connection([('127.0.0.1',61613)]) #Aca hay que definir el conector externo
+            conn = stomp.Connection(REQUESTSERVER) #Aca hay que definir el conector externo
             conn.start()
             conn.connect()
-            responseQueue = '/temp-queue/responseQueue'
             conn.set_listener('list', MyListener())
             #Estimacion origen
             msg = createMessage(temporaryRoute.getLinea(),  origenStop.getId())
-            conn.send(msg, destination='/queue/predictions.requests',headers={'reply-to':responseQueue})
-            conn.subscribe(destination=responseQueue, ack='auto')
+            conn.send(msg, destination = REQUESTQUEUENAME,headers={'reply-to':RESPONSEQUEUENAME})
+            conn.subscribe(destination = RESPONSEQUEUENAME, ack='auto')
             predictionXml = ""
             lis1 = conn.get_listener('list')
             timer = 0
-            while (predictionXml == '' and timer <= 15):
+            while (predictionXml == '' and timer <= REQUESTTIMEOUT):
                 time.sleep(1)
                 timer=timer+1
                 predictionXml = lis1.getMessage()
-            if (timer == 15):
+            if (timer == REQUESTTIMEOUT):
                 errorDescription = 'Tiempo de espera agotado'
             else:
                 parseString(predictionXml, parser)
@@ -260,16 +259,16 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
             if errorDescription == "":
                 #Estimacion destino
                 msg = createMessage(temporaryRoute.getLinea(),  destinyStop.getId())
-                conn.send(msg, destination='/queue/predictions.requests',headers={'reply-to':responseQueue})
-                conn.subscribe(destination=responseQueue, ack='auto')
+                conn.send(msg, destination = REQUESTQUEUENAME,headers={'reply-to':RESPONSEQUEUENAME})
+                conn.subscribe(destination = RESPONSEQUEUENAME, ack='auto')
                 predictionXml = ""
                 lis1 = conn.get_listener('list')
                 timer = 0
-                while (predictionXml == '' and timer <= 15):
+                while (predictionXml == '' and timer <= REQUESTTIMEOUT):
                     time.sleep(1)
                     timer=timer+1
                     predictionXml = lis1.getMessage()
-                if (timer == 15):
+                if (timer == REQUESTTIMEOUT):
                     errorDescription = 'Tiempo de espera agotado'
                 else:
                     parseString(predictionXml, parser)
@@ -291,7 +290,7 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
                                     predictionList = [Presponse(prediccion1.bus, predictionMinute, predictionSecond,0,0)]
                         if predictionList == []:
                             errorDescription = "No hay predicciones disponibles"
-            conn.unsubscribe(destination=responseQueue)
+            conn.unsubscribe(destination=RESPONSEQUEUENAME)
             conn.disconnect()
         #empiezan las excepciones
     except SAXParseException:
@@ -309,4 +308,4 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('vResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:6],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('vResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))
