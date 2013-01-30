@@ -51,11 +51,13 @@
 				</thead>
 	  			<tbody>	
 		  		{% for stop in stopList %}
+		  			{% if stop.paradaactiva %}
 		  			<tr>
 		  				<td>{{ stop.orden }}</td>
 		  				<td>{{ stop.calle1 }}</td>
 		  				<td>{{ stop.calle2 }}</td>
 	  				</tr>
+	  				{% endif %}
 		  		{% endfor%}
 	  			</tbody>
 	  		</table>

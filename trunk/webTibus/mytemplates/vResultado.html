@@ -1,11 +1,10 @@
 {% extends "baseMenuMapa.html" %}
 
 {% block extras %}
-<table style="text-align: center; height: 100%; width: 100%;">
-  {% if error %} <tr><td style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></td></tr>{% endif %}
-  <tr><td><font size=4>Predicciones para la viaje desde {{ origen }} a {{ destino}} de la linea {{ linea }}</font></td></tr>
-  <tr><td align=center >
-    <div id="tableContainer" class="row">
+<div class="row-fluid pagination-centered">
+  {% if error %} <div style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></div>{% endif %}
+  <h4>Predicciones para la viaje desde {{ origen }} a {{ destino}} de la linea {{ linea }}</h4>
+  <div id="tableContainer" class="row">
       {% if predicciones %}
       <div class="span4 center">
       <table class="table table-striped">
@@ -23,13 +22,13 @@
       </tbody></table>
       {% if timeStamp %}<a><font size=2>Tiempos Calculados a {{ timeStamp }}</font></a>{% endif %}
       </div>
-      <div id="mapas" style="height:350px" class="span8">Aca va el mapa</div>
+      <div class="span8"><div id="mapas" style="height:350px">Aca va el mapa</div></div>
     {% endif %}
-</div></td></tr>
-  <tr><td><form name = "formPrediccion" action="" method="post">{% csrf_token %}
+  </div>
+  <div><form name = "formPrediccion" action="" method="post">{% csrf_token %}
    	<BUTTON type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
-  </form></td></tr>
-</table>
+  </form></div>
+</div>
 {% endblock %}
 
 {% block marcas %}   
