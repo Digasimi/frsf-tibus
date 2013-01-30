@@ -12,5 +12,5 @@ urlpatterns = patterns('tibus.views',
     (r'^rViaje$', 'travelResult'),
     (r'^modelo$', 'model'), 
     (r'^contacto$', 'contact'),
-    (r'^itinerario$', 'itinerary'), 
+    (r'^recorridos$', 'itinerary'), 
 )
