@@ -756,6 +756,7 @@ def eliminar(request):
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         dataType = request.GET.get('type')
         identificador = request.GET.get('id')
+        form.initial = {'dataType': dataType, 'identificador': identificador}
         try:
             if request.method == 'POST':
                 if dataType == 'usuario':
@@ -803,7 +804,7 @@ def eliminar(request):
     else:
         errorDescription = "No posee permisos para ejecutar esta accion"
     logger.info("Usuario: " + userData.nombre +" in Eliminar Error:" + errorDescription)
-    return render_to_response('eliminar.html',  {'form':form,'error':errorDescription},  context_instance=RequestContext(request))
+    return render_to_response('eliminar.html',  {'form':form,'error':errorDescription}, context_instance=RequestContext(request))
 
 @login_required
 def frecuencydata(request, routeId):

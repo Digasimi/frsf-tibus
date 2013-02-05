@@ -34,37 +34,36 @@
 </script>
 		
 <div class="row-fluid pagination-centered">
-	  	{% crispy form %}
-	  	{% if error %} <div class="span12">Error: {{ error }}</div>{% endif %}
-	  	<div class="span5">
-			<div id="mapas" style="width:100%; height:400px;">Aca va el mapa</div>
-		</div>
-		<div class="span6">
-		    {% if stopList %}
-	  		<table id="stopList" class="table table-striped table-bordered">
-	  			<thead>
-	  				<tr>
-	  					<th><a href="#">Orden</a></th>
-	  					<th><a href="#">Calle</a></th>
-	  					<th><a href="#">Interseccion</a></th>
-  					</tr>
-				</thead>
-	  			<tbody>	
-		  		{% for stop in stopList %}
-		  			{% if stop.paradaactiva %}
-		  			<tr>
-		  				<td>{{ stop.orden }}</td>
-		  				<td>{{ stop.calle1 }}</td>
-		  				<td>{{ stop.calle2 }}</td>
-	  				</tr>
-	  				{% endif %}
-		  		{% endfor%}
-	  			</tbody>
-	  		</table>
-	  		{% else %}
-	  		<span>No hay paradas disponibles</span>
-	  		{% endif %}
-  		</div>
+  	{% crispy form %}
+  	{% if error %} <div class="span12">Error: {{ error }}</div>{% endif %}
+  	<div class="span5">
+		<div id="mapas" style="width:100%; height:400px;">Aca va el mapa</div>
+	</div>
+	<div class="span6">
+	    {% if stopList %}
+  		<table id="stopList" class="table table-striped table-bordered">
+  			<thead>
+  				<tr>
+  					<th style="display:none"><a href="#">Orden</a></th>
+  					<th><a href="#">Calle</a></th>
+  					<th><a href="#">Interseccion</a></th>
+ 					</tr>
+			</thead>
+  			<tbody>	
+	  		{% for stop in stopList %}
+	  			{% if stop.paradaactiva %}
+	  			<tr>
+	  				<td style="display:none">{{ stop.orden }}</td>
+	  				<td>{{ stop.calle1 }}</td>
+	  				<td>{{ stop.calle2 }}</td>
+  				</tr>
+  				{% endif %}
+	  		{% endfor%}
+  			</tbody>
+  		</table>
+  		{% else %}
+  		<span>No hay paradas disponibles</span>
+  		{% endif %}
 	</div>
 </div>
 {% endblock %}
@@ -78,7 +77,7 @@
         map:map,
         draggable:false,
         position: markerPosition,
-        title: "Parada: {{ stop.calle1 }} {% if stop.calle2 == '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.orden }})",
+        title: "Parada: {{ stop.calle1 }} {% if stop.calle2 != '' %}& {{ stop.calle2 }} {% endif %} ({{ stop.sentido }})",
         icon: markerImage
     });
     limits.extend(markerPosition);

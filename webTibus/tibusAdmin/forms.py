@@ -307,7 +307,10 @@ class PasswordForm(forms.Form):
 
 #Formulario generico para la confirmacion de la eliminacion        
 class EliminarForm(forms.Form):
-    identificador = forms.CharField(widget=forms.HiddenInput)
+    dataType = forms.CharField(label = "Tipo de dato")
+    dataType.widget.attrs["disabled"]="disabled"
+    identificador = forms.CharField()
+    identificador.widget.attrs["disabled"]="disabled"
     
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -315,7 +318,9 @@ class EliminarForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
             Fieldset(
-                'Confirmacion de Eliminacion'
+                'Confirmacion de Eliminacion',
+                'dataType',
+                'identificador',
             ),
             FormActions(
                 Submit('eliminar', 'Eliminar', css_class="btn-primary")                
