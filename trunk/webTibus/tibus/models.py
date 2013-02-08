@@ -136,6 +136,9 @@ class Unidad(models.Model):
       
     class Meta:
         db_table = 'unidad'
+        
+    def __unicode__(self):
+        return str(self.getIdByLinea()) + " (" +str(self.linea) + ")"
     
     def getLinea(self):
         return self.linea
@@ -155,6 +158,9 @@ class Frecuencia(models.Model):
     dia_semana = models.CharField(max_length=10, choices=DIASSEMANA)
     hora = models.TimeField()
     
+    def __unicode__(self):
+        return str(self.dia_semana) + " " + str(self.hora)
+        
     def getLinea(self):
         return self.linea
     
