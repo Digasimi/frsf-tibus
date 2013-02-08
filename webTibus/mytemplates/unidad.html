@@ -4,7 +4,7 @@
     	{% if busList %}
 			<thead>
 				<tr>
-					<th><a href="#">Identificador</a></th>
+					<th style="display:none"><a href="#">Identificador</a></th>
 					<th><a href="#">Linea</a></th>
 					<th><a href="#">Unidad</a></th>
 					<th><a href="#">Apta Movilidad Reducida</a></th>
@@ -13,7 +13,7 @@
 			<tbody>
       		{% for bus in busList %}
       			<tr>
-      				<td>{{ bus.idunidad }}</td>
+      				<td style="display:none">{{ bus.idunidad }}</td>
       				<td>{{ bus.linea }}</td>
       				<td>{{ bus.id_unidad_linea }}</td>
       				<td>{{ bus.apto_movilidad_reducida }}</td>

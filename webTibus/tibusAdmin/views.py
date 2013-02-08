@@ -756,7 +756,6 @@ def eliminar(request):
     if (userData.categoria == 'Administrador' or userData.categoria == 'Empresa'):
         dataType = request.GET.get('type')
         identificador = request.GET.get('id')
-        form.initial = {'dataType': dataType, 'identificador': identificador}
         try:
             if request.method == 'POST':
                 if dataType == 'usuario':
@@ -788,6 +787,19 @@ def eliminar(request):
                     temporaryRoute = temporary.getLinea()
                     temporary.delete()    
                     return HttpResponseRedirect('frecuency'+temporaryRoute.getLinea())
+            elif request.method == 'GET':
+                if dataType == 'usuario':
+                    form.initial = {'dataType': dataType, 'identificador': Usuario.objects.get(id=identificador)}
+                elif dataType == 'empresa':
+                    form.initial = {'dataType': dataType, 'identificador': Empresa.objects.get(idempresa = identificador)}
+                elif dataType == 'linea':
+                    form.initial = {'dataType': dataType, 'identificador': Recorrido.objects.get(linea = identificador)}
+                elif dataType == 'parada':
+                    form.initial = {'dataType': dataType, 'identificador': Parada.objects.get(idparada = identificador)} 
+                elif dataType == 'unidad':
+                    form.initial = {'dataType': dataType, 'identificador': Unidad.objects.get(idunidad = identificador)}
+                elif dataType == 'frecuencia':
+                    form.initial = {'dataType': dataType, 'identificador': Frecuencia.objects.get(idfrecuencia = identificador)}
         except Usuario.DoesNotExist:
             errorDescription = "No existe usuario"
         except Empresa.DoesNotExist:
