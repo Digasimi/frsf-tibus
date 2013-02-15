@@ -1,0 +1,14 @@
+{% extends "basewml.wml" %}
+
+{% block card %}
+<card id="result" title="Tibus"> 
+	{% if predictionList %}
+    <p>La proxima unidad llega en:</p>
+    {% for bus in predictionList %}
+    <p> {{ bus.time }}:{{ bus.timeseg }} minutos </p> 
+    {% endfor %}
+    {% else %}
+    <p> {{ error }} </p>
+    {% endif %}
+</card> 
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "basewml.wml" %}
+
+{% block card %}
+<card id="stopselect" title="Tibus"> 
+      <p>Seleccione una Parada:</p>
+      {% for stop in stopList %}
+      <p><anchor title="go{{ stop.idparada }}">{{ stop }}
+	  <go href="ws{{ stop.idparada }}" /></anchor></p> 
+      {% endfor %}
+</card> 
+{% endblock %}

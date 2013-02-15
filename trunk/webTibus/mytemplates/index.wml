@@ -1,0 +1,11 @@
+{% extends "basewml.wml" %}
+
+{% block card %}
+<card id="companyselect" title="Tibus"> 
+      <p>Seleccione una Empresa:</p>
+      {% for company in companyList %}
+      <p><anchor title="go{{ company }}">{{ company }}
+	  <go href="wc{{ company.idempresa }}" /></anchor></p> 
+      {% endfor %}
+</card> 
+{% endblock %}

@@ -106,6 +106,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'tibusWap.mobileMediator.RequestMobileMiddleware',
+    'tibusWap.mobileMediator.ResponseMobileMiddleware',
 )
 
 ROOT_URLCONF = "timetobus.urls"
@@ -136,8 +138,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'django.contrib.gis',
     'crispy_forms',
-    'tibusAdmin', 
+    'tibusAdmin',
     'tibus',
+    'tibusWap',
 )
 
 # A sample logging configuration. The only tangible logging
