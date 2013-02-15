@@ -25,6 +25,11 @@ Cantidad de Predicciones enviadas en la response (respuesta)
 PREDICTIONSNUMBERS = 6
 
 '''
+Cantidad de Predicciones enviadas en la wap response (respuesta)
+'''
+MOBILEPREDICTIONSNUMBERS = 2
+
+'''
 Tiempo limite de respuesta para las consultas
 '''
 REQUESTTIMEOUT = 15
