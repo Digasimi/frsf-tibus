@@ -196,6 +196,7 @@ def stop(request, routeId): #Pagina de ABM de paradas
     stopList = []
     mensaje = ''
     temporaryRoute = None
+    action = ""
         
     #logica
     try:
@@ -312,6 +313,7 @@ def companydata(request, companyId): #pagina de ABM de unidades - faltan excepci
     logger = logging.getLogger(__name__)
     form = CompanyForm()
     mensaje = ''
+    action = ""
 
     #logica
     try:
@@ -371,6 +373,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
     logger = logging.getLogger(__name__)
     temporaryUser = None
     mensaje = ''
+    action = ""
     
     try:
         if (userData.categoria == 'Administrador'):
@@ -456,6 +459,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
     form = BusForm()
     temporaryBus = None
     mensaje = ''
+    action = ""
     
     try:
         superadmin = (userData.categoria == 'Administrador')
@@ -531,6 +535,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
     temporaryStop = None
     mensaje = ''
     stopList=[]
+    action = ""
     
     #logica
     try:
@@ -829,6 +834,7 @@ def frecuencydata(request, routeId):
     logger = logging.getLogger(__name__)
     temporaryFrecuency = None
     mensaje = ''
+    action = ""
     
     try:
         #logica

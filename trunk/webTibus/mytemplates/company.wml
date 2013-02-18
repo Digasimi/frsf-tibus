@@ -2,7 +2,7 @@
 
 {% block card %}
 <card id="routeselect" title="Tibus"> 
-      <p>Seleccione una Linea:</p>
+      <p><strong>Seleccione una Linea:</strong></p>
       {% for route in routeList %}
       <p><anchor title="go{{ route.idrecorrido }}">{{ route }}
 	  <go href="wr{{ route.idrecorrido }}" /></anchor></p> 

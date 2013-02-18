@@ -2,7 +2,7 @@
 
 {% block card %}
 <card id="companyselect" title="Tibus"> 
-      <p>Seleccione una Empresa:</p>
+      <p><strong>Seleccione una Empresa:</strong></p>
       {% for company in companyList %}
       <p><anchor title="go{{ company }}">{{ company }}
 	  <go href="wc{{ company.idempresa }}" /></anchor></p> 

@@ -8,10 +8,11 @@ import re
 class RequestMobileMiddleware(object):
     def process_request(self, request):
         is_mobile = False;
-
+        is_http_mobile = False;
+        
         if request.META.has_key('HTTP_USER_AGENT'):
             user_agent = request.META['HTTP_USER_AGENT']
-            pattern = "(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|windows ce|pda|mobile|mini|palm|netfront)"
+            pattern = "(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|windows ce|pda|mobile|mini|palm|netfront|android|ipad|iphone)"
             prog = re.compile(pattern, re.IGNORECASE)
             match = prog.search(user_agent)
 
@@ -50,9 +51,18 @@ class RequestMobileMiddleware(object):
                     is_mobile = True
 
         request.is_mobile = is_mobile
+        if is_mobile:
+            if request.META.has_key('HTTP_ACCEPT'):
+                http_accept = request.META['HTTP_ACCEPT']
+                pattern = "text/html"
+                prog = re.compile(pattern, re.IGNORECASE)
+                match = prog.search(http_accept)
+                if match:
+                    is_http_mobile = True
+        request.is_http_mobile = is_http_mobile
 
 class ResponseMobileMiddleware(object):
     def process_response(self, request, response):        
-        if request.is_mobile:
-            response['Content-Type'] = "text/vnd.wap.wml"
+        if request.is_mobile and not request.is_http_mobile:
+                response['Content-Type'] = "text/vnd.wap.wml"
         return response
