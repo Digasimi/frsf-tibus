@@ -3,7 +3,7 @@ from django.core.context_processors import csrf
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from tibus.models import Empresa, Recorrido, Parada
-from tibus.predictor import predictor
+from tibus.predictor import Predictor
 from timetobus.parameters import MOBILEPREDICTIONSNUMBERS
 
 def index(request): #pagina principal
@@ -15,14 +15,30 @@ def index(request): #pagina principal
 def company(request, companyId): #pagina principal
     c={}
     c.update(csrf(request))
-    routeList = Recorrido.objects.filter(empresa = companyId).order_by('linea')
-    return render_to_response('company.wml',{'routeList': routeList,'admin': False},  context_instance=RequestContext(request))
+    try:
+        Empresa.objects.get(idempresa=companyId)
+        routeList = Recorrido.objects.filter(empresa = companyId).order_by('linea')
+        return render_to_response('company.wml',{'routeList': routeList,'admin': False},  context_instance=RequestContext(request))
+    except Empresa.DoesNotExist:
+        companyList = Empresa.objects.all().order_by('nombre')
+        return render_to_response('index.wml',{'companyList': companyList,'admin': False},  context_instance=RequestContext(request))
+    except Recorrido.DoesNotExist:
+        companyList = Empresa.objects.all().order_by('nombre')
+        return render_to_response('index.wml',{'companyList': companyList,'admin': False},  context_instance=RequestContext(request))
 
 def route(request, routeId): #pagina principal
     c={}
     c.update(csrf(request))
-    stopList = Parada.objects.filter(linea = routeId, paradaactiva = True).order_by('orden')
-    return render_to_response('route.wml',{'stopList': stopList,'admin': False},  context_instance=RequestContext(request))
+    try:
+        Recorrido.objects.get(idrecorrido=routeId)
+        stopList = Parada.objects.filter(linea = routeId, paradaactiva = True).order_by('orden')
+        return render_to_response('route.wml',{'stopList': stopList,'admin': False},  context_instance=RequestContext(request))
+    except Parada.DoesNotExist:
+        companyList = Empresa.objects.all().order_by('nombre')
+        return render_to_response('index.wml',{'companyList': companyList,'admin': False},  context_instance=RequestContext(request))
+    except Recorrido.DoesNotExist:
+        companyList = Empresa.objects.all().order_by('nombre')
+        return render_to_response('index.wml',{'companyList': companyList,'admin': False},  context_instance=RequestContext(request))    
 
 def result(request, stopId): #pagina principal
     #carga inicial
@@ -35,7 +51,7 @@ def result(request, stopId): #pagina principal
     #logica
     try:
         temporaryRoute= Parada.objects.get(idparada = stopId).getLinea().getLinea()
-        predictorTemp = predictor()
+        predictorTemp = Predictor()
         predictorTemp.doPrediction(temporaryRoute, stopId, False)
         errorDescription = predictorTemp.getError()
         predictionList = predictorTemp.getPredictionList()

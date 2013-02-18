@@ -7,10 +7,10 @@ import stomp, time
 from tibus.models import Unidad
 from tibus.listenerParseXML import MyListener, PresponseHandler
 from xml.sax import parseString,  SAXParseException
-from timetobus.parameters import * 
+from timetobus.parameters import REQUESTSERVER, REQUESTQUEUENAME, RESPONSEQUEUENAME, REQUESTTIMEOUT 
 from django.db.utils import DatabaseError
 
-class predictor():
+class Predictor():
     errorDescription = ''
     timeStampPrediction = ''
     predictionList = []
@@ -38,6 +38,8 @@ class predictor():
             conn.start()
             conn.connect()
             msg = self.createMessage(routeId, stopId)
+            if aptoPrediction == None or aptoPrediction == "":
+                aptoPrediction = False
             if msg == None:
                 self.errorDescription = "Datos incompletos"
             else:
@@ -80,6 +82,6 @@ class predictor():
         except ValueError:
             self.errorDescription = "Datos en formato incorrecto - Valor de datos"
         except DatabaseError:
-            self.errorDescription = "Error de no se que" #Ver cuando salta este error. posible error de asociacion route-parada
+            self.errorDescription = "Error de base de datos"
         except stomp.exception.ConnectFailedException:
             self.errorDescription = "No hay conexion con el servidor"

@@ -5,28 +5,8 @@ when you run "manage.py test".
 """
 
 from django.test import TestCase
-from tibus.views import createMessage
 from tibus.models import Empresa, Recorrido, Parada, Unidad, Frecuencia
-        
-class MessageTest(TestCase):
-    def getValidMessageTest(self):
-        """
-        Prueba que valida mensaje valido
-        """
-        messageValid = '<prediction-request><linea>1</linea><parada>1</parada></prediction-request>'
-        self.assertEqual(createMessage(1,1), messageValid)
-
-    def getNotRouteMessageTest(self):
-        """
-        Prueba que valida mensaje valido
-        """
-        self.assertEqual(createMessage('',1), None)
-        
-    def getNotStopMessageTest(self):
-        """
-        Prueba que valida mensaje valido
-        """
-        self.assertEqual(createMessage(1,''), None)
+from tibus.predictor import Predictor
         
 class CompanyTest(TestCase):
     def validCompanyTest(self):
@@ -158,3 +138,47 @@ class FrecuencyTest(TestCase):
             self.assertTrue(False)
         except:
             self.assertTrue(True)
+            
+class PredictorTest(TestCase):
+    testPredictor = Predictor()
+     
+    def emptyMessage(self):
+        msg = self.testPredictor.createMessage("", "")
+        self.assertIsNone(msg, "Mensaje Vacio")
+        
+    def notRouteMessage(self):
+        msg = self.testPredictor.createMessage(13, "")
+        self.assertIsNone(msg, "Mensaje Vacio")
+        
+    def notStopMessage(self):
+        msg = self.testPredictor.createMessage("", 12)
+        self.assertIsNone(msg, "Mensaje Vacio")
+        
+    def correctMessage(self):
+        messageValid = '<prediction-request><linea>1</linea><parada>1</parada></prediction-request>'
+        msg = self.testPredictor.createMessage(1, 1)
+        self.assertEqual(msg, messageValid)
+        
+    def emptyPrediction(self):
+        self.testPredictor.doPrediction("", "", "")
+        self.assertNotEqual("", self.testPredictor.getError(), "Error de prueba")
+        
+    def notRoutePrediction(self):
+        self.testPredictor.doPrediction("", 13, None)
+        self.assertNotEqual("", self.testPredictor.getError(), "Error de prueba")
+    
+    def notStopPrediction(self):
+        self.testPredictor.doPrediction(12, "", None)
+        self.assertNotEqual("", self.testPredictor.getError(), "Error de prueba")
+        
+    def notAptoPrediction(self):
+        self.testPredictor.doPrediction(1, 1, "")
+        self.assertNotEqual("Datos incompletos", self.testPredictor.getError(), "Error de prueba")
+
+    def falseAptoPrediction(self):
+        self.testPredictor.doPrediction(1, 1, False)
+        self.assertNotEqual("Datos incompletos", self.testPredictor.getError(), "Error de prueba")
+        
+    def trueAptoPrediction(self):
+        self.testPredictor.doPrediction(1, 1, True)
+        self.assertNotEqual("Datos incompletos", self.testPredictor.getError(), "Error de prueba")
