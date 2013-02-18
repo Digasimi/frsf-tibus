@@ -15,7 +15,7 @@ from timetobus.parameters import PREDICTIONSNUMBERS
 def index(request): #pagina principal
     c={}
     c.update(csrf(request))
-    if request.is_mobile:
+    if request.is_mobile and not request.is_http_mobile:
         return HttpResponseRedirect('windex')
     else:
         return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
@@ -78,7 +78,10 @@ def arriveResult(request): #pagina que mostrara las predicciones
     predictionList = []
     errorDescription = ""
     timeStampPrediction = ""
-    stopList = Parada.objects.all()
+    stopList = []
+    temporaryRoute = None
+    nameTemporaryRoute = ""
+    destinyStop = None
     
     #logica
     routeName = request.GET.get('linea')
@@ -93,10 +96,11 @@ def arriveResult(request): #pagina que mostrara las predicciones
             errorDescription = "No ingreso la parada"
         else:
             temporaryRoute= Recorrido.objects.get(idrecorrido = routeName)
+            nameTemporaryRoute = temporaryRoute.getLinea()
             stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
             destinyStop = Parada.objects.get(idparada = destinyStopId)
             predictorTemp = predictor()
-            predictorTemp.doPrediction(temporaryRoute.getLinea(), destinyStopId, aptoPrediction)
+            predictorTemp.doPrediction(nameTemporaryRoute, destinyStopId, aptoPrediction)
             errorDescription = predictorTemp.getError()
             predictionList = predictorTemp.getPredictionList()
             timeStampPrediction = predictorTemp.getTimeStamp()
@@ -107,7 +111,7 @@ def arriveResult(request): #pagina que mostrara las predicciones
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'parada': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': nameTemporaryRoute, 'parada': destinyStop},  context_instance=RequestContext(request))
 
 def itinerary(request): #pagina que muestra las recorridos de las distintas unidades
     c = {}
@@ -170,7 +174,11 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
     predictionList = []
     errorDescription = ""
     timeStampPrediction = ""
-    stopList = Parada.objects.all()
+    stopList = []
+    temporaryRoute = None
+    nameTemporaryRoute = ""
+    destinyStop = None
+    origenStop = None
     
     #logica
     routeName = request.GET.get('linea')
@@ -185,16 +193,17 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
             errorDescription = "No ingreso la parada"
         else:
             temporaryRoute= Recorrido.objects.get(idrecorrido = routeName)
+            nameTemporaryRoute = temporaryRoute.getLinea()
             stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
             origenStop = Parada.objects.get(idparada = origenStopId)
             destinyStop = Parada.objects.get(idparada = destinyStopId)
             
             predictorTemp = predictor()
-            predictorTemp.doPrediction(temporaryRoute.getLinea(), origenStopId, False)
+            predictorTemp.doPrediction(nameTemporaryRoute, origenStopId, False)
             errorDescription = predictorTemp.getError()
             predictionList1 = predictorTemp.getPredictionList()
             if errorDescription == "":
-                predictorTemp.doPrediction(temporaryRoute.getLinea(), destinyStopId, False)
+                predictorTemp.doPrediction(nameTemporaryRoute, destinyStopId, False)
                 errorDescription = predictorTemp.getError()
                 predictionList2 = predictorTemp.getPredictionList()
                 timeStampPrediction = predictorTemp.getTimeStamp()
@@ -221,4 +230,4 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('vResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': temporaryRoute.getLinea(), 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('vResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': nameTemporaryRoute, 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))

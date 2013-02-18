@@ -2,7 +2,7 @@
 
 {% block card %}
 <card id="stopselect" title="Tibus"> 
-      <p>Seleccione una Parada:</p>
+      <p><strong>Seleccione una Parada:</strong></p>
       {% for stop in stopList %}
       <p><anchor title="go{{ stop.idparada }}">{{ stop }}
 	  <go href="ws{{ stop.idparada }}" /></anchor></p> 
