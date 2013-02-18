@@ -9,14 +9,19 @@ from django.http import HttpResponseRedirect
 from tibus.forms import PredictionForm, ItineraryForm, TravelForm
 from tibus.models import Parada, Recorrido, Unidad, Frecuencia
 from tibus.listenerParseXML import Presponse
-from tibus.predictor import predictor
+from tibus.predictor import Predictor
 from timetobus.parameters import PREDICTIONSNUMBERS
 
 def index(request): #pagina principal
     c={}
     c.update(csrf(request))
-    if request.is_mobile and not request.is_http_mobile:
-        return HttpResponseRedirect('windex')
+    if request.is_mobile:
+        if not request.is_http_mobile:
+            return HttpResponseRedirect('windex')
+        else:
+            #Hacer version de pagina reducida para smartphone
+            #Por el momento redrigida a version http
+            return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
     else:
         return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
     
@@ -64,13 +69,6 @@ def contact(request):#pagina de ayuda
     c.update(csrf(request))
     return render_to_response('contact.html',  {'admin': False},  context_instance=RequestContext(request))
 
-#Funcion que crea el mensaje xml dados los id de route y de unidad
-def createMessage(route,  order):
-    if route == None or order == None or route == '' or order == '':
-        return None
-    else: 
-        return '<prediction-request><linea>' + str(route) + '</linea><parada>' + str(order) + '</parada></prediction-request>'
-
 def arriveResult(request): #pagina que mostrara las predicciones
     #carga inicial
     c = {}
@@ -99,7 +97,7 @@ def arriveResult(request): #pagina que mostrara las predicciones
             nameTemporaryRoute = temporaryRoute.getLinea()
             stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
             destinyStop = Parada.objects.get(idparada = destinyStopId)
-            predictorTemp = predictor()
+            predictorTemp = Predictor()
             predictorTemp.doPrediction(nameTemporaryRoute, destinyStopId, aptoPrediction)
             errorDescription = predictorTemp.getError()
             predictionList = predictorTemp.getPredictionList()
@@ -198,7 +196,7 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
             origenStop = Parada.objects.get(idparada = origenStopId)
             destinyStop = Parada.objects.get(idparada = destinyStopId)
             
-            predictorTemp = predictor()
+            predictorTemp = Predictor()
             predictorTemp.doPrediction(nameTemporaryRoute, origenStopId, False)
             errorDescription = predictorTemp.getError()
             predictionList1 = predictorTemp.getPredictionList()
