@@ -1,4 +1,5 @@
 # Create your views here.
+# Create your views here.
 
 import stomp
 from django.core.context_processors import csrf
@@ -6,29 +7,24 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.db.utils import DatabaseError
 from django.http import HttpResponseRedirect
-from tibus.forms import PredictionForm, ItineraryForm, TravelForm
-from tibus.models import Parada, Recorrido, Unidad, Frecuencia
+from tibus.forms import PredictionForm, TravelForm
+from tibus.models import Parada, Recorrido, Unidad
 from tibus.listenerParseXML import Presponse
 from tibus.predictor import Predictor
-from timetobus.parameters import PREDICTIONSNUMBERS
+from timetobus.parameters import SPHONEPREDICTIONSNUMBERS
 
-def index(request): #pagina principal
+def sindex(request): #pagina principal
     c={}
     c.update(csrf(request))
     if request.is_mobile:
         if not request.is_http_mobile:
             return HttpResponseRedirect('windex')
         else:
-            return HttpResponseRedirect('sindex')
+            return render_to_response('sindex.html',{'admin': False},  context_instance=RequestContext(request))
     else:
-        return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
+        return HttpResponseRedirect('index')
     
-def model(request): #pagina que explica el funcionamiento del modelo
-    c={}
-    c.update(csrf(request))
-    return render_to_response('modelo.html',  {'admin': False},  context_instance=RequestContext(request))
-    
-def prediction(request): #pagina que mostrara las predicciones
+def sprediction(request): #pagina que mostrara las predicciones
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -44,7 +40,7 @@ def prediction(request): #pagina que mostrara las predicciones
                 aptoPrediction = request.POST.get('apto')
                 if aptoPrediction == None:
                     aptoPrediction = False
-                return HttpResponseRedirect('resultado?linea=' + str(routePrediction.getId()) + '&parada='+ str(stopPrediction.getId())+'&apto='+str(aptoPrediction))
+                return HttpResponseRedirect('sresultado?linea=' + str(routePrediction.getId()) + '&parada='+ str(stopPrediction.getId())+'&apto='+str(aptoPrediction))
             else:
                 form.setQueryOrden(request.POST.get('linea'))
             #empiezan las excepciones
@@ -60,14 +56,9 @@ def prediction(request): #pagina que mostrara las predicciones
             errorDescription = "No existe la parada"
     else:
         form = PredictionForm()
-    return render_to_response('prediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
+    return render_to_response('sprediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
     
-def contact(request):#pagina de ayuda
-    c={}
-    c.update(csrf(request))
-    return render_to_response('contact.html',  {'admin': False},  context_instance=RequestContext(request))
-
-def arriveResult(request): #pagina que mostrara las predicciones
+def sarriveResult(request): #pagina que mostrara las predicciones
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -107,27 +98,9 @@ def arriveResult(request): #pagina que mostrara las predicciones
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': nameTemporaryRoute, 'parada': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('sresultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:SPHONEPREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': nameTemporaryRoute, 'parada': destinyStop},  context_instance=RequestContext(request))
 
-def itinerary(request): #pagina que muestra las recorridos de las distintas unidades
-    c = {}
-    c.update(csrf(request))
-    errorDescription = ""
-    form = ItineraryForm()
-    if request.method == 'POST':
-        temporaryRoute = Recorrido.objects.get(idrecorrido = request.POST.get('linea'))
-        stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
-        frecuencyList = Frecuencia.objects.filter(linea = temporaryRoute)
-        form.quitEmptyOption()
-        form.initial = {'linea':request.POST.get('linea')}
-    else:
-        temporaryRoute = None
-        stopList = []
-        frecuencyList = []
-    
-    return render_to_response('itinerario.html',  {'stopList':stopList, 'frecuencyList':frecuencyList, 'error': errorDescription, 'form': form},  context_instance=RequestContext(request))
-
-def travelPrediction(request): #pagina que mostrara el formulario de datos para las predicciones de tiempos de viaje
+def stravelPrediction(request): #pagina que mostrara el formulario de datos para las predicciones de tiempos de viaje
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -142,7 +115,7 @@ def travelPrediction(request): #pagina que mostrara el formulario de datos para 
                 origenStopPrediction = Parada.objects.get(idparada = request.POST.get('origen'))
                 destinyStopPrediction = Parada.objects.get(idparada = request.POST.get('destino'))
                 if (destinyStopPrediction.getOrder() >= origenStopPrediction.getOrder()):
-                    return HttpResponseRedirect('rViaje?linea=' + str(routePrediction.getId()) + '&origen='+ str(origenStopPrediction.getId())+'&destino='+ str(destinyStopPrediction.getId()))
+                    return HttpResponseRedirect('srViaje?linea=' + str(routePrediction.getId()) + '&origen='+ str(origenStopPrediction.getId())+'&destino='+ str(destinyStopPrediction.getId()))
                 else:
                     errorDescription = "La parada destino debe ser posterior a la parada origen"
                     form.setQueryOrden(request.POST.get('linea'))
@@ -161,9 +134,9 @@ def travelPrediction(request): #pagina que mostrara el formulario de datos para 
             errorDescription = "No existe la parada"
     else:
         form = TravelForm()
-    return render_to_response('prediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
+    return render_to_response('sprediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
 
-def travelResult(request): #pagina que mostrara los resultados de las estimaciones de tiempos de viaje 
+def stravelResult(request): #pagina que mostrara los resultados de las estimaciones de tiempos de viaje 
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -226,4 +199,4 @@ def travelResult(request): #pagina que mostrara los resultados de las estimacion
         errorDescription = "No existe la parada"
     except Unidad.DoesNotExist:
         errorDescription = "No hay unidades existentes"
-    return render_to_response('vResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': nameTemporaryRoute, 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))
+    return render_to_response('svResultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:SPHONEPREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': nameTemporaryRoute, 'origen': origenStop,'destino': destinyStop},  context_instance=RequestContext(request))
