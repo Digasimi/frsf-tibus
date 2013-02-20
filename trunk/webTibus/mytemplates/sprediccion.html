@@ -1,0 +1,10 @@
+{% extends "basesp.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<div style="width:100%" class="row-fluid pagination-centered">
+  			{% crispy form %}
+
+			{% if error %}<div>Error: {{ error }}</div>{% endif %}
+	</div>
+{% endblock %}

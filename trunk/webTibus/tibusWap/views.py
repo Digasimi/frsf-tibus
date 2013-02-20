@@ -5,12 +5,18 @@ from django.shortcuts import render_to_response
 from tibus.models import Empresa, Recorrido, Parada
 from tibus.predictor import Predictor
 from timetobus.parameters import MOBILEPREDICTIONSNUMBERS
+from django.http import HttpResponseRedirect
 
 def index(request): #pagina principal
     c={}
     c.update(csrf(request))
-    companyList = Empresa.objects.all().order_by('nombre')
-    return render_to_response('index.wml',{'companyList': companyList,'admin': False},  context_instance=RequestContext(request))
+    if request.is_mobile:
+        if not request.is_http_mobile:
+            return HttpResponseRedirect('windex')
+        else:
+            return render_to_response('sindex.html',{'admin': False},  context_instance=RequestContext(request))
+    else:
+        return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
 
 def company(request, companyId): #pagina principal
     c={}

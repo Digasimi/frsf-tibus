@@ -1,0 +1,33 @@
+{% extends "basesp.html" %}
+
+{% block content %}
+<div style="width:100%" class="row-fluid pagination-centered">
+  {% if error %} <div style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></div>{% endif %}
+  <h4>Predicciones para la viaje desde {{ origen }} a {{ destino}} de la linea {{ linea }}</h4>
+  <div id="tableContainer" class="row">
+    {% if predicciones %}
+      <div class="span4 center">
+      <table class="table table-striped">
+      	<thead>
+			<tr>
+				<th>Tiempo estimado [m:ss]</a></th>
+			</tr>
+		</thead>
+		<tbody>
+      {% for bus in predicciones %}
+        <tr>
+        	<td>{{ bus.time }}: {{ bus.timeseg }}</td>
+       	</tr>
+      {% endfor %}
+      </tbody></table>
+      {% if timeStamp %}<a><font size=2>Tiempos Calculados a {{ timeStamp }}</font></a>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+  <div><form name = "formPrediccion" action="" method="post">{% csrf_token %}
+   	<BUTTON type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
+  </form></div>
+</div>
+{% endblock %}
+
+{% block extraScripts %}<script>setTimeout('document.location.reload()',60000); </script>{% endblock %}

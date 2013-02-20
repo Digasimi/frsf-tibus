@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'tibusAdmin',
     'tibus',
     'tibusWap',
+    'tibussphone',
 )
 
 # A sample logging configuration. The only tangible logging
