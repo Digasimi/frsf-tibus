@@ -47,6 +47,7 @@
   					<th style="display:none"><a href="#">Orden</a></th>
   					<th><a href="#">Calle</a></th>
   					<th><a href="#">Interseccion</a></th>
+  					<th><a href="#">Sentido</a></th>
  					</tr>
 			</thead>
   			<tbody>	
@@ -56,6 +57,7 @@
 	  				<td style="display:none">{{ stop.orden }}</td>
 	  				<td>{{ stop.calle1 }}</td>
 	  				<td>{{ stop.calle2 }}</td>
+	  				<td>{{ stop.sentido }}</td>
   				</tr>
   				{% endif %}
 	  		{% endfor%}

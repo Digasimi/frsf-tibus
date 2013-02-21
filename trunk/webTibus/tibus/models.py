@@ -33,6 +33,7 @@ class Empresa(models.Model):
         def validate(self):
             if self.nombre == "" or self.mail == '' or re.search("[^a-zA-Z0-9]", self.nombre) :
                 return False
+            self.nombre = self.nombre.strip().rstrip("\n")
             return True
             
         class Meta:
@@ -53,6 +54,7 @@ class Recorrido(models.Model):
     def validate(self):
         if self.linea == "" or (re.search("[^a-zA-Z0-9]", self.linea)!=None):
             return False
+        self.linea = self.linea.strip().rstrip("\n")
         return True
         
     def getId(self):
@@ -124,6 +126,8 @@ class Parada(models.Model):
         if self.calle1 == None or self.calle1 == '':
             return False
         if (self.latitud <= 90 and self.latitud >= -90) and (self.longitud <= 180 and self.longitud >= -180):
+            self.calle1 = self.calle1.strip().rstrip("\n")
+            self.calle2 = self.calle2.strip().rstrip("\n")
             return True
         return False 
         
