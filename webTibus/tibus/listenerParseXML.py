@@ -1,7 +1,10 @@
 from xml.sax.handler import ContentHandler
 
-#Clase que define un objeto que reenvia y recibe mensajes via stomp al servidor JMS
+
 class MyListener(object):
+    '''
+    Clase que define un objeto que reenvia y recibe mensajes via stomp al servidor JMS
+    '''
     message = ''
   
     def on_error(self, headers, message):
@@ -14,8 +17,11 @@ class MyListener(object):
     def getMessage(self):
         return self.message
 
-#Clase que maneja el xml respuesta y lo transforma en un lista de datos de Presponse    
+    
 class PresponseHandler(ContentHandler):
+    '''
+    Clase que maneja el xml respuesta y lo transforma en un lista de datos de Presponse
+    '''
     list = []
     isColeElement= 0
     isTimeElement = 0
@@ -46,6 +52,9 @@ class PresponseHandler(ContentHandler):
         self.error = ""
     
     def startElement(self, name, attrs):
+        '''
+        Funcion que identifica el elemento
+        '''
         if name == 'busId':
             self.isColeElement= 1
             self.bus = ""
@@ -66,6 +75,9 @@ class PresponseHandler(ContentHandler):
             self.error = ""   
     
     def characters (self, ch):
+        '''
+        Funcion que guarda los datos de cada elemento
+        '''
         if self.isColeElement== 1:
             self.bus += ch
         if self.isTimeElement == 1:
@@ -80,6 +92,9 @@ class PresponseHandler(ContentHandler):
             self.error += ch
     
     def endElement(self, name):
+        '''
+        Funcion que identifica el cierre cada elemento
+        '''
         if name == 'busId':
             self.isColeElement= 0
         if name == 'timeSec':
@@ -108,8 +123,11 @@ class PresponseHandler(ContentHandler):
     def getError(self):
         return self.error
     
-    #Clase que guarda una estimacion de tiempo
+    
 class Presponse(object):
+    '''
+    Clase que representa una estimacion de tiempo de prediccion
+    '''
     bus = ''
     time = 0
     lat = 0

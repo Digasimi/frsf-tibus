@@ -614,7 +614,7 @@ def stopdata(request, stopId): #pagina de ABM de unidades - faltan excepciones
                 else:
                     temporaryStop = Parada.objects.get(idparada = stopId)
                     temporaryRoute= Recorrido.objects.get(linea = temporaryStop.getLinea())
-                    form.initial = {'linea': temporaryRoute.getId(),'orden': temporaryStop.getOrder(), 'latitud': temporaryStop.getLat(), 'longitud': temporaryStop.getLon(), 'calle1': temporaryStop.getStreetName1(), 'calle2': temporaryStop.getStreetName2(), 'paradaactiva': temporaryStop.getActive()}
+                    form.initial = {'linea': temporaryRoute.getId(),'orden': temporaryStop.getOrder(), 'latitud': temporaryStop.getLat(), 'longitud': temporaryStop.getLon(), 'calle1': temporaryStop.getStreetName1(), 'calle2': temporaryStop.getStreetName2(), 'paradaactiva': temporaryStop.getActive(), 'sentido':temporaryStop.getDirection()}
                     form.setStopList(temporaryRoute.getId())
                     if request.GET.get('edit') == '':
                         form.setEditOption()

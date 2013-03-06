@@ -29,9 +29,10 @@
       {% if timeStamp %}<a><font size=2>Fecha: {{ timeStamp }}</font></a>{% endif %}
       </div>
     {% endif %}
-	</div>
+</div>
+<br>
 <div><form name = "formPrediccion" action="" method="post">{% csrf_token %}
-   	<BUTTON type="submit" name="action" value="prediction">Volver a elegir destino</BUTTON>
+   	<BUTTON class="btn-primary" type="submit" name="action" value="prediction">Volver a elegir destino</BUTTON>
 </form></div>
 {% endblock %}
 

@@ -12,7 +12,10 @@ from tibus.listenerParseXML import Presponse
 from tibus.predictor import Predictor
 from timetobus.parameters import PREDICTIONSNUMBERS
 
-def index(request): #pagina principal
+def index(request): 
+    '''
+    pagina principal que redirecciona a la aplicacion acorde al dispositivo desde el que se accede
+    '''
     c={}
     c.update(csrf(request))
     if request.is_mobile:
@@ -23,12 +26,19 @@ def index(request): #pagina principal
     else:
         return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
     
-def model(request): #pagina que explica el funcionamiento del modelo
+def model(request): 
+    '''
+    pagina que explica el funcionamiento del modelo
+    Actualmente fuera de uso
+    '''
     c={}
     c.update(csrf(request))
     return render_to_response('modelo.html',  {'admin': False},  context_instance=RequestContext(request))
     
-def prediction(request): #pagina que mostrara las predicciones
+def prediction(request): 
+    '''
+    Pagina que mostrara el formulario para la carga de datos para la prediccion de tiempos de arribo
+    '''
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -50,10 +60,6 @@ def prediction(request): #pagina que mostrara las predicciones
             #empiezan las excepciones
         except ValueError:
             errorDescription = "Datos en formato incorrecto - Valor de datos"
-        except DatabaseError:
-            errorDescription = "Error de no se que" #Ver cuando salta este error. posible error de asociacion route-parada
-        except stomp.exception.ConnectFailedException:
-            errorDescription = "No hay conexion con el servidor"
         except Recorrido.DoesNotExist:
             errorDescription = "No existe la route"
         except Parada.DoesNotExist:
@@ -63,11 +69,17 @@ def prediction(request): #pagina que mostrara las predicciones
     return render_to_response('prediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
     
 def contact(request):#pagina de ayuda
+    '''
+    Pagina que muestra los datos de contacto
+    '''
     c={}
     c.update(csrf(request))
     return render_to_response('contact.html',  {'admin': False},  context_instance=RequestContext(request))
 
-def arriveResult(request): #pagina que mostrara las predicciones
+def arriveResult(request): 
+    '''
+    Pagina que mostrara los resultados de la prediccion de tiempos de arribo
+    '''
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -109,7 +121,10 @@ def arriveResult(request): #pagina que mostrara las predicciones
         errorDescription = "No hay unidades existentes"
     return render_to_response('resultado.html',  {'route': temporaryRoute, 'stopList': stopList, 'predicciones':predictionList[0:PREDICTIONSNUMBERS],  'error': errorDescription,  'admin': False,  'timeStamp': timeStampPrediction, 'linea': nameTemporaryRoute, 'parada': destinyStop},  context_instance=RequestContext(request))
 
-def itinerary(request): #pagina que muestra las recorridos de las distintas unidades
+def itinerary(request): 
+    '''
+    Pagina que muestra el formulario y los datos de los recorridos de las lineas
+    '''
     c = {}
     c.update(csrf(request))
     errorDescription = ""
@@ -124,10 +139,12 @@ def itinerary(request): #pagina que muestra las recorridos de las distintas unid
         temporaryRoute = None
         stopList = []
         frecuencyList = []
-    
     return render_to_response('itinerario.html',  {'stopList':stopList, 'frecuencyList':frecuencyList, 'error': errorDescription, 'form': form},  context_instance=RequestContext(request))
 
-def travelPrediction(request): #pagina que mostrara el formulario de datos para las predicciones de tiempos de viaje
+def travelPrediction(request): 
+    '''
+    Pagina que mostrara el formulario de datos para las predicciones de tiempos de viaje
+    '''
     #carga inicial
     c = {}
     c.update(csrf(request))
@@ -163,7 +180,9 @@ def travelPrediction(request): #pagina que mostrara el formulario de datos para 
         form = TravelForm()
     return render_to_response('prediccion.html',  {'form':form, 'error': errorDescription,  'admin': False},  context_instance=RequestContext(request))
 
-def travelResult(request): #pagina que mostrara los resultados de las estimaciones de tiempos de viaje 
+def travelResult(request): 
+    '''pagina que mostrara los resultados de las estimaciones de tiempos de viaje
+    ''' 
     #carga inicial
     c = {}
     c.update(csrf(request))
