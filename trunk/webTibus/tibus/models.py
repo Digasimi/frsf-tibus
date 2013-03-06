@@ -3,6 +3,9 @@ from django.db import models
 
 import re
 
+'''
+Enumeracion de datos usada para guardar frecuencias
+'''
 DIASSEMANA = (
     ('LUNES', 'Lunes'),
     ('MARTES', 'Martes'),
@@ -14,32 +17,40 @@ DIASSEMANA = (
 )
     
 class Empresa(models.Model):
-        idempresa = models.AutoField(primary_key=True)
-        nombre = models.CharField(max_length=50, help_text="Nombre de la empresa")
-        mail = models.EmailField()
+    '''
+    Clase que representa a un empresa
+    Permite la Agrupacion de lineas, unidades y usuarios
+    '''
+    idempresa = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=50, help_text="Nombre de la empresa")
+    mail = models.EmailField()
+    
+    def __unicode__(self):
+        return self.nombre
+    
+    def getId(self):
+        return self.idempresa
+    
+    def getName(self):
+        return self.nombre
+    
+    def getMail(self):
+        return self.mail
+    
+    def validate(self):
+        if self.nombre == "" or self.mail == '' or re.search("[^a-zA-Z0-9]", self.nombre) :
+            return False
+        self.nombre = self.nombre.strip().rstrip("\n")
+        return True
         
-        def __unicode__(self):
-            return self.nombre
-        
-        def getId(self):
-            return self.idempresa
-        
-        def getName(self):
-            return self.nombre
-        
-        def getMail(self):
-            return self.mail
-        
-        def validate(self):
-            if self.nombre == "" or self.mail == '' or re.search("[^a-zA-Z0-9]", self.nombre) :
-                return False
-            self.nombre = self.nombre.strip().rstrip("\n")
-            return True
-            
-        class Meta:
-            db_table = 'empresa'
+    class Meta:
+        db_table = 'empresa'
             
 class Recorrido(models.Model):
+    '''
+    Clase que representa el recorrida de una linea
+    Posee una relacion uno-muchos con empresa
+    '''
     idrecorrido = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
     linea = models.CharField(max_length=50)
     empresa = models.ForeignKey(Empresa)
@@ -70,6 +81,10 @@ class Recorrido(models.Model):
         return self.predictable
 
 class Parada(models.Model):
+    '''
+    Clase que Representa cada una de las paradas de una linea
+    Posee una relacion uno-muchos con recorrido
+    '''
     idparada = models.AutoField(primary_key=True) #agregado para el cambio de tablespace
     orden = models.IntegerField()
     latitud = models.FloatField()
@@ -122,6 +137,9 @@ class Parada(models.Model):
     def getActive(self):
         return self.paradaactiva
     
+    def getDirection(self):
+        return self.sentido
+    
     def validate(self):
         if self.calle1 == None or self.calle1 == '':
             return False
@@ -133,6 +151,10 @@ class Parada(models.Model):
         
       
 class Unidad(models.Model):
+    '''
+    Clase que representa cada una de las unidades moviles
+    Posee una relacion uno-muchos con Recorrido
+    '''
     idunidad = models.AutoField(primary_key=True)
     linea = models.ForeignKey(Recorrido)
     apto_movilidad_reducida = models.BooleanField()
@@ -157,6 +179,10 @@ class Unidad(models.Model):
         return self.apto_movilidad_reducida
     
 class Frecuencia(models.Model):
+    '''
+    Clase que representa los horarios de salida de las unidades de la paradas iniciales
+    Posee una relacion uno-muchos con Recorrido
+    '''
     idfrecuencia = models.AutoField(primary_key=True)
     linea = models.ForeignKey(Recorrido, related_name = "recorrido")
     dia_semana = models.CharField(max_length=10, choices=DIASSEMANA)

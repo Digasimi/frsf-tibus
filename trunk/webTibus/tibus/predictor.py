@@ -11,6 +11,10 @@ from timetobus.parameters import REQUESTSERVER, REQUESTQUEUENAME, RESPONSEQUEUEN
 from django.db.utils import DatabaseError
 
 class Predictor():
+    '''
+    Clase que permite la comunicacion con el Servidor JMS
+    Punto de acceso que realiza las predicciones
+    '''
     errorDescription = ''
     timeStampPrediction = ''
     predictionList = []
@@ -27,12 +31,18 @@ class Predictor():
     
     #Funcino que crea el mensaje xml dados los id de route y de unidad
     def createMessage(self, route,  order):
+        '''
+        Funcion que crea el XML que se envia dentro del mensaje 
+        '''
         if route == None or order == None or route == '' or order == '':
             return None
         else: 
             return '<prediction-request><linea>' + str(route) + '</linea><parada>' + str(order) + '</parada></prediction-request>'
     
     def doPrediction(self, routeId, stopId, aptoPrediction):
+        '''
+        Funcion que realiza la prediccion
+        '''
         try:
             conn = stomp.Connection(REQUESTSERVER) #Aca hay que definir el conector externo
             conn.start()

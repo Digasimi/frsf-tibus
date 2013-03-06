@@ -3,7 +3,7 @@
 {% block content %}
 <div style="width:100%" class="row-fluid pagination-centered">
   {% if error %} <div style="text-align: center;"><font color="red" size=2>Error: {{ error }}</font></div>{% endif %}
-  <h4>Predicciones para la viaje desde {{ origen }} a {{ destino}} de la linea {{ linea }}</h4>
+  <h4>Predicciones para el viaje desde {{ origen }} a {{ destino}} de la linea {{ linea }}</h4>
   <div id="tableContainer" class="row">
     {% if predicciones %}
       <div class="span4 center">
@@ -24,8 +24,9 @@
       </div>
     {% endif %}
   </div>
+  <br>
   <div><form name = "formPrediccion" action="" method="post">{% csrf_token %}
-   	<BUTTON type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
+   	<BUTTON class="btn-primary" type="submit" name="action" value="prediction">Volver a elegir</BUTTON>
   </form></div>
 </div>
 {% endblock %}
