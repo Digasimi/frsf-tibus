@@ -104,15 +104,19 @@ public class Route {
 				}
 			}
 			 DateTimeFormatter dateFormat = new DateTimeFormatterBuilder()
-			 .appendDayOfWeekText()
-			 .appendLiteral(' ')
-	            .appendDayOfMonth(2)	            
-	            .appendLiteral(" de ")
-	            .appendMonthOfYearText()
-	            .appendLiteral(" de ")
-	            .appendYear(4, 4)
-	            .toFormatter();
-			dateFormat.withLocale(new Locale("es_ES"));
+			 		.appendHourOfDay(2)
+			 		.appendLiteral(":")
+					.appendMinuteOfHour(2)
+					.appendLiteral(" de ")
+					.appendDayOfWeekText()
+					.appendLiteral(' ')
+					.appendDayOfMonth(2)
+					.appendLiteral(" de ")
+					.appendMonthOfYearText()
+					.appendLiteral(" de ")
+					.appendYear(4, 4)
+					.toFormatter();
+	 		dateFormat.withLocale(new Locale("es_ES"));
 			result.setTimestamp(dateFormat.print(new DateTime()));
 		}
 		else
@@ -120,9 +124,27 @@ public class Route {
 			result.setError("No existe la parada especificada");
 		}
 		
-		if(result.getPrediction().isEmpty())
+		if(result.getPrediction().isEmpty()){
 			result.setError("No hay estimaciones disponibles");
-		
+			//Agregar predicciones con las frecuencias (colocar verdadero solo si hay proxima frecuencia)
+			if (true == false){
+				if (destination != null){
+					Double time = new Double(0);
+					Stop tempStop1, tempStop2;
+					for(int i = 1; i < getStopOrder(destination);i++)
+					{
+						tempStop1 = getStopByOrder(i);
+						tempStop2 = getNextStop(tempStop1);
+						
+						time += getDistance(tempStop1, tempStop2)/
+								tempStop1.getAverageSpeed();						
+					}
+					tempStop1 = getStopByOrder(1);
+					result.addPrediction(new Prediction("Siguiente",new Integer(time.intValue()), 
+							tempStop1.getLat(), tempStop1.getLon()));
+				}
+			}
+		}
 		return result;
 	}
 
