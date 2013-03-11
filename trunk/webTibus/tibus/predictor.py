@@ -43,6 +43,10 @@ class Predictor():
         '''
         Funcion que realiza la prediccion
         '''
+        self.errorDescription = ''
+        self.timeStampPrediction = ''
+        self.predictionList = []
+        tempPredictionList = []
         try:
             conn = stomp.Connection(REQUESTSERVER) #Aca hay que definir el conector externo
             conn.start()

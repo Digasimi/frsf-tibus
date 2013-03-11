@@ -55,6 +55,8 @@ class PresponseHandler(ContentHandler):
         '''
         Funcion que identifica el elemento
         '''
+        if name == 'prediction-response':
+            self.list = []
         if name == 'busId':
             self.isColeElement= 1
             self.bus = ""
