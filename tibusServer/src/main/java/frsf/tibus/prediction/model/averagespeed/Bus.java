@@ -5,13 +5,11 @@ import org.joda.time.Period;
 import com.bbn.openmap.proj.Length;
 
 import frsf.tibus.domain.BusPositionData;
+import frsf.tibus.prediction.model.averagespeed.Route;
+import frsf.tibus.prediction.model.averagespeed.Stop;
 
-public class Bus {
-	
-	private Route route;
-	private Integer id;
-	private Float lat, lon;
-	
+public class Bus extends frsf.tibus.prediction.model.Bus{
+
 	// Parada asignada según posición recibida
 	private Stop currentStop;
 	private Stop previousStop;
@@ -21,9 +19,7 @@ public class Bus {
 	private BusPositionData currentLocation;
 	
 	public Bus(Integer id, Route route) {
-		super();
-		this.route = route;
-		this.id = id;
+		super(id, route);
 		this.currentStop = null;
 	}
 	
@@ -32,24 +28,6 @@ public class Bus {
 	}
 	public void setCurrentStop(Stop currentStop) {
 		this.currentStop = currentStop;
-	}
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
-	public Float getLat() {
-		return lat;
-	}
-	public void setLat(Float lat) {
-		this.lat = lat;
-	}
-	public Float getLon() {
-		return lon;
-	}
-	public void setLon(Float lon) {
-		this.lon = lon;
 	}
 
 	protected void processPosition(BusPositionData busPosition) 
@@ -60,7 +38,7 @@ public class Bus {
 		else
 			nearestStop = route.findNearestStop(busPosition, currentStop);
 		
-//		if(nearestStop != null)
+//			if(nearestStop != null)
 		
 		previousStop = currentStop;
 		currentStop = nearestStop;

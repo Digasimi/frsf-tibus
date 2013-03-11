@@ -13,6 +13,7 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import frsf.tibus.domain.BusPositionData;
 import frsf.tibus.domain.PredictionRequest;
 import frsf.tibus.domain.PredictionResponse;
+import frsf.tibus.prediction.model.averagespeed.Bus;
 import frsf.tibus.prediction.model.PredictionModel;
 
 public class AverageSpeedModel implements PredictionModel {

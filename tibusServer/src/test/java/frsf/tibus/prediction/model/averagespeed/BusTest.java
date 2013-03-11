@@ -12,6 +12,7 @@ import org.junit.Test;
 import com.bbn.openmap.proj.Length;
 
 import frsf.tibus.domain.BusPositionData;
+import frsf.tibus.prediction.model.averagespeed.Bus;
 
 public class BusTest {
 	private Route route;

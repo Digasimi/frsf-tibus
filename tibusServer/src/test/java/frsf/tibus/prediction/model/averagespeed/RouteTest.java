@@ -3,8 +3,11 @@ package frsf.tibus.prediction.model.averagespeed;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+
+import frsf.tibus.prediction.model.averagespeed.Bus;
 
 import junit.framework.TestCase;
 
@@ -251,6 +254,153 @@ public class RouteTest extends TestCase {
 	}
 	
 	@Test
+	public void testCoincideDiaLunes(){
+		assertTrue(route.coincideDia("LUNES",1));
+	}
+	
+	@Test
+	public void testCoincideDiaMartes(){
+		assertTrue(route.coincideDia("MARTES",2));
+	}
+	
+	@Test
+	public void testCoincideDiaMiercoles(){
+		assertTrue(route.coincideDia("MIERCOLES",3));
+	}
+	
+	@Test
+	public void testCoincideDiaJueves(){
+		assertTrue(route.coincideDia("JUEVES",4));
+	}
+	
+	@Test
+	public void testCoincideDiaViernes(){
+		assertTrue(route.coincideDia("VIERNES",5));
+	}
+	
+	@Test
+	public void testCoincideDiaSabado(){
+		assertTrue(route.coincideDia("SABADO",6));
+	}
+	
+	@Test
+	public void testCoincideDiaDomingo(){
+		assertTrue(route.coincideDia("DOMINGO",7));
+	}
+
+	@Test
+	public void testCoincideDiaLunes2(){
+		assertTrue(route.coincideDia("LUNES",2));
+	}
+	
+	@Test
+	public void testCoincideDiaMartes2(){
+		assertTrue(route.coincideDia("MARTES",3));
+	}
+	
+	@Test
+	public void testCoincideDiaMiercoles2(){
+		assertTrue(route.coincideDia("MIERCOLES",4));
+	}
+	
+	@Test
+	public void testCoincideDiaJueves2(){
+		assertTrue(route.coincideDia("JUEVES",5));
+	}
+	
+	@Test
+	public void testCoincideDiaViernes2(){
+		assertTrue(route.coincideDia("VIERNES",6));
+	}
+	
+	@Test
+	public void testCoincideDiaSabado2(){
+		assertTrue(route.coincideDia("SABADO",7));
+	}
+	
+	@Test
+	public void testCoincideDiaDomingo2(){
+		assertTrue(route.coincideDia("DOMINGO",1));
+	}
+	
+	@Test
+	public void testNotCoincideDiaLunes(){
+		assertFalse(route.coincideDia("LUNES",7));
+	}
+	
+	@Test
+	public void testNotCoincideDiaMartes(){
+		assertFalse(route.coincideDia("MARTES",1));
+	}
+	
+	@Test
+	public void testNotCoincideDiaMiercoles(){
+		assertFalse(route.coincideDia("MIERCOLES",2));
+	}
+	
+	@Test
+	public void testNotCoincideDiaJueves(){
+		assertFalse(route.coincideDia("JUEVES",3));
+	}
+	
+	@Test
+	public void testNotCoincideDiaViernes(){
+		assertFalse(route.coincideDia("VIERNES",4));
+	}
+	
+	@Test
+	public void testNotCoincideDiaSabado(){
+		assertFalse(route.coincideDia("SABADO",5));
+	}
+	
+	@Test
+	public void testNotCoincideDiaDomingo(){
+		assertFalse(route.coincideDia("DOMINGO",6));
+	}
+	
+	@Test
+	public void testdiferenciaTiempo1()
+	{
+		DateTime inicio = new DateTime();
+		DateTime fin = new DateTime().plusSeconds(40);
+		assertTrue(route.diferenciaTiempo(inicio, fin) == 40);
+	}
+	
+	@Test
+	public void testdiferenciaTiempo2()
+	{
+		DateTime inicio = new DateTime();
+		DateTime fin = new DateTime().minusSeconds(40);
+		assertTrue(route.diferenciaTiempo(inicio, fin) > 60);
+	}
+	
+	@Test
+	public void testdiferenciaTiempo3()
+	{
+		DateTime inicio = new DateTime();
+		DateTime fin = null;
+		assertTrue(route.diferenciaTiempo(inicio, fin) == null);
+	}
+	
+	@Test
+	public void testdiferenciaTiempoDiasDiferentes1()
+	{
+		DateTime inicio = new DateTime();
+		DateTime fin = new DateTime().plusSeconds(40);
+		inicio.minusDays(1);
+		assertTrue(route.diferenciaTiempo(inicio, fin) == 40);
+	}
+	
+	@Test
+	public void testdiferenciaTiempoDiasDiferentes2()
+	{
+		DateTime inicio = new DateTime();
+		DateTime fin = new DateTime().plusSeconds(40);
+		fin.plusDays(3);
+		assertTrue(route.diferenciaTiempo(inicio, fin) == 40);
+	}
+	
+	@Test
 	public void testConsecutive()
 	{
 		route = new Route();
@@ -339,5 +489,4 @@ public class RouteTest extends TestCase {
 		assertEquals(s3,route.getPreviousStop(s4));
 		
 	}
-
 }

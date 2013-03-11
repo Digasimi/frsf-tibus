@@ -2,7 +2,9 @@ package frsf.tibus.prediction.model.averagespeed;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import java.util.List;
 
@@ -18,6 +20,8 @@ import com.bbn.openmap.proj.coords.LatLonPoint;
 import frsf.tibus.domain.BusPositionData;
 import frsf.tibus.domain.PredictionResponse;
 import frsf.tibus.domain.PredictionResponse.Prediction;
+import frsf.tibus.prediction.model.averagespeed.Bus;
+import frsf.tibus.prediction.model.Frecuency;
 
 @Entity
 @Table(name="recorrido")
@@ -33,6 +37,10 @@ public class Route {
 			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@OrderBy("orden asc")
 	private List<Stop> stops;
+
+	@OneToMany(targetEntity=Frecuency.class, mappedBy = "route", 
+			fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private Set<Frecuency> frecuencies;
 	
 	@Transient
 	private HashMap<Integer,Bus> buses;
@@ -48,6 +56,7 @@ public class Route {
 	{
 		stops = new ArrayList<Stop>();
 		buses = new HashMap<Integer,Bus>();
+		frecuencies = new HashSet<Frecuency>();
 	}
 	
 	public Integer getRouteId() {
@@ -64,6 +73,14 @@ public class Route {
 
 	public void setStops(List<Stop> stops) {
 		this.stops = stops;
+	}
+
+	public Set<Frecuency> getFrecuencies() {
+		return frecuencies;
+	}
+
+	public void setFrecuencies(Set<Frecuency> frecuencies) {
+		this.frecuencies = frecuencies;
 	}
 
 	public HashMap<Integer,Bus> getBuses() {
@@ -127,7 +144,7 @@ public class Route {
 		if(result.getPrediction().isEmpty()){
 			result.setError("No hay estimaciones disponibles");
 			//Agregar predicciones con las frecuencias (colocar verdadero solo si hay proxima frecuencia)
-			if (true == false){
+			if (!this.frecuencies.isEmpty()){
 				if (destination != null){
 					Double time = new Double(0);
 					Stop tempStop1, tempStop2;
@@ -140,12 +157,74 @@ public class Route {
 								tempStop1.getAverageSpeed();						
 					}
 					tempStop1 = getStopByOrder(1);
+					time = time + findNextFrecuency(new DateTime());
 					result.addPrediction(new Prediction("Siguiente",new Integer(time.intValue()), 
 							tempStop1.getLat(), tempStop1.getLon()));
 				}
+				 DateTimeFormatter dateFormat = new DateTimeFormatterBuilder()
+			 		.appendHourOfDay(2)
+			 		.appendLiteral(":")
+					.appendMinuteOfHour(2)
+					.appendLiteral(" de ")
+					.appendDayOfWeekText()
+					.appendLiteral(' ')
+					.appendDayOfMonth(2)
+					.appendLiteral(" de ")
+					.appendMonthOfYearText()
+					.appendLiteral(" de ")
+					.appendYear(4, 4)
+					.toFormatter();
+				 dateFormat.withLocale(new Locale("es_ES"));
+				 result.setTimestamp(dateFormat.print(new DateTime()));
 			}
 		}
 		return result;
+	}
+
+	public Integer findNextFrecuency(DateTime time) {
+		Integer diferenciaMinima = 86400, diferencia; // 24 hours * 60 minutes * 60 seconds
+		new DateTime();
+		DateTime hoy = DateTime.now();
+		for(Frecuency frecuency:frecuencies){
+			if (coincideDia(frecuency.getWeekDay(), hoy.getDayOfWeek())){
+				diferencia = diferenciaTiempo(hoy, frecuency.getTime().toDateTime());
+				if (diferencia >= 0 && diferencia < diferenciaMinima){
+					diferenciaMinima = diferencia;
+				}
+			}
+		}
+		return diferenciaMinima;
+	}
+
+	public boolean coincideDia(String weekDay, int dayOfWeek) {
+		if (weekDay.equalsIgnoreCase("LUNES") && (dayOfWeek == 1 || dayOfWeek == 2))
+			return true;
+		if (weekDay.equalsIgnoreCase("MARTES") && (dayOfWeek == 2 || dayOfWeek == 3))
+			return true;
+		if (weekDay.equalsIgnoreCase("MIERCOLES") && (dayOfWeek == 3 || dayOfWeek == 4))
+			return true;
+		if (weekDay.equalsIgnoreCase("JUEVES") && (dayOfWeek == 4 || dayOfWeek == 5))
+			return true;
+		if (weekDay.equalsIgnoreCase("VIERNES") && (dayOfWeek == 5 || dayOfWeek == 6))
+			return true;
+		if (weekDay.equalsIgnoreCase("SABADO") && (dayOfWeek == 6 || dayOfWeek == 7))
+			return true;
+		if (weekDay.equalsIgnoreCase("DOMINGO") && (dayOfWeek == 7 || dayOfWeek == 1))
+			return true;
+		return false;
+	}
+
+	public Integer diferenciaTiempo(DateTime inicio, DateTime fin) {
+		Integer segundosInicio, segundosFin, difSegundos = null;
+		if (inicio != null && fin != null){
+			segundosInicio = inicio.getSecondOfDay();
+			segundosFin = fin.getSecondOfDay();
+			if (segundosFin >= segundosInicio) 
+				difSegundos = segundosFin - segundosInicio;
+			else
+				difSegundos = 86400 + segundosFin - segundosInicio;
+		}
+		return difSegundos;
 	}
 
 	public Integer getStopOrder(Stop s) {

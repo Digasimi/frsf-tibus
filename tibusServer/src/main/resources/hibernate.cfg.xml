@@ -11,6 +11,7 @@
   <property name="show_sql">true</property>
   <property name="hibernate.connection.url">jdbc:postgresql://localhost/sistemaprediccion</property>
   <property name="hibernate.hbm2ddl.auto">update</property>
+  <mapping class="frsf.tibus.prediction.model.Frecuency"/>
   <mapping class="frsf.tibus.prediction.model.averagespeed.Stop"/>
   <mapping class="frsf.tibus.prediction.model.averagespeed.Route"/>
   <mapping class="frsf.tibus.prediction.model.averagespeed.AverageSpeed"/>
