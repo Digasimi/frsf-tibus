@@ -245,11 +245,11 @@ class UsersForm(forms.Form):
         )
         super(UsersForm, self).__init__(*args, **kwargs)
             
-#Formulario para la carga de user            
+#Formulario para la carga de user 
 class UserForm(forms.Form):
     nombre = forms.CharField(label='Nombre')
     email = forms.EmailField(required=False,label='email')
-    categoria = forms.ChoiceField(widget=forms.RadioSelect, choices=[('Administrador','Administrador'),('Empresa','Empresa')], label='Categoria')
+    categoria = forms.CharField(widget=forms.Select(choices=[('Administrador','Administrador'),('Empresa','Empresa')]), label='Categoria')
     empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label="Todas", label='Empresa',required=False)
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
     confirmacion = forms.CharField(widget=forms.PasswordInput, label='Confirmar Password')
@@ -377,3 +377,4 @@ class FrecuencyForm(forms.Form):
         
     def setForm(self, idLinea):
         self.fields['linea'].queryset = Recorrido.objects.filter(linea = idLinea).order_by('linea')
+
