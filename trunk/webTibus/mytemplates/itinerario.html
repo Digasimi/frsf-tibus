@@ -39,33 +39,77 @@
   	<div class="span5">
 		<div id="mapas" style="width:100%; height:400px;">Aca va el mapa</div>
 	</div>
-	<div class="span6">
-	    {% if stopList %}
-  		<table id="stopList" class="table table-striped table-bordered">
-  			<thead>
-  				<tr>
-  					<th style="display:none"><a href="#">Orden</a></th>
-  					<th><a href="#">Calle</a></th>
-  					<th><a href="#">Interseccion</a></th>
-  					<th><a href="#">Sentido</a></th>
- 					</tr>
-			</thead>
-  			<tbody>	
-	  		{% for stop in stopList %}
-	  			{% if stop.paradaactiva %}
-	  			<tr>
-	  				<td style="display:none">{{ stop.orden }}</td>
-	  				<td>{{ stop.calle1 }}</td>
-	  				<td>{{ stop.calle2 }}</td>
-	  				<td>{{ stop.sentido }}</td>
-  				</tr>
-  				{% endif %}
-	  		{% endfor%}
-  			</tbody>
-  		</table>
-  		{% else %}
-  		<span>No hay paradas disponibles</span>
-  		{% endif %}
+	<div class="accordion span6" id="accordion2">
+	  <div class="accordion-group">
+	    <div class="accordion-heading">
+	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+	        Ver paradas
+	      </a>
+	    </div>
+	    <div id="collapseOne" class="accordion-body collapse in">
+	      <div class="accordion-inner">
+		    {% if stopList %}
+	  		<table id="stopList" class="table table-striped table-bordered">
+	  			<thead>
+	  				<tr>
+	  					<th style="display:none"><a href="#">Orden</a></th>
+	  					<th><a href="#">Calle</a></th>
+	  					<th><a href="#">Interseccion</a></th>
+	  					<th><a href="#">Sentido</a></th>
+	 					</tr>
+				</thead>
+	  			<tbody>	
+		  		{% for stop in stopList %}
+		  			{% if stop.paradaactiva %}
+		  			<tr>
+		  				<td style="display:none">{{ stop.orden }}</td>
+		  				<td>{{ stop.calle1 }}</td>
+		  				<td>{{ stop.calle2 }}</td>
+		  				<td>{{ stop.sentido }}</td>
+	  				</tr>
+	  				{% endif %}
+		  		{% endfor%}
+	  			</tbody>
+	  		</table>
+	  		{% else %}
+	  		<span>No hay paradas disponibles</span>
+	  		{% endif %}
+	      </div>
+	    </div>
+	  </div>
+	  <div class="accordion-group">
+	    <div class="accordion-heading">
+	      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+	        Ver Frecuencias
+	      </a>
+	    </div>
+	    <div id="collapseTwo" class="accordion-body collapse">
+	      <div class="accordion-inner">
+	        {% if frecuencyList %}
+	  		<table id="frecuencyList" class="table table-striped table-bordered">
+	  			<thead>
+	  				<tr>
+	  					<th style="display:none"><a href="#">Id</a></th>
+	  					<th><a href="#">Dia</a></th>
+	  					<th><a href="#">Horario</a></th>
+	 					</tr>
+				</thead>
+	  			<tbody>	
+		  		{% for frecuency in frecuencyList %}
+		  			<tr>
+		  				<td style="display:none">{{ frecuency.idfrecuencia }}</td>
+		  				<td>{{ frecuency.dia_semana }}</td>
+		  				<td>{{ frecuency.hora }}</td>
+	  				</tr>
+		  		{% endfor%}
+	  			</tbody>
+	  		</table>
+	  		{% else %}
+	  		<span>No hay frecuencias disponibles</span>
+	  		{% endif %}
+	      </div>
+	    </div>
+	  </div>
 	</div>
 </div>
 {% endblock %}
