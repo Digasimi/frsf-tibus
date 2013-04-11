@@ -1,4 +1,4 @@
-{% extends "admin/base_site.html" %}
+{% extends "baseMenu.html" %}
 {% load i18n %}
 
 {% block breadcrumbs %}<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a> &rsaquo; {% trans "Server error" %}</div>{% endblock %}
@@ -6,7 +6,9 @@
 {% block title %}{% trans 'Server error (500)' %}{% endblock %}
 
 {% block content %}
-<h1>{% trans 'Server Error <em>(500)</em>' %}</h1>
-<p>{% trans "There's been an error. It's been reported to the site administrators via e-mail and should be fixed shortly. Thanks for your patience." %}</p>
+<h1>{% trans 'Error en el servidor <em>(500)</em>' %}</h1>
+<p>{% trans "Ha habido un error en el servidor. Vuelva a intentar su consulta en algunos instates." %}</p>
+<p>{% trans "Si el error persiste, por favor reportelo por mail a los administradores para que sea solucionado a la brevedad." %}</p>
+<p>{% trans "Gracias por su paciencia." %}</p>
 
 {% endblock %}

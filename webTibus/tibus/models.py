@@ -93,7 +93,7 @@ class Parada(models.Model):
     calle1 = models.CharField(verbose_name="calle1", max_length=100,null=True)
     calle2 = models.CharField(verbose_name="calle2", max_length=100,null=True)
     paradaactiva = models.BooleanField(help_text="Indica si es una parada donde se detiene el colectivo o no")
-    sentido = models.CharField()
+    sentido = models.CharField(max_length=20)
   
     class Meta:
         db_table = 'parada'

@@ -431,7 +431,7 @@ def userdata(request, userId): #pagina de ABM de unidades - faltan excepciones
                     temporaryUser = Usuario.objects.get(nombre = userId)
                     form.initial = {'nombre': temporaryUser.getName(), 'email' : temporaryUser.getMail(), 'categoria' : temporaryUser.getCategory(), 'empresa': temporaryUser.getCompany(), 'password':'nuevo','confirmacion':'nuevo'}
                     if request.GET.get('edit') == '':
-                        form.setEditOption()
+                        form.setEditOption(temporaryUser.getCategory(),temporaryUser.getCompany())
                         mensaje = 'Modificacion de Usuario Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Usuario'
@@ -507,7 +507,7 @@ def busdata(request, busId): #pagina de ABM de unidades - faltan excepciones
                     temporaryBus = Unidad.objects.get(idunidad = busId)
                     form.initial = {'linea': temporaryBus.getLinea(), 'apto_movilidad_reducida' : temporaryBus.getApto(), 'id_unidad_linea': temporaryBus.getIdByLinea()}
                     if request.GET.get('edit') == '':
-                        form.setEditOption()
+                        form.setEditOption(temporaryBus.getLinea().getId())
                         mensaje = 'Modificacion de Unidad Existente'
                     elif request.GET.get('delete') == '':
                         mensaje = 'Confirmacion de Eliminacion de Unidad'

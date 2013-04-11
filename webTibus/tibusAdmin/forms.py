@@ -177,8 +177,8 @@ class BusForm(forms.Form):
     def filtrarEmpresa(self, companyUser):
         self.fields['linea'].queryset = Recorrido.objects.filter(empresa__nombre = companyUser).order_by('linea')
         
-    def setEditOption(self):
-        self.fields['linea'].widget.attrs["disabled"]="disabled"
+    def setEditOption(self, routeId):
+        self.fields['linea'].queryset = Recorrido.objects.filter(idrecorrido = routeId)
 
 #Formulario para la lista de empresas
 class CompaniesForm(forms.Form):
@@ -251,8 +251,8 @@ class UserForm(forms.Form):
     email = forms.EmailField(required=False,label='email')
     categoria = forms.CharField(widget=forms.Select(choices=[('Administrador','Administrador'),('Empresa','Empresa')]), label='Categoria')
     empresa = forms.ModelChoiceField(queryset=Empresa.objects.all(), empty_label="Todas", label='Empresa',required=False)
-    password = forms.CharField(widget=forms.PasswordInput, label='Password')
-    confirmacion = forms.CharField(widget=forms.PasswordInput, label='Confirmar Password')
+    password = forms.CharField(widget=forms.PasswordInput(render_value = True), label='Password')
+    confirmacion = forms.CharField(widget=forms.PasswordInput(render_value = True), label='Confirmar Password')
     action = forms.CharField(widget=forms.HiddenInput)
     
     def __init__(self, *args, **kwargs):
@@ -276,9 +276,15 @@ class UserForm(forms.Form):
         )
         super(UserForm, self).__init__(*args, **kwargs)
         
-    def setEditOption(self):
-        self.fields['categoria'].widget.attrs["disabled"]="disabled"
-        self.fields['empresa'].widget.attrs["disabled"]="disabled"
+    def setEditOption(self, category, company):
+        self.fields['categoria'].widget.choices = ((category,category),)
+        if category == 'Administrador':
+            self.fields['empresa'].queryset = Empresa.objects.filter(nombre = None)
+        else:
+            self.fields['empresa'].queryset = Empresa.objects.filter(nombre = company.getName())
+            self.fields['empresa'].empty_label = None
+
+            
 
 #Formulario para el cambio de password    
 class PasswordForm(forms.Form):
