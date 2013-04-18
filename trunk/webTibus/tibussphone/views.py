@@ -86,11 +86,14 @@ def sarriveResult(request): #pagina que mostrara las predicciones
             nameTemporaryRoute = temporaryRoute.getLinea()
             stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
             destinyStop = Parada.objects.get(idparada = destinyStopId)
-            predictorTemp = Predictor()
-            predictorTemp.doPrediction(nameTemporaryRoute, destinyStopId, aptoPrediction)
-            errorDescription = predictorTemp.getError()
-            predictionList = predictorTemp.getPredictionList()
-            timeStampPrediction = predictorTemp.getTimeStamp()
+            if (destinyStop != None and destinyStop.getActive()):
+                predictorTemp = Predictor()
+                predictorTemp.doPrediction(nameTemporaryRoute, destinyStopId, aptoPrediction)
+                errorDescription = predictorTemp.getError()
+                predictionList = predictorTemp.getPredictionList()
+                timeStampPrediction = predictorTemp.getTimeStamp()
+            else:
+                errorDescription = "La parada destino no es valida"
         #empiezan las excepciones
     except Recorrido.DoesNotExist:
         errorDescription = "No existe la route"
@@ -166,32 +169,34 @@ def stravelResult(request): #pagina que mostrara los resultados de las estimacio
             stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
             origenStop = Parada.objects.get(idparada = origenStopId)
             destinyStop = Parada.objects.get(idparada = destinyStopId)
-            
-            predictorTemp = Predictor()
-            predictorTemp.doPrediction(nameTemporaryRoute, origenStopId, False)
-            errorDescription = predictorTemp.getError()
-            predictionList1 = predictorTemp.getPredictionList()
-            if errorDescription == "":
-                predictorTemp.doPrediction(nameTemporaryRoute, destinyStopId, False)
+            if ( origenStop != None and origenStop.getActive() and destinyStop != None and destinyStop.getActive()):
+                predictorTemp = Predictor()
+                predictorTemp.doPrediction(nameTemporaryRoute, origenStopId, False)
                 errorDescription = predictorTemp.getError()
-                predictionList2 = predictorTemp.getPredictionList()
-                timeStampPrediction = predictorTemp.getTimeStamp()
+                predictionList1 = predictorTemp.getPredictionList()
                 if errorDescription == "":
-                    if predictionList1 == [] or predictionList2 == []:
-                        errorDescription = "No hay predicciones disponibles"
-                    else:
-                        for prediccion1 in predictionList1:
-                            for prediccion2 in predictionList2:
-                                if prediccion1.bus == prediccion2.bus:
-                                    if (prediccion2.timeseg >= prediccion1.timeseg):
-                                        predictionMinute = (prediccion2.time - prediccion1.time)
-                                        predictionSecond = (prediccion2.timeseg - prediccion1.timeseg)
-                                    else:
-                                        predictionMinute = (prediccion2.time - 1 - prediccion1.time)
-                                        predictionSecond = (prediccion2.timeseg + 60 - prediccion1.timeseg)
-                                    predictionList = [Presponse(prediccion1.bus, predictionMinute, predictionSecond,0,0)]
-                        if predictionList == []:
+                    predictorTemp.doPrediction(nameTemporaryRoute, destinyStopId, False)
+                    errorDescription = predictorTemp.getError()
+                    predictionList2 = predictorTemp.getPredictionList()
+                    timeStampPrediction = predictorTemp.getTimeStamp()
+                    if errorDescription == "":
+                        if predictionList1 == [] or predictionList2 == []:
                             errorDescription = "No hay predicciones disponibles"
+                        else:
+                            for prediccion1 in predictionList1:
+                                for prediccion2 in predictionList2:
+                                    if prediccion1.bus == prediccion2.bus:
+                                        if (prediccion2.timeseg >= prediccion1.timeseg):
+                                            predictionMinute = (prediccion2.time - prediccion1.time)
+                                            predictionSecond = (prediccion2.timeseg - prediccion1.timeseg)
+                                        else:
+                                            predictionMinute = (prediccion2.time - 1 - prediccion1.time)
+                                            predictionSecond = (prediccion2.timeseg + 60 - prediccion1.timeseg)
+                                        predictionList = [Presponse(prediccion1.bus, predictionMinute, predictionSecond,0,0)]
+                            if predictionList == []:
+                                errorDescription = "No hay predicciones disponibles"
+            else:
+                errorDescription = "La parada destino no es valida"
         #empiezan las excepciones
     except Recorrido.DoesNotExist:
         errorDescription = "No existe la route"
