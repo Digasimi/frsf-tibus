@@ -54,7 +54,7 @@ class RequestMobileMiddleware(object):
         if is_mobile:
             if request.META.has_key('HTTP_ACCEPT'):
                 http_accept = request.META['HTTP_ACCEPT']
-                pattern = "text/html"
+                pattern = "application/xml"
                 prog = re.compile(pattern, re.IGNORECASE)
                 match = prog.search(http_accept)
                 if match:
@@ -63,6 +63,6 @@ class RequestMobileMiddleware(object):
 
 class ResponseMobileMiddleware(object):
     def process_response(self, request, response):
-        if request.META.has_key('is_mobile') and request.META.has_key('is_http_mobile') and request.is_mobile and not request.is_http_mobile:
+        if request.is_mobile and not request.is_http_mobile:
                 response['Content-Type'] = "text/vnd.wap.wml"
         return response

@@ -12,11 +12,12 @@ def index(request): #pagina principal
     c.update(csrf(request))
     if request.is_mobile:
         if not request.is_http_mobile:
-            return HttpResponseRedirect('windex')
+            companyList = Empresa.objects.all().order_by('nombre')
+            return render_to_response('index.wml',{'companyList': companyList,'admin': False},  context_instance=RequestContext(request))
         else:
-            return render_to_response('sindex.html',{'admin': False},  context_instance=RequestContext(request))
+            return HttpResponseRedirect('sindex')
     else:
-        return render_to_response('index.html',{'admin': False},  context_instance=RequestContext(request))
+        return HttpResponseRedirect('index')
 
 def company(request, companyId): #pagina principal
     c={}
@@ -56,12 +57,17 @@ def result(request, stopId): #pagina principal
     
     #logica
     try:
-        temporaryRoute= Parada.objects.get(idparada = stopId).getLinea().getLinea()
-        predictorTemp = Predictor()
-        predictorTemp.doPrediction(temporaryRoute, stopId, False)
-        errorDescription = predictorTemp.getError()
-        predictionList = predictorTemp.getPredictionList()
-        timeStampPrediction = predictorTemp.getTimeStamp()
+        destinyStop = Parada.objects.get(idparada = stopId)
+        temporaryRoute= destinyStop.getLinea().getLinea()
+        if (destinyStop != None and destinyStop.getActive()):
+            predictorTemp = Predictor()
+            predictorTemp.doPrediction(temporaryRoute, stopId, False)
+            errorDescription = predictorTemp.getError()
+            predictionList = predictorTemp.getPredictionList()
+            timeStampPrediction = predictorTemp.getTimeStamp()
+        else:
+            errorDescription = "La parada destino no es valida"
+
         #empiezan las excepciones
     except Recorrido.DoesNotExist:
         errorDescription = "No existe la route"
