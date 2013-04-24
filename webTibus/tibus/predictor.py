@@ -81,10 +81,10 @@ class Predictor():
                                     self.predictionList = self.predictionList + [prediction]
                             except Unidad.DoesNotExist:
                                 self.predictionList = self.predictionList
-                        if len(self.predictionList) == 0:
-                            self.errorDescription = "No hay estimaciones disponibles"
                     else:
                         self.predictionList = tempPredictionList
+                    if len(self.predictionList) == 0:
+                        self.errorDescription = "No hay estimaciones disponibles"
                     self.timeStampPrediction = self.parser.getTimeStamp()
                 conn.unsubscribe(destination=RESPONSEQUEUENAME)
                 conn.disconnect()
