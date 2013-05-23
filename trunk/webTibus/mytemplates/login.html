@@ -1,7 +1,4 @@
 {% extends "base.html" %}
-{% load i18n %}
-
-{% block extrastyle %}{% load adminmedia %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/login.css" />{% endblock %}
 
 {% block content %}
  <div class="row" style="background-image: ../Archivos/img/stripes.png">
@@ -48,10 +45,8 @@
 </div>
 {% if error %}<div>Error: {{ error }}</div>{% endif %}
 			
-			<script type="text/javascript">
-				document.getElementById('id_username').focus()
-			</script>
+<script type="text/javascript">
+	document.getElementById('id_username').focus()
+</script>
 		
-
-
 {% endblock %}
