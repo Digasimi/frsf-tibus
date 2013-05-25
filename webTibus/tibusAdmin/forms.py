@@ -384,3 +384,25 @@ class FrecuencyForm(forms.Form):
     def setForm(self, idLinea):
         self.fields['linea'].queryset = Recorrido.objects.filter(linea = idLinea).order_by('linea')
 
+#Formulario generico para la confirmacion de la eliminacion        
+class InfoForm(forms.Form):
+    dataType = forms.CharField(label = "Tipo de dato")
+    dataType.widget.attrs["disabled"]="disabled"
+    identificador = forms.CharField()
+    identificador.widget.attrs["disabled"]="disabled"
+    
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-EliminarForm'
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Fieldset(
+                'Se han grabado exitosamente los cambios',
+                'dataType',
+                'identificador',
+            ),
+            FormActions(
+                Submit('continuar', 'Continuar', css_class="btn-primary")                
+            ),
+        )
+        super(InfoForm, self).__init__(*args, **kwargs)    

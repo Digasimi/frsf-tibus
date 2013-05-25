@@ -130,19 +130,25 @@ def itinerary(request):
     '''
     c = {}
     c.update(csrf(request))
-    errorDescription = ""
-    form = ItineraryForm()
-    if request.method == 'POST':
-        temporaryRoute = Recorrido.objects.get(idrecorrido = request.POST.get('linea'))
-        stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
-        frecuencyList = Frecuencia.objects.filter(linea = temporaryRoute)
-        form.quitEmptyOption()
-        form.initial = {'linea':request.POST.get('linea')}
+    if request.is_mobile:
+        if request.is_http_mobile:
+            return HttpResponseRedirect('sindex')
+        else:
+            return HttpResponseRedirect('windex')
     else:
-        temporaryRoute = None
-        stopList = []
-        frecuencyList = []
-    return render_to_response('itinerario.html',  {'stopList':stopList, 'frecuencyList':frecuencyList, 'error': errorDescription, 'form': form},  context_instance=RequestContext(request))
+        errorDescription = ""
+        form = ItineraryForm()
+        if request.method == 'POST':
+            temporaryRoute = Recorrido.objects.get(idrecorrido = request.POST.get('linea'))
+            stopList = Parada.objects.filter(linea = temporaryRoute).order_by('orden')
+            frecuencyList = Frecuencia.objects.filter(linea = temporaryRoute)
+            form.quitEmptyOption()
+            form.initial = {'linea':request.POST.get('linea')}
+        else:
+            temporaryRoute = None
+            stopList = []
+            frecuencyList = []
+        return render_to_response('itinerario.html',  {'stopList':stopList, 'frecuencyList':frecuencyList, 'error': errorDescription, 'form': form},  context_instance=RequestContext(request))
 
 def travelPrediction(request): 
     '''
