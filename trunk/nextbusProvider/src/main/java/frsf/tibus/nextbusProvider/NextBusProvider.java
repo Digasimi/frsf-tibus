@@ -99,6 +99,7 @@ public class NextBusProvider
 		    		{
 		    			if(data.isPredictable())
 		    			{
+		    				try {
 			    			ObjectMessage r = jmsSession.createObjectMessage();
 			    			DateTime timestamp = new DateTime();
 			    			
@@ -107,6 +108,10 @@ public class NextBusProvider
 			    			r.setObject(new BusPositionData(new Integer(data.getId()), data.getLat(), 
 			    					data.getLon(), data.getHeading(), timestamp,data.getRouteTag()));
 			    			p.send(r);
+		    				}
+		    				catch (java.lang.NumberFormatException e){
+		    					e.printStackTrace();
+		    				}
 		    			}
 		    		}
 		    		lastTime = b.getLastTime().getTime();
